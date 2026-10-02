@@ -1,0 +1,1320 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>POS KASIR - SEBLAK BRENGOS (THE REBELLIOUS SPICE)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; }
+    body { background: #FAF6F0; color: #2B1B14; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #D5C3B0; border-radius: 9999px; }
+    @media print {
+      body * { visibility: hidden !important; }
+      #printArea, #printArea * { visibility: visible !important; }
+      #printArea { position: fixed; left: 0; top: 0; width: 58mm; padding: 2mm; background: #fff; color: #000; font-family: monospace; font-size: 11px; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP NAVBAR (CLEAN & PROFESSIONAL - NO CLOUD BUTTON VISIBLE) -->
+  <header class="bg-[#2B1B14] text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-md sticky top-0 z-30 border-b-2 border-[#B3261E]">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-[#B3261E] flex items-center justify-center text-lg font-black shadow-inner">🌶️</div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="font-black text-sm sm:text-base tracking-tight">SEBLAK BRENGOS</h1>
+          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#B3261E] text-amber-200 uppercase">POS KASIR</span>
+        </div>
+        <p class="text-[10px] text-amber-200/80 font-semibold">THE REBELLIOUS SPICE • NIKMATNYA BRUTAL</p>
+      </div>
+    </div>
+
+    <div class="flex items-center flex-wrap gap-1.5 sm:gap-2">
+      <!-- Status Sync Indicator -->
+      <button onclick="pullFromCloud(true)" id="btnSyncStatus" class="px-2.5 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-600 text-[11px] font-bold flex items-center gap-1.5 cursor-pointer">
+        <span id="syncDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span id="syncText">Sync Aktif</span>
+      </button>
+
+      <!-- Shift Button -->
+      <button onclick="openShiftModal()" id="btnShiftBadge" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[11px] font-extrabold cursor-pointer">
+        Shift: Buka
+      </button>
+
+      <!-- Navigation Tabs: Kasir, Riwayat, Stok (Clean: No Cloud button!) -->
+      <div class="flex bg-stone-800 p-0.5 rounded-xl border border-stone-700">
+        <button onclick="switchTab('pos')" id="tabBtn_pos" class="px-3 py-1 rounded-lg text-xs font-extrabold bg-[#B3261E] text-white cursor-pointer">Kasir</button>
+        <button onclick="switchTab('tx')" id="tabBtn_tx" class="px-3 py-1 rounded-lg text-xs font-extrabold text-stone-300 hover:text-white cursor-pointer">Riwayat</button>
+        <button onclick="switchTab('stock')" id="tabBtn_stock" class="px-3 py-1 rounded-lg text-xs font-extrabold text-stone-300 hover:text-white cursor-pointer">Stok</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEW: POS KASIR -->
+  <main id="view_pos" class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+    <!-- LEFT: MENU & CATEGORIES -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Order Type & Filter Bar -->
+      <div class="p-3 bg-white border-b border-[#E6D8C8] space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap gap-1.5" id="orderTypeBar"></div>
+          <div class="flex items-center gap-1.5">
+            <input id="custNameInput" type="text" placeholder="Nama Pelanggan / No Meja..." class="px-3 py-1.5 rounded-xl border border-[#E6D8C8] bg-[#FAF6F0] text-xs font-bold w-44 sm:w-52 focus:outline-none focus:border-[#B3261E]" />
+            <input id="onlineCodeInput" type="text" placeholder="Kode Order Online..." class="hidden px-3 py-1.5 rounded-xl border border-amber-300 bg-amber-50 text-xs font-bold w-36 focus:outline-none focus:border-[#B3261E]" />
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex gap-1.5 overflow-x-auto pb-0.5" id="categoryBar"></div>
+          <input id="searchMenuInput" oninput="renderMenuGrid()" type="text" placeholder="Cari seblak / mie..." class="px-3 py-1.5 rounded-xl border border-[#E6D8C8] bg-[#FAF6F0] text-xs font-bold w-36 sm:w-48 focus:outline-none focus:border-[#B3261E]" />
+        </div>
+      </div>
+
+      <!-- Menu Cards Grid -->
+      <div class="flex-1 overflow-y-auto p-3 sm:p-4">
+        <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: CART & CHECKOUT -->
+    <div class="w-full lg:w-96 bg-white border-t lg:border-t-0 lg:border-l border-[#E6D8C8] flex flex-col shrink-0 shadow-xl">
+      <div class="px-4 py-2.5 bg-[#FFF8F0] border-b border-[#E6D8C8] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="font-black text-sm text-[#2B1B14]">🧾 Pesanan Aktif</span>
+          <span id="cartCountBadge" class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#EAD8C7] text-[#5A4333]">0 item</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button onclick="saveOpenBill()" class="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-[11px] font-extrabold cursor-pointer">+ Simpan Bill</button>
+          <button onclick="openBillsModal()" id="btnOpenBillsCount" class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 text-[11px] font-black cursor-pointer">Bill (0)</button>
+        </div>
+      </div>
+
+      <!-- Cart Items -->
+      <div id="cartList" class="flex-1 overflow-y-auto p-3 space-y-2 max-h-[38vh] lg:max-h-none"></div>
+
+      <!-- Cart Summary & Pay -->
+      <div class="p-3.5 bg-[#FFF8F0] border-t border-[#E6D8C8] space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-[#7A6354]">Subtotal</span>
+          <span id="subtotalText" class="font-extrabold text-[#2B1B14]">Rp 0</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <button onclick="openDiscountModal()" class="px-2 py-0.5 rounded-md bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold text-[11px] cursor-pointer">% Diskon (PIN Owner)</button>
+          <span id="discountText" class="font-bold text-red-600">- Rp 0</span>
+        </div>
+        <div class="pt-1.5 border-t border-[#E6D8C8] flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-extrabold text-[#8A7364] uppercase">TOTAL BAYAR</span>
+            <div id="grandTotalText" class="text-xl font-black text-[#B3261E]">Rp 0</div>
+          </div>
+          <button onclick="clearCart()" class="text-xs font-bold text-stone-400 hover:text-red-600 underline cursor-pointer">Kosongkan</button>
+        </div>
+        <button onclick="openCheckoutModal()" id="btnPayNow" class="w-full py-3 rounded-xl bg-[#3F7D5C] hover:bg-[#326449] text-white font-black text-sm shadow-md transition-all cursor-pointer">
+          💳 Bayar &amp; Cetak Struk
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- VIEW: RIWAYAT TRANSAKSI & CLOSING -->
+  <section id="view_tx" class="hidden flex-1 p-4 max-w-5xl mx-auto w-full space-y-4">
+    <div class="bg-white p-4 rounded-2xl border border-[#E6D8C8] flex flex-wrap items-center justify-between gap-3 shadow-xs">
+      <div>
+        <h2 class="font-black text-base text-[#2B1B14]">Riwayat Transaksi Shift Hari Ini</h2>
+        <p class="text-xs text-[#8A7364]">Semua transaksi otomatis tersimpan di perangkat dan terupdate ke Owner Seblak Brengos.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button onclick="flushOfflineQueue()" id="btnRetryQueue" class="hidden px-3 py-2 rounded-xl bg-amber-500 text-stone-950 font-black text-xs cursor-pointer">🔄 Kirim Antrean Offline</button>
+        <button onclick="exportTodayCsv()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-extrabold text-xs border border-stone-300 cursor-pointer">📥 Download CSV</button>
+        <button onclick="openClosingModal()" class="px-4 py-2 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-xs shadow-sm cursor-pointer">🔒 Tutup Shift / Closing Kasir</button>
+      </div>
+    </div>
+    <div id="txStatsRow" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+    <div id="txHistoryList" class="space-y-2.5"></div>
+  </section>
+
+  <!-- VIEW: STOK BAHAN BAKU -->
+  <section id="view_stock" class="hidden flex-1 p-4 max-w-5xl mx-auto w-full space-y-4">
+    <div class="bg-white p-4 rounded-2xl border border-[#E6D8C8] flex flex-wrap items-center justify-between gap-3 shadow-xs">
+      <div>
+        <h2 class="font-black text-base text-[#2B1B14]">Stok Bahan Baku &amp; Pelengkap Seblak Brengos</h2>
+        <p class="text-xs text-[#8A7364]">Otomatis berkurang saat porsi &amp; extra topping terjual. Sinkron 2 arah dengan Owner.</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="pullFromCloud(true)" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-extrabold text-xs border border-stone-300 cursor-pointer">🔄 Tarik Stok dari Owner</button>
+        <button onclick="pushStockToCloud()" class="px-3.5 py-2 rounded-xl bg-[#3F7D5C] hover:bg-[#326449] text-white font-extrabold text-xs cursor-pointer">☁️ Upload Stok ke Cloud</button>
+      </div>
+    </div>
+    <div id="stockGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
+  </section>
+
+  <!-- DISCREET FOOTER (WITH HIDDEN SECRET TRIGGER FOR CLOUD SPREADSHEET CONFIG) -->
+  <footer class="mt-auto py-3 bg-[#FAF6F0] border-t border-[#E6D8C8] text-center text-xs text-stone-500 select-none">
+    <div class="max-w-md mx-auto flex flex-col items-center gap-0.5">
+      <p class="inline-flex items-center gap-1.5 cursor-pointer hover:text-stone-700 transition-colors py-1 px-3 rounded-full hover:bg-stone-200/60" onclick="triggerSecretCloudModal()" title="Klik untuk membuka Pengaturan Cloud & Spreadsheet (Wajib PIN Owner)">
+        <span>© 2026 Seblak Brengos — The Rebellious Spice. All rights reserved.</span>
+        <span class="opacity-20 hover:opacity-100 text-[11px]">🔒</span>
+      </p>
+      <span class="text-[9.5px] text-stone-400">High-Speed Offline-Resilient POS Engine</span>
+    </div>
+  </footer>
+
+  <!-- SECRET MODAL: CLOUD & SPREADSHEET CONFIG (HIDDEN FROM CASUAL VIEW) -->
+  <div id="secretCloudModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl p-5 sm:p-6 text-[#2B1B14] shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto border border-[#E6D8C8]">
+      <div class="flex items-center justify-between border-b border-stone-200 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">⚙️</span>
+          <div>
+            <h3 class="font-black text-base text-[#B3261E]">Pengaturan Cloud &amp; Google Spreadsheet</h3>
+            <p class="text-xs text-stone-500">Area Terbatas Owner (Tersambung dengan Kasir &amp; Owner HTML)</p>
+          </div>
+        </div>
+        <button onclick="closeSecretCloudModal()" class="w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-black cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-xs font-extrabold text-[#5A4333] uppercase mb-1">URL Web App Google Apps Script (Exec):</label>
+          <input id="cfgScriptUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full p-3 rounded-xl border border-[#E6D8C8] bg-[#FAF6F0] text-xs font-mono font-bold text-[#2B1B14] focus:outline-none focus:border-[#B3261E]" />
+        </div>
+        <div>
+          <label class="block text-xs font-extrabold text-[#5A4333] uppercase mb-1">URL Google Spreadsheet (Opsional - Shortcut):</label>
+          <input id="cfgSheetUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/..." class="w-full p-3 rounded-xl border border-[#E6D8C8] bg-[#FAF6F0] text-xs font-mono text-[#2B1B14] focus:outline-none focus:border-[#B3261E]" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-extrabold text-[#5A4333] uppercase mb-1">Nama Kasir Aktif:</label>
+            <input id="cfgCashierName" type="text" placeholder="Kasir Seblak Brengos" class="w-full p-2.5 rounded-xl border border-[#E6D8C8] bg-[#FAF6F0] text-xs font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-extrabold text-[#5A4333] uppercase mb-1">WhatsApp Owner (Kirim Laporan):</label>
+            <input id="cfgOwnerWa" type="text" placeholder="087898185988" class="w-full p-2.5 rounded-xl border border-[#E6D8C8] bg-[#FAF6F0] text-xs font-bold" />
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-stone-200 flex items-center justify-between">
+          <div>
+            <span class="font-extrabold uppercase text-red-600">🧹 Bersihkan Transaksi Demo Hari Ini:</span>
+            <p class="text-[10px] text-stone-500">Mereset nota transaksi hari ini ke 0 tanpa mengubah menu.</p>
+          </div>
+          <button onclick="cleanKasirDemoData()" class="px-3 py-1.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 font-extrabold text-xs cursor-pointer">Bersihkan</button>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 pt-2 border-t border-stone-200">
+        <button onclick="saveCloudConfig()" class="flex-1 py-2.5 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-xs cursor-pointer shadow-md">💾 Simpan Konfigurasi</button>
+        <button onclick="pullFromCloud(true)" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs cursor-pointer">🔄 Tes &amp; Tarik Data</button>
+        <button onclick="resetDefaultSeblakData()" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs border border-stone-300 cursor-pointer">Reset Menu</button>
+        <button onclick="closeSecretCloudModal()" class="px-3 py-2.5 rounded-xl bg-stone-200 text-stone-700 font-bold text-xs cursor-pointer">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CUSTOMIZE ITEM (SPICE LEVEL & 16 EXTRA TOPPINGS) -->
+  <div id="itemModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-[#FAF6F0] w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-[#E6D8C8]">
+      <div class="px-5 py-3.5 bg-[#FFF8F0] border-b border-[#E6D8C8] flex items-center justify-between">
+        <div>
+          <h3 id="modalItemName" class="font-black text-base sm:text-lg text-[#2B1B14]">Seblak Spesial</h3>
+          <p id="modalItemPrice" class="text-xs font-extrabold text-[#B3261E]">Rp 25.000</p>
+        </div>
+        <button onclick="closeItemModal()" class="w-8 h-8 rounded-full bg-[#EAD8C7] text-[#5A4333] font-black cursor-pointer">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4">
+        <div id="modalItemDescBox" class="p-3 bg-[#FFF8F0] border border-[#E6D8C8] rounded-xl text-xs text-[#5A4333]"></div>
+
+        <!-- Qty -->
+        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-[#E6D8C8]">
+          <span class="text-xs font-extrabold uppercase text-[#7A6354]">Jumlah Porsi</span>
+          <div class="flex items-center gap-3">
+            <button onclick="changeModalQty(-1)" class="w-8 h-8 rounded-lg bg-[#FAF6F0] border border-[#E6D8C8] font-black cursor-pointer">-</button>
+            <span id="modalQtyVal" class="font-black text-base min-w-6 text-center">1</span>
+            <button onclick="changeModalQty(1)" class="w-8 h-8 rounded-lg bg-[#FAF6F0] border border-[#E6D8C8] font-black cursor-pointer">+</button>
+          </div>
+        </div>
+
+        <!-- Level Pedas -->
+        <div>
+          <label class="block text-xs font-extrabold uppercase text-[#7A6354] mb-2">🌶️ Pilih Level Pedas</label>
+          <div id="modalSpiceGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+        </div>
+
+        <!-- 16 Extra Toppings -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-extrabold uppercase text-[#7A6354]">🍢 Extra Topping Resmi (Bisa Dobel)</label>
+            <button onclick="resetModalToppings()" class="text-[11px] font-bold text-[#B3261E] underline cursor-pointer">Reset Topping</button>
+          </div>
+          <div id="modalToppingGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+        </div>
+
+        <!-- Note -->
+        <div>
+          <label class="block text-xs font-extrabold uppercase text-[#7A6354] mb-1">Catatan Pesanan (Opsional)</label>
+          <input id="modalNoteInput" type="text" placeholder="Contoh: Kuah kental, tidak pakai sayur..." class="w-full p-2.5 bg-white border border-[#E6D8C8] rounded-xl text-xs font-semibold focus:outline-none focus:border-[#B3261E]" />
+        </div>
+      </div>
+
+      <div class="p-4 bg-[#FFF8F0] border-t border-[#E6D8C8] flex gap-2">
+        <button onclick="closeItemModal()" class="px-4 py-3 rounded-xl bg-white border border-[#DDC6B2] text-xs font-bold text-[#5A4333] cursor-pointer">Batal</button>
+        <button onclick="confirmAddToCart()" id="btnConfirmItem" class="flex-1 py-3 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-xs sm:text-sm shadow-md cursor-pointer">
+          + Tambah ke Pesanan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CHECKOUT BAYAR -->
+  <div id="checkoutModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#FAF6F0] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-[#E6D8C8]">
+      <div class="px-5 py-3.5 bg-[#FFF8F0] border-b border-[#E6D8C8] flex items-center justify-between">
+        <h3 class="font-black text-base text-[#2B1B14]">Pembayaran Kasir Seblak Brengos</h3>
+        <button onclick="closeCheckoutModal()" class="w-7 h-7 rounded-full bg-[#EAD8C7] text-xs font-black cursor-pointer">✕</button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="p-3.5 rounded-2xl bg-[#2B1B14] text-white flex items-center justify-between">
+          <span class="text-xs font-bold text-amber-200 uppercase">Total Tagihan</span>
+          <span id="payModalTotal" class="text-2xl font-black text-amber-400">Rp 0</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold uppercase text-[#7A6354] mb-1.5">Metode Pembayaran</label>
+          <div id="payMethodGrid" class="grid grid-cols-2 gap-2"></div>
+        </div>
+
+        <div id="cashInputSection" class="space-y-2">
+          <label class="block text-xs font-extrabold uppercase text-[#7A6354]">Uang Tunai Diterima (Rp)</label>
+          <input id="cashReceivedInput" oninput="updateChangePreview()" type="number" class="w-full p-3 bg-white border-2 border-[#E6D8C8] rounded-xl text-base font-black text-[#2B1B14] focus:outline-none focus:border-[#B3261E]" />
+          <div class="flex flex-wrap gap-1.5" id="quickCashBtns"></div>
+          <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs font-extrabold text-emerald-900">
+            <span>Kembalian:</span>
+            <span id="changePreviewText" class="text-sm font-black">Rp 0</span>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-[#FFF8F0] border-t border-[#E6D8C8] flex gap-2">
+        <button onclick="closeCheckoutModal()" class="px-4 py-2.5 rounded-xl bg-white border border-[#DDC6B2] text-xs font-bold cursor-pointer">Batal</button>
+        <button onclick="processPayment()" class="flex-1 py-2.5 rounded-xl bg-[#3F7D5C] hover:bg-[#326449] text-white font-black text-sm shadow-md cursor-pointer">✅ Selesaikan &amp; Cetak Struk</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RECEIPT PREVIEW -->
+  <div id="receiptModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-stone-200 flex flex-col max-h-[90vh]">
+      <div class="px-4 py-3 bg-stone-900 text-white flex items-center justify-between">
+        <span class="font-black text-xs uppercase tracking-wider">🧾 Struk Transaksi Seblak Brengos</span>
+        <button onclick="closeReceiptModal()" class="w-7 h-7 rounded-full bg-stone-700 text-xs font-black cursor-pointer">✕</button>
+      </div>
+      <div class="p-4 overflow-y-auto flex-1 bg-stone-50 flex justify-center">
+        <div id="receiptPreviewBox" class="bg-white p-4 rounded-xl shadow-xs border border-stone-200 w-full font-mono text-xs text-stone-900"></div>
+      </div>
+      <div class="p-3 bg-white border-t border-stone-200 grid grid-cols-2 gap-2">
+        <button onclick="window.print()" class="py-2.5 rounded-xl bg-[#2B1B14] text-white font-black text-xs cursor-pointer">🖨️ Cetak Thermal</button>
+        <button onclick="sendReceiptWa()" class="py-2.5 rounded-xl bg-emerald-600 text-white font-black text-xs cursor-pointer">📲 Kirim WA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: OPEN BILLS -->
+  <div id="openBillsModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#FAF6F0] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-[#E6D8C8] flex flex-col max-h-[85vh]">
+      <div class="px-5 py-3.5 bg-[#FFF8F0] border-b border-[#E6D8C8] flex items-center justify-between">
+        <h3 class="font-black text-sm text-[#2B1B14]">📂 Daftar Open Bill / Meja Belum Bayar</h3>
+        <button onclick="closeOpenBillsModal()" class="w-7 h-7 rounded-full bg-[#EAD8C7] text-xs font-black cursor-pointer">✕</button>
+      </div>
+      <div id="openBillsContainer" class="p-4 overflow-y-auto space-y-2.5 flex-1"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: CLOSING SHIFT -->
+  <div id="closingModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#FAF6F0] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-[#E6D8C8]">
+      <div class="px-5 py-3.5 bg-[#B3261E] text-white flex items-center justify-between">
+        <h3 class="font-black text-sm">🔒 Tutup Shift &amp; Rekonsiliasi Kasir</h3>
+        <button onclick="closeClosingModal()" class="w-7 h-7 rounded-full bg-black/20 text-xs font-black cursor-pointer">✕</button>
+      </div>
+      <div class="p-5 space-y-3 text-xs">
+        <div id="closingSummaryBox" class="p-3 bg-white rounded-xl border border-[#E6D8C8] space-y-1.5"></div>
+        <div>
+          <label class="block font-extrabold uppercase text-[#5A4333] mb-1">Modal Kas Awal Laci (Rp):</label>
+          <input id="closingInitCash" type="number" value="0" class="w-full p-2.5 bg-white border border-[#E6D8C8] rounded-xl font-bold" />
+        </div>
+        <div>
+          <label class="block font-extrabold uppercase text-[#5A4333] mb-1">Uang Fisik Aktual di Laci Saat Ini (Rp):</label>
+          <input id="closingActualCash" type="number" placeholder="Hitung uang tunai di laci..." class="w-full p-2.5 bg-white border-2 border-[#B3261E] rounded-xl font-black text-sm" />
+        </div>
+        <div>
+          <label class="block font-extrabold uppercase text-[#5A4333] mb-1">Catatan Closing / Selisih:</label>
+          <input id="closingNote" type="text" placeholder="Contoh: Shift Malam aman..." class="w-full p-2.5 bg-white border border-[#E6D8C8] rounded-xl" />
+        </div>
+      </div>
+      <div class="p-4 bg-[#FFF8F0] border-t border-[#E6D8C8] flex gap-2">
+        <button onclick="closeClosingModal()" class="px-4 py-2.5 rounded-xl bg-white border border-[#DDC6B2] text-xs font-bold cursor-pointer">Batal</button>
+        <button onclick="submitClosingShift()" class="flex-1 py-2.5 rounded-xl bg-[#B3261E] text-white font-black text-xs cursor-pointer">✅ Kirim Laporan Closing ke Owner &amp; Cloud</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINT AREA -->
+  <div id="printArea"></div>
+
+  <script>
+    const NS = 'aroppos_seblak_v2_';
+    const BC_CHANNEL_NAME = 'seblak_brengos_sync';
+
+    // BROADCAST CHANNEL (SUB-5MS INSTANT COMMUNICATION WITH OWNER HTML)
+    const syncChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(BC_CHANNEL_NAME) : null;
+    if (syncChannel) {
+      syncChannel.onmessage = (event) => {
+        const payload = event.data || {};
+        if (payload.type === 'MENU_UPDATED') {
+          menuList = getLS('menu', DEFAULT_MENU);
+          renderCategories();
+          renderMenuGrid();
+        } else if (payload.type === 'TOPPINGS_UPDATED') {
+          toppingList = getLS('toppings', DEFAULT_TOPPINGS);
+          if (activeCustomizingItem) renderModalToppings();
+        } else if (payload.type === 'STOCK_UPDATED') {
+          stockList = getLS('stock', DEFAULT_STOCK);
+          renderStockView();
+        } else if (payload.type === 'TRANSACTION_VOIDED') {
+          txList = getLS('tx_' + todayStr(), txList);
+          renderTxHistory();
+        }
+      };
+    }
+
+    // CROSS-TAB STORAGE LISTENER
+    window.addEventListener('storage', (e) => {
+      if (e.key && e.key.startsWith(NS)) {
+        menuList = getLS('menu', menuList);
+        toppingList = getLS('toppings', toppingList);
+        stockList = getLS('stock', stockList);
+        txList = getLS('tx_' + todayStr(), txList);
+        renderCategories();
+        renderMenuGrid();
+        renderStockView();
+        renderTxHistory();
+      }
+    });
+
+    const DEFAULT_MENU = [
+      { id: 'sb_spesial', name: 'Seblak Spesial', price: 25000, category: 'Menu Utama', description: 'Isian / pelengkap + sosis 1, bakso 2, cilok 2, dumpling 1, ceker 1, tulang 1, cuanki lidah 1, siomay mini 4, jamur Enoki, pilus', ingredients: [{stockId:'st1',qty:1},{stockId:'st4',qty:1},{stockId:'st3',qty:2},{stockId:'st_cilok',qty:2},{stockId:'st_dumpling',qty:1},{stockId:'st2',qty:1},{stockId:'st_tulang',qty:1},{stockId:'st_cuanki',qty:1},{stockId:'st_siomay_mini',qty:4},{stockId:'st_enoki',qty:1},{stockId:'st_pilus',qty:1}] },
+      { id: 'sb_ceker', name: 'Seblak Ceker', price: 15000, category: 'Menu Utama', description: 'Isian / pelengkap + ceker 2 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st2',qty:2}] },
+      { id: 'sb_dumpling', name: 'Seblak Dumpling', price: 15000, category: 'Menu Utama', description: 'Isian / pelengkap + dumpling 2 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st_dumpling',qty:2}] },
+      { id: 'sb_tulang', name: 'Seblak Tulang', price: 15000, category: 'Menu Utama', description: 'Isian / pelengkap + tulang 3 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st_tulang',qty:3}] },
+      { id: 'sb_cilok', name: 'Seblak Cilok', price: 13000, category: 'Menu Utama', description: 'Isian / pelengkap + cilok 4 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st_cilok',qty:4}] },
+      { id: 'sb_sosis', name: 'Seblak Sosis', price: 15000, category: 'Menu Utama', description: 'Isian / pelengkap + sosis 1 ½ bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st4',qty:1.5}] },
+      { id: 'sb_cuanki', name: 'Seblak Cuanki', price: 15000, category: 'Menu Utama', description: 'Isian / pelengkap + cuanki lidah 5 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st_cuanki',qty:5}] },
+      { id: 'sb_bakso', name: 'Seblak Bakso', price: 15000, category: 'Menu Utama', description: 'Isian / pelengkap + bakso 3 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st3',qty:3}] },
+      { id: 'sb_baci', name: 'Bakso Aci', price: 15000, category: 'Menu Utama', description: 'Cilok 5, cuanki lidah 2, siomay mini 10, cuanki tahu 2, mie, pilus, jeruk limau', ingredients: [{stockId:'st_cilok',qty:5},{stockId:'st_cuanki',qty:2},{stockId:'st_siomay_mini',qty:10},{stockId:'st_cuanki_tahu',qty:2},{stockId:'st_pilus',qty:1}] },
+      { id: 'sb_pangsit_mie_jkt', name: 'Pangsit Mie Ayam Jakarta', price: 15000, category: 'Menu Baru', description: '★ Menu Baru: Pangsit Mie Ayam Jakarta', ingredients: [{stockId:'st_mie_ayam',qty:1}] },
+      { id: 'sb_mie_ndoweh', name: 'Mie Ndoweh', price: 10000, category: 'Menu Baru', description: '★ Menu Baru: Pilihan Level 1, Level 2, Level 3, Level 4', ingredients: [{stockId:'st_mie_ndoweh',qty:1}] }
+    ];
+
+    const DEFAULT_TOPPINGS = [
+      { id: 'top_pilus', name: 'Pilus', price: 2000, stockId: 'st_pilus', qtyUse: 1 },
+      { id: 'top_enoki', name: 'Enoki', price: 2500, stockId: 'st_enoki', qtyUse: 1 },
+      { id: 'top_odeng', name: 'Odeng', price: 2500, stockId: 'st_odeng', qtyUse: 1 },
+      { id: 'top_dumpling', name: 'Dumpling', price: 2500, stockId: 'st_dumpling', qtyUse: 1 },
+      { id: 'top_cilok', name: 'Cilok (4 Biji)', price: 3000, stockId: 'st_cilok', qtyUse: 4 },
+      { id: 'top_cuankilidah', name: 'Cuanki Lidah', price: 3000, stockId: 'st_cuanki', qtyUse: 1 },
+      { id: 'top_sosis', name: 'Sosis', price: 3000, stockId: 'st4', qtyUse: 1 },
+      { id: 'top_batagormini', name: 'Batagor Mini (15 Biji)', price: 3000, stockId: 'st_siomay_mini', qtyUse: 15 },
+      { id: 'top_telur_utuh', name: 'Telur Utuh', price: 4000, stockId: 'st_telur', qtyUse: 1 },
+      { id: 'top_bakso', name: 'Bakso', price: 4000, stockId: 'st3', qtyUse: 1 },
+      { id: 'top_chikuwa', name: 'Chikuwa (2 Biji)', price: 4000, stockId: 'st_chikuwa', qtyUse: 2 },
+      { id: 'top_kembangcumi', name: 'Kembang Cumi', price: 4000, stockId: 'st_kembang_cumi', qtyUse: 1 },
+      { id: 'top_crab', name: 'Crab Stik', price: 4000, stockId: 'st_crab_stik', qtyUse: 1 },
+      { id: 'top_ceker', name: 'Ceker (2 Biji)', price: 5000, stockId: 'st2', qtyUse: 2 },
+      { id: 'top_tulang', name: 'Tulang', price: 5000, stockId: 'st_tulang', qtyUse: 1 },
+      { id: 'top_sosisbesar', name: 'Sosis Besar', price: 6000, stockId: 'st_sosis_besar', qtyUse: 1 }
+    ];
+
+    const DEFAULT_STOCK = [
+      { id: 'st1', name: 'Isian / Pelengkap Seblak (Kerupuk & Bumbu)', unit: 'porsi', qty: 120, low: 20 },
+      { id: 'st2', name: 'Ceker Ayam', unit: 'biji', qty: 100, low: 15 },
+      { id: 'st3', name: 'Bakso', unit: 'biji', qty: 100, low: 20 },
+      { id: 'st4', name: 'Sosis', unit: 'biji', qty: 100, low: 20 },
+      { id: 'st_sosis_besar', name: 'Sosis Besar', unit: 'biji', qty: 50, low: 10 },
+      { id: 'st_cilok', name: 'Cilok', unit: 'biji', qty: 200, low: 30 },
+      { id: 'st_dumpling', name: 'Dumpling', unit: 'biji', qty: 80, low: 15 },
+      { id: 'st_tulang', name: 'Tulang Ayam', unit: 'biji', qty: 90, low: 15 },
+      { id: 'st_cuanki', name: 'Cuanki Lidah', unit: 'biji', qty: 120, low: 20 },
+      { id: 'st_cuanki_tahu', name: 'Cuanki Tahu', unit: 'biji', qty: 80, low: 15 },
+      { id: 'st_siomay_mini', name: 'Siomay / Batagor Mini', unit: 'biji', qty: 300, low: 50 },
+      { id: 'st_enoki', name: 'Jamur Enoki', unit: 'porsi', qty: 60, low: 10 },
+      { id: 'st_pilus', name: 'Pilus', unit: 'porsi', qty: 100, low: 20 },
+      { id: 'st_odeng', name: 'Odeng', unit: 'porsi', qty: 60, low: 10 },
+      { id: 'st_telur', name: 'Telur Utuh', unit: 'butir', qty: 60, low: 12 },
+      { id: 'st_chikuwa', name: 'Chikuwa', unit: 'biji', qty: 60, low: 12 },
+      { id: 'st_kembang_cumi', name: 'Kembang Cumi', unit: 'porsi', qty: 50, low: 10 },
+      { id: 'st_crab_stik', name: 'Crab Stik', unit: 'porsi', qty: 50, low: 10 },
+      { id: 'st_mie_ayam', name: 'Porsi Pangsit Mie Ayam Jakarta', unit: 'porsi', qty: 60, low: 10 },
+      { id: 'st_mie_ndoweh', name: 'Porsi Mie Ndoweh', unit: 'porsi', qty: 60, low: 10 }
+    ];
+
+    const SPICE_LEVELS = [
+      { id: 'sp_0', name: 'Level 0 (Tidak Pedas)' },
+      { id: 'sp_1', name: 'Level 1 (Pedas Sedang)' },
+      { id: 'sp_2', name: 'Level 2 (Pedas Mantap)' },
+      { id: 'sp_3', name: 'Level 3 (Pedas Nampol)' },
+      { id: 'sp_4', name: 'Level 4 (Pedas Brutal)' },
+      { id: 'sp_5', name: 'Level 5 (Pedas Mampus 🔥)' }
+    ];
+
+    const ORDER_TYPES = [
+      { id: 'dinein', name: '🍽️ Dine-In', online: false },
+      { id: 'takeaway', name: '🛍️ Take Away', online: false },
+      { id: 'shopee', name: '🧡 ShopeeFood', online: true },
+      { id: 'gojek', name: '💚 GoFood', online: true },
+      { id: 'grab', name: '🟢 GrabFood', online: true }
+    ];
+
+    const PAY_METHODS = [
+      { id: 'cash', name: '💵 Tunai (Cash)', isCash: true },
+      { id: 'qris', name: '📱 QRIS', isCash: false },
+      { id: 'transfer', name: '🏦 Transfer Bank', isCash: false }
+    ];
+
+    function getLS(key, fallback) {
+      try { const v = localStorage.getItem(NS + key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+    }
+    function setLS(key, val) {
+      try { localStorage.setItem(NS + key, JSON.stringify(val)); } catch {}
+    }
+    function rp(n) { return 'Rp ' + Math.round(Number(n) || 0).toLocaleString('id-ID'); }
+    function todayStr() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
+    // STATE
+    let cloudCfg = getLS('cloud_cfg', {
+      scriptUrl: "",
+      sheetUrl: "",
+      cashierName: 'Kasir Seblak Brengos',
+      ownerWa: '087898185988'
+    });
+    let menuList = getLS('menu', DEFAULT_MENU);
+    let toppingList = getLS('toppings', DEFAULT_TOPPINGS);
+    let stockList = getLS('stock', DEFAULT_STOCK);
+    let txList = getLS('tx_' + todayStr(), []);
+    let openBills = getLS('open_bills', []);
+    let offlineQueue = getLS('offline_queue', []);
+
+    let activeCategory = 'SEMUA';
+    let activeOrderType = 'dinein';
+    let cart = [];
+    let discountAmount = 0;
+    let selectedPayMethod = PAY_METHODS[0];
+    let activeCustomizingItem = null;
+    let modalSpice = SPICE_LEVELS[1];
+    let modalToppings = {};
+    let modalQty = 1;
+    let lastReceiptTx = null;
+
+    function switchTab(tab) {
+      ['pos', 'tx', 'stock'].forEach(t => {
+        const viewEl = document.getElementById('view_' + t);
+        if (viewEl) viewEl.classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById('tabBtn_' + t);
+        if (btn) {
+          btn.className = t === tab
+            ? 'px-3 py-1 rounded-lg text-xs font-extrabold bg-[#B3261E] text-white cursor-pointer'
+            : 'px-3 py-1 rounded-lg text-xs font-extrabold text-stone-300 hover:text-white cursor-pointer';
+        }
+      });
+      if (tab === 'tx') renderTxHistory();
+      if (tab === 'stock') renderStockView();
+    }
+
+    // CATEGORIES & ORDER TYPES
+    function renderOrderTypes() {
+      document.getElementById('orderTypeBar').innerHTML = ORDER_TYPES.map(o => `
+        <button type="button" onclick="selectOrderType('${o.id}')" class="px-2.5 py-1 rounded-xl text-xs font-black cursor-pointer ${activeOrderType === o.id ? 'bg-[#B3261E] text-white shadow-xs' : 'bg-white border border-[#E6D8C8] text-[#5A4333]'}">
+          ${o.name}
+        </button>
+      `).join('');
+      const cur = ORDER_TYPES.find(o => o.id === activeOrderType);
+      document.getElementById('onlineCodeInput').classList.toggle('hidden', !(cur && cur.online));
+    }
+    function selectOrderType(id) { activeOrderType = id; renderOrderTypes(); }
+
+    function getCategories() {
+      const set = new Set(menuList.map(m => m.category || 'Menu Utama'));
+      return ['SEMUA', ...Array.from(set)];
+    }
+    function renderCategories() {
+      const cats = getCategories();
+      document.getElementById('categoryBar').innerHTML = cats.map(c => `
+        <button type="button" onclick="selectCategory('${c}')" class="px-3 py-1 rounded-lg text-xs font-black shrink-0 cursor-pointer ${activeCategory === c ? 'bg-[#2B1B14] text-white' : 'bg-white border border-[#E6D8C8] text-[#5A4333]'}">
+          ${c}
+        </button>
+      `).join('');
+    }
+    function selectCategory(c) { activeCategory = c; renderCategories(); renderMenuGrid(); }
+
+    // MENU GRID
+    function renderMenuGrid() {
+      const q = (document.getElementById('searchMenuInput').value || '').toLowerCase();
+      const filtered = menuList.filter(m => {
+        const matchesCat = activeCategory === 'SEMUA' || (m.category || 'Menu Utama') === activeCategory;
+        const matchesSearch = !q || m.name.toLowerCase().includes(q) || (m.description || '').toLowerCase().includes(q);
+        return matchesCat && matchesSearch;
+      });
+
+      const grid = document.getElementById('menuGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="col-span-full py-12 text-center text-xs text-stone-500 font-bold">Tidak ada menu yang sesuai pencarian.</div>';
+        return;
+      }
+      grid.innerHTML = filtered.map(m => `
+        <div onclick="openItemCustomizer('${m.id}')" class="p-3 bg-white rounded-2xl border border-[#E6D8C8] hover:border-[#B3261E] hover:shadow-md cursor-pointer transition-all flex flex-col justify-between space-y-2">
+          <div>
+            <span class="text-[9.5px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">${m.category || 'Menu Utama'}</span>
+            <h4 class="font-extrabold text-xs sm:text-sm text-[#2B1B14] leading-snug mt-1">${m.name}</h4>
+            ${m.description ? `<p class="text-[10px] text-[#7A6354] line-clamp-2 leading-tight mt-0.5">${m.description}</p>` : ''}
+          </div>
+          <div class="flex items-center justify-between pt-1 border-t border-[#FAF6F0]">
+            <span class="font-black text-xs sm:text-sm text-[#B3261E]">${rp(m.price)}</span>
+            <span class="w-6 h-6 rounded-lg bg-[#FAF6F0] text-[#B3261E] font-black text-xs flex items-center justify-center">+</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ITEM CUSTOMIZER MODAL
+    function openItemCustomizer(menuId) {
+      const item = menuList.find(m => m.id === menuId);
+      if (!item) return;
+      activeCustomizingItem = item;
+      modalQty = 1;
+      modalSpice = SPICE_LEVELS[1];
+      modalToppings = {};
+
+      document.getElementById('modalItemName').textContent = item.name;
+      document.getElementById('modalItemPrice').textContent = rp(item.price);
+      document.getElementById('modalQtyVal').textContent = '1';
+      document.getElementById('modalNoteInput').value = '';
+
+      const descBox = document.getElementById('modalItemDescBox');
+      if (item.description) {
+        descBox.innerHTML = '<b class="text-[#2B1B14]">Isian Standar:</b> ' + item.description;
+        descBox.classList.remove('hidden');
+      } else {
+        descBox.classList.add('hidden');
+      }
+
+      renderModalSpices();
+      renderModalToppings();
+      document.getElementById('itemModal').classList.remove('hidden');
+    }
+    function closeItemModal() { document.getElementById('itemModal').classList.add('hidden'); }
+    function changeModalQty(d) {
+      modalQty = Math.max(1, modalQty + d);
+      document.getElementById('modalQtyVal').textContent = String(modalQty);
+    }
+    function renderModalSpices() {
+      document.getElementById('modalSpiceGrid').innerHTML = SPICE_LEVELS.map(sp => `
+        <button type="button" onclick="selectModalSpice('${sp.id}')" class="p-2 rounded-xl text-left border text-xs font-bold cursor-pointer transition-all ${modalSpice && modalSpice.id === sp.id ? 'bg-[#B3261E] text-white border-[#B3261E] shadow-xs' : 'bg-white text-[#5A4333] border-[#E6D8C8]'}">
+          ${sp.name}
+        </button>
+      `).join('');
+    }
+    function selectModalSpice(id) {
+      modalSpice = SPICE_LEVELS.find(s => s.id === id) || SPICE_LEVELS[0];
+      renderModalSpices();
+    }
+    function renderModalToppings() {
+      document.getElementById('modalToppingGrid').innerHTML = toppingList.map(t => {
+        const count = modalToppings[t.id] || 0;
+        return `
+          <div class="p-2 bg-white rounded-xl border border-[#E6D8C8] flex items-center justify-between gap-1 text-xs">
+            <div>
+              <div class="font-bold text-[#2B1B14]">${t.name}</div>
+              <div class="text-[10px] font-extrabold text-[#B3261E]">${rp(t.price)}</div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              ${count > 0 ? `<button type="button" onclick="adjustModalTopping('${t.id}', -1)" class="w-6 h-6 rounded-lg bg-[#FAF6F0] font-black text-xs cursor-pointer">-</button>` : ''}
+              ${count > 0 ? `<span class="font-black text-xs min-w-4 text-center">${count}</span>` : ''}
+              <button type="button" onclick="adjustModalTopping('${t.id}', 1)" class="px-2 py-1 rounded-lg ${count > 0 ? 'bg-amber-100 text-amber-900' : 'bg-[#FAF6F0] text-[#2B1B14]'} font-extrabold text-xs cursor-pointer">+ Tambah</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    function adjustModalTopping(id, delta) {
+      const cur = modalToppings[id] || 0;
+      const next = Math.max(0, cur + delta);
+      if (next === 0) delete modalToppings[id];
+      else modalToppings[id] = next;
+      renderModalToppings();
+    }
+    function resetModalToppings() { modalToppings = {}; renderModalToppings(); }
+
+    function confirmAddToCart() {
+      if (!activeCustomizingItem) return;
+      const chosenToppings = [];
+      Object.entries(modalToppings).forEach(([tId, qty]) => {
+        const def = toppingList.find(t => t.id === tId);
+        if (def && qty > 0) chosenToppings.push({ id: def.id, name: def.name, price: def.price, qty });
+      });
+
+      cart.push({
+        uid: 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        menuId: activeCustomizingItem.id,
+        name: activeCustomizingItem.name,
+        basePrice: activeCustomizingItem.price,
+        qty: modalQty,
+        spiceId: modalSpice ? modalSpice.id : null,
+        spiceName: modalSpice ? modalSpice.name : null,
+        toppings: chosenToppings,
+        note: document.getElementById('modalNoteInput').value.trim()
+      });
+      closeItemModal();
+      renderCart();
+    }
+
+    function itemUnitTotal(it) {
+      const top = (it.toppings || []).reduce((s, t) => s + t.price * (t.qty || 1), 0);
+      return (it.basePrice + top) * it.qty;
+    }
+    function getSubtotal() { return cart.reduce((s, it) => s + itemUnitTotal(it), 0); }
+    function getGrandTotal() { return Math.max(0, getSubtotal() - discountAmount); }
+
+    function renderCart() {
+      const list = document.getElementById('cartList');
+      const totalItems = cart.reduce((s, i) => s + i.qty, 0);
+      document.getElementById('cartCountBadge').textContent = totalItems + ' item';
+      document.getElementById('btnOpenBillsCount').textContent = 'Bill (' + openBills.length + ')';
+
+      if (cart.length === 0) {
+        list.innerHTML = '<div class="py-10 text-center text-xs text-[#8A7364] font-semibold">Keranjang masih kosong.<br/>Ketuk menu Seblak di sebelah kiri.</div>';
+      } else {
+        list.innerHTML = cart.map(it => `
+          <div class="p-2.5 rounded-xl bg-[#FAF6F0] border border-[#EDE1D2] space-y-1">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <div class="font-extrabold text-xs text-[#2B1B14]">${it.name}</div>
+                <div class="flex flex-wrap gap-1 mt-1">
+                  ${it.spiceName ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-800">🌶️ ${it.spiceName}</span>` : ''}
+                  ${(it.toppings || []).map(t => `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">+${t.qty > 1 ? t.qty + 'x ' : ''}${t.name}</span>`).join('')}
+                </div>
+                ${it.note ? `<div class="text-[10px] italic text-[#7A6354] mt-0.5">"${it.note}"</div>` : ''}
+              </div>
+              <span class="font-black text-xs text-[#B3261E] shrink-0">${rp(itemUnitTotal(it))}</span>
+            </div>
+            <div class="flex items-center justify-between pt-1 border-t border-[#EDE1D2]">
+              <button onclick="removeCartItem('${it.uid}')" class="text-[11px] text-red-600 font-bold cursor-pointer">Hapus</button>
+              <div class="flex items-center gap-1.5 bg-white border border-[#E6D8C8] rounded-lg px-1 py-0.5">
+                <button onclick="stepCartQty('${it.uid}', -1)" class="w-5 h-5 font-black text-xs cursor-pointer">-</button>
+                <span class="text-xs font-black px-1">${it.qty}</span>
+                <button onclick="stepCartQty('${it.uid}', 1)" class="w-5 h-5 font-black text-xs text-emerald-700 cursor-pointer">+</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+      document.getElementById('subtotalText').textContent = rp(getSubtotal());
+      document.getElementById('discountText').textContent = '- ' + rp(discountAmount);
+      document.getElementById('grandTotalText').textContent = rp(getGrandTotal());
+    }
+    function stepCartQty(uid, d) {
+      cart = cart.map(i => i.uid === uid ? { ...i, qty: Math.max(1, i.qty + d) } : i);
+      renderCart();
+    }
+    function removeCartItem(uid) { cart = cart.filter(i => i.uid !== uid); renderCart(); }
+    function clearCart() { cart = []; discountAmount = 0; renderCart(); }
+
+    function openDiscountModal() {
+      const pin = prompt('Masukkan PIN Owner Seblak Brengos (1111 / 8888) untuk Diskon:');
+      if (pin !== '1111' && pin !== '8888') { alert('PIN Owner tidak sesuai!'); return; }
+      const nom = prompt('Masukkan Nominal Potongan Diskon (Rp):', String(discountAmount || 0));
+      if (nom !== null) { discountAmount = Math.max(0, Number(nom) || 0); renderCart(); }
+    }
+
+    function saveOpenBill() {
+      if (cart.length === 0) { alert('Keranjang masih kosong!'); return; }
+      const cname = document.getElementById('custNameInput').value.trim() || prompt('Nama Pelanggan / Nomor Meja:') || 'Meja ' + (openBills.length + 1);
+      openBills.unshift({
+        id: 'bill_' + Date.now(),
+        customerName: cname,
+        orderType: activeOrderType,
+        items: [...cart],
+        discount: discountAmount,
+        total: getGrandTotal(),
+        createdAt: new Date().toISOString()
+      });
+      setLS('open_bills', openBills);
+      cart = [];
+      discountAmount = 0;
+      document.getElementById('custNameInput').value = '';
+      renderCart();
+    }
+    function openBillsModal() {
+      const box = document.getElementById('openBillsContainer');
+      if (openBills.length === 0) {
+        box.innerHTML = '<div class="py-8 text-center text-xs text-stone-500">Belum ada Open Bill tersimpan.</div>';
+      } else {
+        box.innerHTML = openBills.map(b => `
+          <div class="p-3 bg-white rounded-xl border border-[#E6D8C8] flex items-center justify-between gap-2">
+            <div>
+              <div class="font-black text-xs text-[#2B1B14]">${b.customerName}</div>
+              <div class="text-[11px] text-[#7A6354]">${b.items.map(i => i.qty + 'x ' + i.name).join(', ')}</div>
+              <div class="font-extrabold text-xs text-[#B3261E] mt-0.5">${rp(b.total)}</div>
+            </div>
+            <div class="flex gap-1.5">
+              <button onclick="loadOpenBill('${b.id}')" class="px-3 py-1.5 rounded-lg bg-[#3F7D5C] text-white font-black text-xs cursor-pointer">Muat</button>
+              <button onclick="deleteOpenBill('${b.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-50 text-red-600 font-bold text-xs cursor-pointer">✕</button>
+            </div>
+          </div>
+        `).join('');
+      }
+      document.getElementById('openBillsModal').classList.remove('hidden');
+    }
+    function closeOpenBillsModal() { document.getElementById('openBillsModal').classList.add('hidden'); }
+    function loadOpenBill(id) {
+      const b = openBills.find(x => x.id === id);
+      if (!b) return;
+      cart = b.items || [];
+      discountAmount = b.discount || 0;
+      activeOrderType = b.orderType || 'dinein';
+      document.getElementById('custNameInput').value = b.customerName || '';
+      openBills = openBills.filter(x => x.id !== id);
+      setLS('open_bills', openBills);
+      closeOpenBillsModal();
+      renderOrderTypes();
+      renderCart();
+    }
+    function deleteOpenBill(id) {
+      openBills = openBills.filter(x => x.id !== id);
+      setLS('open_bills', openBills);
+      openBillsModal();
+      renderCart();
+    }
+
+    function openCheckoutModal() {
+      if (cart.length === 0) return;
+      const gt = getGrandTotal();
+      document.getElementById('payModalTotal').textContent = rp(gt);
+      selectedPayMethod = PAY_METHODS[0];
+      document.getElementById('cashReceivedInput').value = String(gt);
+      const qBtns = [gt, 20000, 50000, 100000];
+      document.getElementById('quickCashBtns').innerHTML = [...new Set(qBtns)].map(v => `
+        <button type="button" onclick="setCashVal(${v})" class="px-2.5 py-1 rounded-lg bg-white border border-[#E6D8C8] text-xs font-extrabold cursor-pointer">${rp(v)}</button>
+      `).join('');
+      renderPayMethods();
+      updateChangePreview();
+      document.getElementById('checkoutModal').classList.remove('hidden');
+    }
+    function closeCheckoutModal() { document.getElementById('checkoutModal').classList.add('hidden'); }
+    function setCashVal(v) { document.getElementById('cashReceivedInput').value = String(v); updateChangePreview(); }
+    function renderPayMethods() {
+      document.getElementById('payMethodGrid').innerHTML = PAY_METHODS.map(m => `
+        <button type="button" onclick="selectPayMethod('${m.id}')" class="p-2.5 rounded-xl border text-xs font-extrabold cursor-pointer ${selectedPayMethod.id === m.id ? 'bg-[#2B1B14] text-white border-[#2B1B14]' : 'bg-white text-[#5A4333] border-[#E6D8C8]'}">${m.name}</button>
+      `).join('');
+      document.getElementById('cashInputSection').classList.toggle('hidden', !selectedPayMethod.isCash);
+    }
+    function selectPayMethod(id) {
+      selectedPayMethod = PAY_METHODS.find(m => m.id === id) || PAY_METHODS[0];
+      renderPayMethods();
+    }
+    function updateChangePreview() {
+      const gt = getGrandTotal();
+      const cash = Number(document.getElementById('cashReceivedInput').value) || 0;
+      const diff = Math.max(0, cash - gt);
+      document.getElementById('changePreviewText').textContent = rp(diff);
+    }
+
+    function deductStockFromCart(items) {
+      items.forEach(ci => {
+        const m = menuList.find(x => x.id === ci.menuId);
+        if (m && Array.isArray(m.ingredients)) {
+          m.ingredients.forEach(ing => {
+            const st = stockList.find(s => s.id === ing.stockId);
+            if (st) st.qty = Math.max(0, Number((st.qty - ing.qty * ci.qty).toFixed(2)));
+          });
+        }
+        (ci.toppings || []).forEach(tp => {
+          const tDef = toppingList.find(x => x.id === tp.id);
+          if (tDef && tDef.stockId) {
+            const st = stockList.find(s => s.id === tDef.stockId);
+            if (st) st.qty = Math.max(0, Number((st.qty - (tDef.qtyUse || 1) * (tp.qty || 1) * ci.qty).toFixed(2)));
+          }
+        });
+      });
+      setLS('stock', stockList);
+      if (syncChannel) {
+        try { syncChannel.postMessage({ type: 'STOCK_UPDATED', data: stockList }); } catch (e) {}
+      }
+    }
+
+    // PROCESS PAYMENT (SYNCHRONOUS ZERO-WAIT WRITE, ANTI-HANG, FAST BROADCAST)
+    function processPayment() {
+      const gt = getGrandTotal();
+      const cash = selectedPayMethod.isCash ? (Number(document.getElementById('cashReceivedInput').value) || gt) : gt;
+      if (selectedPayMethod.isCash && cash < gt) {
+        alert('Uang tunai kurang dari total belanja!');
+        return;
+      }
+      const oType = ORDER_TYPES.find(o => o.id === activeOrderType) || ORDER_TYPES[0];
+      const tx = {
+        id: 'SB-' + Date.now().toString().slice(-6),
+        time: new Date().toISOString(),
+        cashierName: cloudCfg.cashierName || 'Kasir Seblak',
+        customerName: document.getElementById('custNameInput').value.trim() || '-',
+        orderTypeName: oType.name.replace(/^[^a-zA-Z]+/, ''),
+        onlineCode: document.getElementById('onlineCodeInput').value.trim() || '',
+        paymentMethodName: selectedPayMethod.name.replace(/^[^a-zA-Z]+/, ''),
+        isCash: selectedPayMethod.isCash,
+        subtotal: getSubtotal(),
+        discount: discountAmount,
+        total: gt,
+        cashReceived: cash,
+        change: Math.max(0, cash - gt),
+        items: [...cart],
+        isVoid: false
+      };
+
+      // 1. Deduct stock and save synchronously (Zero data loss!)
+      deductStockFromCart(cart);
+      txList.unshift(tx);
+      setLS('tx_' + todayStr(), txList);
+      lastReceiptTx = tx;
+
+      // 2. Broadcast immediately over BroadcastChannel (<5ms to Owner screen)
+      if (syncChannel) {
+        try {
+          syncChannel.postMessage({ type: 'TRANSACTION_CREATED', tx, stockList });
+        } catch (e) {}
+      }
+
+      // 3. Asynchronously sync to Google Spreadsheet (non-blocking in background)
+      sendToCloud({
+        type: 'sale',
+        outletId: 'seblak',
+        outletName: 'Seblak Brengos',
+        data: tx,
+        stockItems: stockList
+      });
+
+      cart = [];
+      discountAmount = 0;
+      document.getElementById('custNameInput').value = '';
+      document.getElementById('onlineCodeInput').value = '';
+      closeCheckoutModal();
+      renderCart();
+      showReceiptModal(tx);
+    }
+
+    function showReceiptModal(tx) {
+      lastReceiptTx = tx;
+      const lines = (tx.items || []).map(it => {
+        const topStr = (it.toppings || []).map(t => '+' + (t.qty > 1 ? t.qty + 'x ' : '') + t.name).join(', ');
+        return `
+          <div class="py-1 border-b border-dashed border-stone-300">
+            <div class="flex justify-between font-bold"><span>${it.qty}x ${it.name}</span><span>${rp(itemUnitTotal(it))}</span></div>
+            ${it.spiceName ? `<div class="text-[10px] text-stone-600">  • ${it.spiceName}</div>` : ''}
+            ${topStr ? `<div class="text-[10px] text-stone-600">  • Topping: ${topStr}</div>` : ''}
+            ${it.note ? `<div class="text-[10px] italic text-stone-500">  "${it.note}"</div>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('receiptPreviewBox').innerHTML = `
+        <div class="text-center pb-2 border-b border-stone-300 space-y-0.5">
+          <div class="font-black text-sm">SEBLAK BRENGOS</div>
+          <div class="text-[10px] text-stone-600">The Rebellious Spice • Nikmatnya Brutal</div>
+          <div class="text-[9px] text-stone-500">Struk Resmi • #${tx.id}</div>
+        </div>
+        <div class="py-1.5 text-[10px] border-b border-dashed border-stone-300 space-y-0.5">
+          <div>Waktu: ${new Date(tx.time).toLocaleString('id-ID')}</div>
+          <div>Kasir: ${tx.cashierName || 'Kasir'}</div>
+          <div>Pelanggan: ${tx.customerName || '-'} (${tx.orderTypeName})</div>
+        </div>
+        <div class="py-1">${lines}</div>
+        <div class="pt-1.5 border-t border-dashed border-stone-300 space-y-0.5 text-[10.5px]">
+          <div class="flex justify-between"><span>Subtotal:</span><span>${rp(tx.subtotal || tx.total)}</span></div>
+          ${tx.discount > 0 ? `<div class="flex justify-between text-red-600"><span>Diskon:</span><span>-${rp(tx.discount)}</span></div>` : ''}
+          <div class="flex justify-between font-black text-xs pt-1 border-t border-stone-300"><span>TOTAL:</span><span>${rp(tx.total)}</span></div>
+          ${tx.isCash ? `
+            <div class="flex justify-between pt-0.5"><span>Tunai Diterima:</span><span>${rp(tx.cashReceived)}</span></div>
+            <div class="flex justify-between"><span>Kembalian:</span><span>${rp(tx.change)}</span></div>
+          ` : `
+            <div class="flex justify-between pt-0.5"><span>Metode:</span><span>${tx.paymentMethodName} (LUNAS)</span></div>
+          `}
+        </div>
+        <div class="text-center pt-3 text-[9.5px] text-stone-500">
+          Terima kasih atas kunjungan Anda!<br/>Follow IG/TikTok: @seblakbrengos
+        </div>
+      `;
+      document.getElementById('receiptModal').classList.remove('hidden');
+    }
+    function closeReceiptModal() { document.getElementById('receiptModal').classList.add('hidden'); }
+
+    function sendReceiptWa() {
+      if (!lastReceiptTx) return;
+      const phone = prompt('Masukkan Nomor WhatsApp Pelanggan (contoh: 08123456789):');
+      if (!phone) return;
+      const formattedPhone = phone.replace(/^0/, '62').replace(/\D/g, '');
+      const itemsList = (lastReceiptTx.items || []).map(i => {
+        const tops = (i.toppings || []).map(t => '+' + t.name).join(' ');
+        return `• ${i.qty}x ${i.name} ${i.spiceName ? '(' + i.spiceName + ')' : ''} ${tops ? '[' + tops + ']' : ''} = ${rp(itemUnitTotal(i))}`;
+      }).join('%0A');
+
+      const msg = `*STRUK PEMBELIAN SEBLAK BRENGOS*%0ANo. Nota: #${lastReceiptTx.id}%0AWaktu: ${new Date(lastReceiptTx.time).toLocaleString('id-ID')}%0A----------------------------%0A${itemsList}%0A----------------------------%0A*Total Bayar: ${rp(lastReceiptTx.total)}*%0AMetode: ${lastReceiptTx.paymentMethodName}%0AStatus: *LUNAS*%0A%0ATerima kasih telah menikmati Seblak Brengos!`;
+      window.open('https://wa.me/' + formattedPhone + '?text=' + msg, '_blank');
+    }
+
+    // FAST ASYNC CLOUD DISPATCH WITH TIMEOUT & OFFLINE QUEUE
+    async function sendToCloud(payload) {
+      if (!cloudCfg.scriptUrl) {
+        offlineQueue.push(payload);
+        setLS('offline_queue', offlineQueue);
+        return;
+      }
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        await fetch(cloudCfg.scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+      } catch (err) {
+        offlineQueue.push(payload);
+        setLS('offline_queue', offlineQueue);
+      }
+    }
+
+    async function pullFromCloud(manual = false) {
+      if (!cloudCfg.scriptUrl) {
+        if (manual) alert('Info: URL Google Spreadsheet belum dikonfigurasi. Anda dapat mengaturnya melalui teks hak cipta di bagian bawah.');
+        return;
+      }
+      const Dot = document.getElementById('syncDot');
+      const Txt = document.getElementById('syncText');
+      Dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+      Txt.textContent = 'Menghubungkan...';
+
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 5000);
+
+      try {
+        const res = await fetch(cloudCfg.scriptUrl + '?action=pull&outletId=seblak&t=' + Date.now(), { signal: controller.signal });
+        clearTimeout(tid);
+        const data = await res.json();
+
+        if (Array.isArray(data.stock) && data.stock.length > 0) {
+          stockList = data.stock.map(s => ({
+            id: String(s.id || s.ID_Bahan || ''),
+            name: String(s.name || s.Nama_Bahan || ''),
+            unit: String(s.unit || s.Satuan || 'porsi'),
+            qty: Number(s.qty ?? s.Stok_Saat_Ini ?? 0),
+            low: Number(s.low ?? s.Batas_Minimum ?? 10)
+          })).filter(s => s.name);
+          setLS('stock', stockList);
+        }
+
+        if (Array.isArray(data.menu) && data.menu.length > 0) {
+          data.menu.forEach(cm => {
+            const found = menuList.find(m => m.id === cm.id || m.name.toLowerCase() === String(cm.name || '').toLowerCase());
+            if (found) {
+              if (Number(cm.price) > 0) found.price = Number(cm.price);
+              if (cm.description) found.description = cm.description;
+            } else if (cm.name) {
+              menuList.push({
+                id: cm.id || ('m_' + Date.now()),
+                name: cm.name,
+                category: cm.category || 'Menu Utama',
+                price: Number(cm.price || 0),
+                description: cm.description || ''
+              });
+            }
+          });
+          setLS('menu', menuList);
+        }
+
+        if (Array.isArray(data.toppings) && data.toppings.length > 0) {
+          data.toppings.forEach(ct => {
+            const found = toppingList.find(t => t.id === ct.id || t.name.toLowerCase() === String(ct.name || '').toLowerCase());
+            if (found) {
+              if (Number(ct.price) > 0) found.price = Number(ct.price);
+            } else if (ct.name) {
+              toppingList.push({
+                id: ct.id || ('top_' + Date.now()),
+                name: ct.name,
+                price: Number(ct.price || 0),
+                stockId: ct.stockId || null
+              });
+            }
+          });
+          setLS('toppings', toppingList);
+        }
+
+        renderCategories();
+        renderMenuGrid();
+        renderStockView();
+        Dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        Txt.textContent = 'Sync Aktif';
+        if (manual) alert('✅ Berhasil menarik data Menu & Stok terbaru dari Spreadsheet Owner!');
+      } catch (err) {
+        clearTimeout(tid);
+        Dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        Txt.textContent = 'Data Siaga';
+        if (manual) alert('Data lokal kasir tetap siaga dan aktif.');
+      }
+    }
+
+    async function pushStockToCloud() {
+      await sendToCloud({ type: 'bulk_stock', outletId: 'seblak', stockItems: stockList });
+      alert('✅ Stok Bahan Baku Seblak Brengos berhasil dikirim ke Google Spreadsheet Owner!');
+    }
+
+    async function flushOfflineQueue() {
+      if (offlineQueue.length === 0) return;
+      const copy = [...offlineQueue];
+      offlineQueue = [];
+      setLS('offline_queue', []);
+      for (const p of copy) { await sendToCloud(p); }
+      renderTxHistory();
+    }
+
+    function renderTxHistory() {
+      const validTx = txList.filter(t => !t.isVoid);
+      const omzet = validTx.reduce((s, t) => s + t.total, 0);
+      const cashSum = validTx.filter(t => t.isCash).reduce((s, t) => s + t.total, 0);
+      const nonCashSum = omzet - cashSum;
+
+      document.getElementById('btnRetryQueue').classList.toggle('hidden', offlineQueue.length === 0);
+      document.getElementById('txStatsRow').innerHTML = `
+        <div class="bg-white p-3.5 rounded-2xl border border-[#E6D8C8]"><span class="text-[10px] font-extrabold text-[#8A7364] uppercase">Total Omzet Hari Ini</span><div class="text-lg font-black text-[#B3261E] mt-0.5">${rp(omzet)}</div></div>
+        <div class="bg-white p-3.5 rounded-2xl border border-[#E6D8C8]"><span class="text-[10px] font-extrabold text-[#8A7364] uppercase">Transaksi Sukses</span><div class="text-lg font-black text-[#2B1B14] mt-0.5">${validTx.length} Nota</div></div>
+        <div class="bg-white p-3.5 rounded-2xl border border-[#E6D8C8]"><span class="text-[10px] font-extrabold text-[#8A7364] uppercase">Kas Tunai</span><div class="text-lg font-black text-emerald-700 mt-0.5">${rp(cashSum)}</div></div>
+        <div class="bg-white p-3.5 rounded-2xl border border-[#E6D8C8]"><span class="text-[10px] font-extrabold text-[#8A7364] uppercase">QRIS / Non-Tunai</span><div class="text-lg font-black text-blue-700 mt-0.5">${rp(nonCashSum)}</div></div>
+      `;
+
+      const list = document.getElementById('txHistoryList');
+      if (txList.length === 0) {
+        list.innerHTML = '<div class="bg-white p-8 rounded-2xl border border-[#E6D8C8] text-center text-xs text-stone-500">Belum ada transaksi hari ini.</div>';
+        return;
+      }
+      list.innerHTML = txList.map(tx => `
+        <div class="bg-white p-3.5 rounded-2xl border ${tx.isVoid ? 'border-red-300 bg-red-50/40 opacity-75' : 'border-[#E6D8C8]'} flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-black text-xs text-[#2B1B14]">#${tx.id}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-stone-100">${tx.orderTypeName}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900">${tx.paymentMethodName}</span>
+              ${tx.isVoid ? '<span class="text-[10px] font-black px-2 py-0.5 rounded bg-red-600 text-white">VOID / BATAL</span>' : ''}
+            </div>
+            <div class="text-xs text-[#5A4333] mt-1 font-medium">${(tx.items || []).map(i => i.qty + 'x ' + i.name).join(', ')}</div>
+            <div class="text-[10px] text-[#8A7364] mt-0.5">${new Date(tx.time).toLocaleTimeString('id-ID')} • Pelanggan: ${tx.customerName || '-'}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-black text-sm text-[#B3261E]">${rp(tx.total)}</span>
+            <button onclick='showReceiptModal(${JSON.stringify(tx).replace(/'/g, "&apos;")})' class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-xs font-bold cursor-pointer">Struk</button>
+            ${!tx.isVoid ? `<button onclick="voidTx('${tx.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold cursor-pointer">Void</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function voidTx(id) {
+      const pin = prompt('Masukkan PIN Owner Seblak Brengos (1111 / 8888) untuk membatalkan (Void) nota #' + id + ':');
+      if (pin !== '1111' && pin !== '8888') { alert('PIN Owner salah!'); return; }
+      const reason = prompt('Alasan Void / Pembatalan:') || 'Dibatalkan atas izin Owner';
+      txList = txList.map(t => t.id === id ? { ...t, isVoid: true, voidReason: reason } : t);
+      setLS('tx_' + todayStr(), txList);
+      if (syncChannel) {
+        try { syncChannel.postMessage({ type: 'TRANSACTION_VOIDED', id, reason }); } catch (e) {}
+      }
+      sendToCloud({ type: 'void_transaction', outletId: 'seblak', transactionId: id, reason });
+      renderTxHistory();
+    }
+
+    function renderStockView() {
+      document.getElementById('stockGrid').innerHTML = stockList.map(s => {
+        const isLow = s.qty <= s.low;
+        return `
+          <div class="bg-white p-3.5 rounded-2xl border ${isLow ? 'border-red-400 bg-red-50/20' : 'border-[#E6D8C8]'} flex items-center justify-between gap-2">
+            <div>
+              <div class="font-extrabold text-xs text-[#2B1B14]">${s.name}</div>
+              <div class="text-[11px] font-bold ${isLow ? 'text-red-600' : 'text-emerald-700'}">Sisa: ${s.qty} ${s.unit} ${isLow ? '(MENIPIS!)' : ''}</div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button onclick="adjustStock('${s.id}', -1)" class="w-7 h-7 rounded-lg bg-stone-100 font-black text-xs cursor-pointer">-</button>
+              <button onclick="adjustStock('${s.id}', 5)" class="px-2 h-7 rounded-lg bg-emerald-100 text-emerald-900 font-black text-xs cursor-pointer">+5</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    function adjustStock(id, d) {
+      stockList = stockList.map(s => s.id === id ? { ...s, qty: Math.max(0, Number((s.qty + d).toFixed(2))) } : s);
+      setLS('stock', stockList);
+      if (syncChannel) {
+        try { syncChannel.postMessage({ type: 'STOCK_UPDATED', data: stockList }); } catch (e) {}
+      }
+      renderStockView();
+    }
+
+    function openClosingModal() {
+      const validTx = txList.filter(t => !t.isVoid);
+      const omzet = validTx.reduce((s, t) => s + t.total, 0);
+      const cashSum = validTx.filter(t => t.isCash).reduce((s, t) => s + t.total, 0);
+      document.getElementById('closingSummaryBox').innerHTML = `
+        <div class="flex justify-between"><span>Total Transaksi Sukses:</span><b>${validTx.length} Nota</b></div>
+        <div class="flex justify-between"><span>Total Omzet Penjualan:</span><b class="text-[#B3261E]">${rp(omzet)}</b></div>
+        <div class="flex justify-between"><span>Penjualan Tunai (Cash):</span><b class="text-emerald-700">${rp(cashSum)}</b></div>
+        <div class="flex justify-between"><span>Penjualan Non-Tunai:</span><b>${rp(omzet - cashSum)}</b></div>
+      `;
+      document.getElementById('closingActualCash').value = String(cashSum);
+      document.getElementById('closingModal').classList.remove('hidden');
+    }
+    function closeClosingModal() { document.getElementById('closingModal').classList.add('hidden'); }
+    function submitClosingShift() {
+      const validTx = txList.filter(t => !t.isVoid);
+      const omzet = validTx.reduce((s, t) => s + t.total, 0);
+      const cashSales = validTx.filter(t => t.isCash).reduce((s, t) => s + t.total, 0);
+      const initCash = Number(document.getElementById('closingInitCash').value) || 0;
+      const actualCash = Number(document.getElementById('closingActualCash').value) || 0;
+      const expectedCash = initCash + cashSales;
+      const diff = actualCash - expectedCash;
+      const note = document.getElementById('closingNote').value.trim();
+
+      const closingData = {
+        dateKey: todayStr(),
+        shiftName: 'Shift Kasir (' + (cloudCfg.cashierName || 'Kasir') + ')',
+        openTime: new Date().toISOString(),
+        closeTime: new Date().toISOString(),
+        txCount: validTx.length,
+        totalSales: omzet,
+        cashSales,
+        nonCashSales: omzet - cashSales,
+        initialCash: initCash,
+        actualCash,
+        cashDifference: diff,
+        cashVarianceNote: note,
+        transactions: txList
+      };
+
+      // Save to closings history locally
+      const closings = getLS('closings', []);
+      closings.unshift(closingData);
+      setLS('closings', closings);
+
+      if (syncChannel) {
+        try { syncChannel.postMessage({ type: 'CLOSING_SUBMITTED', data: closingData }); } catch (e) {}
+      }
+
+      sendToCloud({ type: 'closing', outletId: 'seblak', outletName: 'Seblak Brengos', data: closingData, stockItems: stockList });
+      closeClosingModal();
+
+      const wa = (cloudCfg.ownerWa || '087898185988').replace(/^0/, '62');
+      const waMsg = `*LAPORAN CLOSING SEBLAK BRENGOS*%0ATanggal: ${todayStr()}%0AKasir: ${cloudCfg.cashierName}%0A----------------%0ATotal Nota: ${validTx.length}%0A*Total Omzet: ${rp(omzet)}*%0ATunai: ${rp(cashSales)}%0ANon-Tunai: ${rp(omzet - cashSales)}%0AKas Aktual Laci: ${rp(actualCash)}%0ASelisih: ${rp(diff)}%0ACatatan: ${note || '-'}`;
+      if (confirm('✅ Laporan Closing berhasil disimpan dan dikirim ke Owner! Kirim juga ringkasan ke WhatsApp Owner?')) {
+        window.open('https://wa.me/' + wa + '?text=' + waMsg, '_blank');
+      }
+    }
+
+    function exportTodayCsv() {
+      const rows = [['ID','Waktu','Tipe','Pelanggan','Menu','Metode','Total','Status']];
+      txList.forEach(t => {
+        rows.push([
+          t.id,
+          new Date(t.time).toLocaleString('id-ID'),
+          t.orderTypeName,
+          t.customerName,
+          (t.items||[]).map(i => i.qty + 'x ' + i.name).join(' | '),
+          t.paymentMethodName,
+          t.total,
+          t.isVoid ? 'VOID' : 'SUKSES'
+        ]);
+      });
+      const csv = '\uFEFF' + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(';')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Transaksi_Seblak_Brengos_' + todayStr() + '.csv';
+      a.click();
+    }
+
+    // DISCREET SECRET CLOUD MODAL (TRIGGERED BY PIN FROM FOOTER COPYRIGHT TEXT)
+    function triggerSecretCloudModal() {
+      const pin = prompt('Akses Pengaturan Cloud & Spreadsheet:\nMasukkan PIN Owner (1111 / 8888):');
+      if (pin === '1111' || pin === '8888') {
+        document.getElementById('cfgScriptUrl').value = cloudCfg.scriptUrl || '';
+        document.getElementById('cfgSheetUrl').value = cloudCfg.sheetUrl || '';
+        document.getElementById('cfgCashierName').value = cloudCfg.cashierName || 'Kasir Seblak Brengos';
+        document.getElementById('cfgOwnerWa').value = cloudCfg.ownerWa || '087898185988';
+        document.getElementById('secretCloudModal').classList.remove('hidden');
+      } else if (pin !== null) {
+        alert('PIN Owner salah! Pengaturan Cloud hanya dapat diakses oleh Owner.');
+      }
+    }
+    function closeSecretCloudModal() {
+      document.getElementById('secretCloudModal').classList.add('hidden');
+    }
+    function saveCloudConfig() {
+      cloudCfg = {
+        scriptUrl: document.getElementById('cfgScriptUrl').value.trim(),
+        sheetUrl: document.getElementById('cfgSheetUrl').value.trim(),
+        cashierName: document.getElementById('cfgCashierName').value.trim() || 'Kasir Seblak Brengos',
+        ownerWa: document.getElementById('cfgOwnerWa').value.trim() || '087898185988'
+      };
+      setLS('cloud_cfg', cloudCfg);
+      closeSecretCloudModal();
+      pullFromCloud(true);
+      alert('✅ Konfigurasi Cloud Spreadsheet berhasil disimpan!');
+    }
+    function cleanKasirDemoData() {
+      const pin = prompt('Konfirmasi Bersihkan Transaksi:\nMasukkan PIN Owner (1111 / 8888):');
+      if (pin !== '1111' && pin !== '8888') { alert('PIN Owner salah!'); return; }
+      if (!confirm('Bersihkan seluruh nota transaksi hari ini menjadi 0? (Daftar menu & topping tetap aman)')) return;
+      txList = [];
+      setLS('tx_' + todayStr(), []);
+      setLS('open_bills', []);
+      if (syncChannel) {
+        try { syncChannel.postMessage({ type: 'TRANSACTION_VOIDED', resetAll: true }); } catch (e) {}
+      }
+      renderCart();
+      renderTxHistory();
+      closeSecretCloudModal();
+      alert('✅ Data transaksi hari ini telah dibersihkan!');
+    }
+    function resetDefaultSeblakData() {
+      if (!confirm('Reset Menu, 16 Extra Topping & Stok ke daftar resmi Seblak Brengos?')) return;
+      menuList = [...DEFAULT_MENU];
+      toppingList = [...DEFAULT_TOPPINGS];
+      stockList = [...DEFAULT_STOCK];
+      setLS('menu', menuList);
+      setLS('toppings', toppingList);
+      setLS('stock', stockList);
+      renderCategories();
+      renderMenuGrid();
+      alert('✅ Daftar Menu & 16 Extra Topping Resmi Seblak Brengos telah dimuat ulang!');
+    }
+    function openShiftModal() { switchTab('tx'); }
+
+    // INIT
+    renderOrderTypes();
+    renderCategories();
+    renderMenuGrid();
+    renderCart();
+    if (cloudCfg.scriptUrl) { pullFromCloud(false); }
+    setInterval(() => { if (cloudCfg.scriptUrl) pullFromCloud(false); }, 60000);
+  </script>
+</body>
+</html>
