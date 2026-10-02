@@ -1,0 +1,3511 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>OWNER BACKOFFICE - SEBLAK BRENGOS (REALTIME CLOUD ERP)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; }
+    body { background: #160F0C; color: #FAF6F0; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #3E291F; border-radius: 9999px; }
+    .pulse-dot { animation: pulseAnim 1.8s infinite; }
+    @keyframes pulseAnim {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+    }
+  </style>
+</head>
+<body class="flex flex-col flex-1">
+
+  <!-- LOGIN GATE OWNER -->
+  <div id="loginGate" class="fixed inset-0 z-50 bg-[#160F0C] flex items-center justify-center p-4">
+    <div class="bg-[#221712] border-2 border-[#B3261E] w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl space-y-4">
+      <div class="w-16 h-16 rounded-2xl bg-[#B3261E] mx-auto flex items-center justify-center text-3xl shadow-lg">👑</div>
+      <div>
+        <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">EXECUTIVE BACKOFFICE</span>
+        <h1 class="font-black text-xl text-white mt-2">OWNER SEBLAK BRENGOS</h1>
+        <p class="text-xs text-stone-400 mt-0.5">Monitoring Penjualan, COGS / HPP &amp; Pembelian Real-Time</p>
+      </div>
+      <div class="space-y-2 text-left">
+        <label class="block text-[11px] font-extrabold uppercase text-amber-300">PIN Otorisasi Owner:</label>
+        <input id="pinInput" type="password" inputmode="numeric" placeholder="Masukkan PIN Owner (1111 / 8888)" onkeydown="if(event.key==='Enter')verifyPin()" class="w-full p-3.5 rounded-xl bg-[#160F0C] border border-stone-700 text-center font-black text-lg tracking-widest text-white focus:outline-none focus:border-[#B3261E]" />
+        <p id="pinErr" class="hidden text-xs font-bold text-red-400 text-center">PIN Owner tidak valid! Gunakan 1111 atau 8888.</p>
+      </div>
+      <button onclick="verifyPin()" class="w-full py-3.5 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-sm shadow-lg cursor-pointer">
+        🔓 Masuk Dashboard Owner
+      </button>
+    </div>
+  </div>
+
+  <!-- TOP HEADER (CLEAN & COMPLETE - NO EXTERNAL SPREADSHEET MANUAL EDITING REQUIRED) -->
+  <header class="bg-[#221712] border-b border-stone-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30 shadow-md">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#B3261E] to-amber-600 flex items-center justify-center text-xl shadow-md">👑</div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="font-black text-sm sm:text-base text-white">OWNER SEBLAK BRENGOS</h1>
+          <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+            <span>LIVE AKTIF</span>
+          </span>
+        </div>
+        <p class="text-[11px] text-stone-400">Pusat Kendali Bisnis: Penjualan ⇄ HPP / COGS ⇄ Pembelian Bahan</p>
+      </div>
+    </div>
+
+    <div class="flex items-center flex-wrap gap-2">
+      <!-- Sync Status & Quick Refresh -->
+      <button onclick="syncFromSpreadsheet(true)" class="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm cursor-pointer transition-all">
+        <span id="ownerSyncDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span id="ownerSyncText">🔄 Segarkan Live</span>
+      </button>
+
+      <!-- Navigation Tabs: ALL OPERATIONAL TOOLS 100% INCLUDED -->
+      <div class="flex flex-wrap bg-[#160F0C] p-1 rounded-xl border border-stone-800 gap-0.5">
+        <button onclick="switchOwnerTab('dash')" id="otab_dash" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold bg-[#B3261E] text-white cursor-pointer">Dashboard</button>
+        <button onclick="switchOwnerTab('cogs')" id="otab_cogs" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">COGS / HPP</button>
+        <button onclick="switchOwnerTab('purchase')" id="otab_purchase" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">Pembelian</button>
+        <button onclick="switchOwnerTab('stock')" id="otab_stock" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">Stok Gudang</button>
+        <button onclick="switchOwnerTab('menu')" id="otab_menu" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">Harga Jual</button>
+        <button onclick="switchOwnerTab('audit')" id="otab_audit" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">Audit Nota</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- TAB 1: EXECUTIVE DASHBOARD & LIVE ONGOING SALES -->
+  <main id="oview_dash" class="flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-5">
+    <!-- KPI CARDS -->
+    <div id="kpiGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+
+    <!-- 🔴 LIVE ONGOING DAILY SALES (PENJUALAN HARIAN YANG SEDANG BERLANGSUNG) -->
+    <div class="bg-[#221712] border-2 border-amber-500/40 rounded-3xl p-4 sm:p-5 space-y-3.5 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-3.5 h-3.5 rounded-full bg-emerald-400 pulse-dot"></span>
+          <div>
+            <h2 class="font-black text-sm sm:text-base text-white flex items-center gap-2">
+              <span>🔴 Penjualan Hari Ini yang Sedang Berlangsung</span>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 uppercase tracking-wider">LIVE STREAM</span>
+            </h2>
+            <p class="text-xs text-stone-400 mt-0.5">Transaksi masuk dari Kasir Seblak Brengos seketika (sub-detik tanpa jeda)</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="liveCounterBadge" class="text-xs font-black px-3 py-1.5 rounded-xl bg-[#160F0C] border border-amber-500/30 text-amber-300">0 Transaksi Hari Ini</span>
+          <button onclick="syncFromSpreadsheet(true)" class="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">Segarkan</button>
+        </div>
+      </div>
+
+      <!-- Live Stream List Container -->
+      <div id="liveSalesFeed" class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1"></div>
+    </div>
+
+    <!-- 2 Column Widgets: Top Products & Stock Warning -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Top Selling Menu & Toppings -->
+      <div class="lg:col-span-2 bg-[#221712] border border-stone-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-black text-sm text-amber-300 uppercase tracking-wider">🔥 Menu &amp; Varian Terlaris Hari Ini</h3>
+          <span id="lastSyncTimestamp" class="text-[11px] text-stone-400">Siap</span>
+        </div>
+        <div id="topMenuRanking" class="space-y-2"></div>
+      </div>
+
+      <!-- Critical Stock Alert -->
+      <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-black text-sm text-red-400 uppercase tracking-wider">⚠️ Peringatan Bahan Menipis</h3>
+          <button onclick="switchOwnerTab('stock')" class="text-[11px] font-bold text-amber-400 underline cursor-pointer">Kelola Stok</button>
+        </div>
+        <div id="lowStockAlerts" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- Riwayat Closing Shift Kasir -->
+    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="font-black text-sm text-white uppercase tracking-wider">🔒 Rekap Closing Shift Kasir</h3>
+          <p class="text-xs text-stone-400">Rekonsiliasi uang fisik laci vs catatan sistem kasir</p>
+        </div>
+        <button onclick="exportOwnerReportCsv()" class="px-3.5 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-extrabold text-amber-300 border border-stone-700 cursor-pointer">📥 Export Laporan CSV</button>
+      </div>
+      <div id="closingHistoryTable" class="space-y-2"></div>
+    </div>
+  </main>
+
+  <!-- TAB 2: ATUR COGS (HPP - HARGA POKOK PENJUALAN) & ANALISIS LABA MARGIN -->
+  <section id="oview_cogs" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-5">
+    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="font-black text-base text-white">Pengaturan COGS (HPP) &amp; Analisis Margin Keuntungan</h2>
+        <p class="text-xs text-stone-400">Atur modal HPP per porsi untuk mengetahui estimasi laba kotor &amp; margin bersih secara otomatis tanpa membuka spreadsheet.</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="saveAllCogsToCloud()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md cursor-pointer">💾 Simpan Perubahan HPP</button>
+      </div>
+    </div>
+
+    <!-- KPI ANALISIS LABA KOTOR HARI INI -->
+    <div id="cogsKpiRow" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+
+    <!-- Sub-tab Selector COGS -->
+    <div class="flex bg-[#160F0C] p-1 rounded-2xl border border-stone-800 w-fit">
+      <button onclick="switchCogsSubTab('menu')" id="cogstab_menu" class="px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer">🍜 COGS Menu Utama &amp; Minuman</button>
+      <button onclick="switchCogsSubTab('addon')" id="cogstab_addon" class="px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer">🍢 COGS Extra Topping / Add-on</button>
+    </div>
+
+    <!-- Grid List COGS Menu -->
+    <div id="cogsGrid_menu" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
+    <!-- Grid List COGS Topping -->
+    <div id="cogsGrid_addon" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+  </section>
+
+  <!-- TAB 3: PEMBELIAN BAHAN BAKU / KULAKAN (PURCHASES & PROCUREMENT) -->
+  <section id="oview_purchase" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-5">
+    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="font-black text-base text-white">Pembelian Bahan Baku / Kulakan Stok</h2>
+        <p class="text-xs text-stone-400">Catat pembelanjaan modal bahan. Stok di Gudang &amp; Kasir akan bertambah secara otomatis seketika.</p>
+      </div>
+      <button onclick="exportPurchasesCsv()" class="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-extrabold text-amber-300 border border-stone-700 cursor-pointer">📥 Export Riwayat Pembelian CSV</button>
+    </div>
+
+    <!-- FORM INPUT PEMBELIAN / RESTOCK CEPAT -->
+    <div class="bg-[#221712] border-2 border-emerald-500/40 rounded-3xl p-5 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+        <h3 class="font-black text-sm text-emerald-300 flex items-center gap-2">
+          <span>🛒 Formulir Catat Pembelian / Kulakan Baru</span>
+        </h3>
+        <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700">OTOMATIS TAMBAH STOK</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+        <div>
+          <label class="block font-bold text-stone-300 uppercase mb-1">Pilih Bahan Baku:</label>
+          <select id="poStockSelect" onchange="onSelectPoStockItem()" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-emerald-400">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-300 uppercase mb-1">Jumlah Masuk / Dibeli (Qty):</label>
+          <input id="poQtyInput" type="number" step="any" placeholder="Contoh: 20" oninput="calcPoUnitCost()" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-amber-300 font-black text-sm focus:outline-none focus:border-emerald-400" />
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-300 uppercase mb-1">Satuan Bahan:</label>
+          <input id="poUnitInput" type="text" placeholder="biji / kg / porsi / butir" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold" />
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-300 uppercase mb-1">Total Biaya Pembelian (Rp):</label>
+          <input id="poTotalCostInput" type="number" placeholder="Contoh: 100000" oninput="calcPoUnitCost()" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-emerald-300 font-black text-sm focus:outline-none focus:border-emerald-400" />
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-300 uppercase mb-1">Harga Beli Satuan (Terhitung):</label>
+          <div id="poUnitCostPreview" class="p-2.5 rounded-xl bg-[#160F0C] border border-stone-800 text-stone-300 font-black text-sm">Rp 0 / unit</div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-300 uppercase mb-1">Supplier / Toko / Pasar:</label>
+          <input id="poSupplierInput" type="text" placeholder="Contoh: Pasar Induk / Agen Sosis" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-emerald-400" />
+        </div>
+
+        <div class="sm:col-span-2 lg:col-span-3">
+          <label class="block font-bold text-stone-300 uppercase mb-1">Catatan Tambahan / Nomor Faktur (Opsional):</label>
+          <input id="poNoteInput" type="text" placeholder="Contoh: Kualitas segar nomor 1, nota fisik disimpan" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white focus:outline-none focus:border-emerald-400" />
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-stone-800 flex justify-end">
+        <button onclick="submitNewPurchase()" class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-2 cursor-pointer shadow-lg">
+          <span>📥 Simpan Pembelian &amp; Tambah Stok Otomatis</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIWAYAT PEMBELIAN / KULAKAN -->
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="font-black text-sm text-white uppercase tracking-wider">📜 Riwayat Pembelian &amp; Belanja Modal Bahan</h3>
+        <span id="purchaseCountBadge" class="text-xs font-bold text-stone-400">0 Pembelian Tercatat</span>
+      </div>
+      <div id="purchaseHistoryList" class="space-y-2.5"></div>
+    </div>
+  </section>
+
+  <!-- TAB 4: MANAJEMEN STOK GUDANG 2-ARAH -->
+  <section id="oview_stock" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-4">
+    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="font-black text-base text-white">Manajemen Stok Bahan Baku (2-Arah)</h2>
+        <p class="text-xs text-stone-400">Stok tersimpan otomatis di perangkat dan terupdate secara instan ke Kasir serta Google Spreadsheet.</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="pushOwnerStockToCloud()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md cursor-pointer">☁️ Kirim Stok ke Cloud &amp; Kasir</button>
+      </div>
+    </div>
+    <div id="ownerStockGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+  </section>
+
+  <!-- TAB 5: MASTER HARGA JUAL MENU & ADD-ON (TOPPING) -->
+  <section id="oview_menu" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-5">
+    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="font-black text-base text-white">Master Harga Jual Menu &amp; Extra Topping / Add-on</h2>
+        <p class="text-xs text-stone-400">Atur harga jual ke pelanggan, tambah menu baru, atau tambah topping/add-on baru secara bebas.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button onclick="openAddMenuModal()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer shadow-sm">+ Tambah Menu Baru</button>
+        <button onclick="openAddToppingModal()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs cursor-pointer shadow-sm">+ Tambah Add-on Baru</button>
+        <button onclick="pushOwnerMenuToCloud()" class="px-4 py-2 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-xs cursor-pointer shadow-md">💾 Simpan Semua ke Cloud &amp; Kasir</button>
+      </div>
+    </div>
+
+    <!-- Sub-tab Selector -->
+    <div class="flex bg-[#160F0C] p-1 rounded-2xl border border-stone-800 w-fit">
+      <button onclick="switchMenuSubTab('main')" id="subtab_main" class="px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer">🍜 Menu Utama &amp; Minuman (<span id="menuCountBadge">0</span>)</button>
+      <button onclick="switchMenuSubTab('addon')" id="subtab_addon" class="px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer">🍢 Extra Topping &amp; Add-on (<span id="toppingCountBadge">0</span>)</button>
+    </div>
+
+    <!-- Section 1: Menu Grid -->
+    <div id="menuSubTab_main" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
+    <!-- Section 2: Topping / Add-on Grid -->
+    <div id="menuSubTab_addon" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+  </section>
+
+  <!-- TAB 6: AUDIT NOTA TRANSAKSI KASIR -->
+  <section id="oview_audit" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-4">
+    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="font-black text-base text-white">Audit Nota Kasir &amp; Remote Void</h2>
+        <p class="text-xs text-stone-400">Pantau seluruh nota kasir hari ini dan batalkan (Void) dari jarak jauh bila terdapat kekeliruan.</p>
+      </div>
+      <button onclick="syncFromSpreadsheet(true)" class="px-4 py-2 rounded-xl bg-[#B3261E] text-white font-black text-xs cursor-pointer">🔄 Tarik Nota Terbaru</button>
+    </div>
+    <div id="auditTxList" class="space-y-2.5"></div>
+  </section>
+
+  <!-- DISCREET FOOTER (WITH HIDDEN SECRET TRIGGER FOR CLOUD SPREADSHEET CONFIG) -->
+  <footer class="mt-auto py-5 text-center text-xs text-stone-500 border-t border-stone-800/40 select-none">
+    <div class="max-w-md mx-auto flex flex-col items-center gap-1">
+      <p class="inline-flex items-center gap-1.5 cursor-pointer hover:text-stone-300 transition-colors py-1.5 px-3 rounded-full hover:bg-stone-900/80" onclick="triggerSecretCloudModal()" title="Klik untuk membuka Pengaturan Cloud & Spreadsheet (Wajib PIN Owner)">
+        <span>© 2026 Seblak Brengos — The Rebellious Spice. All rights reserved.</span>
+        <span class="opacity-20 hover:opacity-100 text-[11px]">🔒</span>
+      </p>
+      <span class="text-[10px] text-stone-600">POS &amp; Executive Backoffice ERP System</span>
+    </div>
+  </footer>
+
+  <!-- SECRET MODAL: CLOUD & SPREADSHEET CONFIG (HIDDEN FROM CASUAL VIEW) -->
+  <div id="secretCloudModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#221712] border-2 border-stone-700 w-full max-w-xl rounded-3xl p-5 sm:p-6 text-white shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">⚙️</span>
+          <div>
+            <h3 class="font-black text-base text-amber-300">Pengaturan Cloud &amp; Google Spreadsheet</h3>
+            <p class="text-xs text-stone-400">Area Terbatas Owner (Jembatan Data Kasir &amp; Owner)</p>
+          </div>
+        </div>
+        <button onclick="closeSecretCloudModal()" class="w-8 h-8 rounded-full bg-stone-800 text-stone-300 font-black cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-extrabold uppercase text-stone-300 mb-1">URL Web App Google Apps Script (Exec):</label>
+          <input id="ownerScriptUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full p-3 rounded-xl bg-[#160F0C] border border-stone-700 text-xs font-mono font-bold text-emerald-300" />
+        </div>
+        <div>
+          <label class="block font-extrabold uppercase text-stone-300 mb-1">URL Google Spreadsheet (Buka Tabel):</label>
+          <input id="ownerSheetUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/..." class="w-full p-3 rounded-xl bg-[#160F0C] border border-stone-700 text-xs font-mono text-white" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-extrabold uppercase text-stone-300 mb-1">Nomor WhatsApp Owner (Laporan):</label>
+            <input id="ownerWaInput" type="text" placeholder="087898185988" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-xs font-bold text-white" />
+          </div>
+          <div>
+            <label class="block font-extrabold uppercase text-stone-300 mb-1">Nama Usaha:</label>
+            <input id="ownerStoreName" type="text" value="Seblak Brengos" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-xs font-bold text-white" />
+          </div>
+        </div>
+
+        <!-- Pembersihan Data Transaksi (Clean Old Demo Data) -->
+        <div class="pt-2 border-t border-stone-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold uppercase text-red-400">🧹 Pembersihan Data (Reset Bersih):</span>
+            <button onclick="cleanOldDemoData()" class="px-3 py-1 rounded-lg bg-red-950 hover:bg-red-900 border border-red-800 text-red-300 font-black text-xs cursor-pointer">Bersihkan Data Transaksi</button>
+          </div>
+          <p class="text-[10.5px] text-stone-400">Membersihkan transaksi demo/lama dan memulai hari baru dengan omzet nol, tanpa mengubah daftar menu, topping, dan stok resmi.</p>
+        </div>
+
+        <div class="pt-2 border-t border-stone-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="font-extrabold uppercase text-amber-300">📜 Kode Google Apps Script Resmi (Code.gs):</label>
+            <button onclick="copyAppsScript()" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer">📋 Copy Script</button>
+          </div>
+          <textarea id="appsScriptBox" readonly rows="5" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-800 font-mono text-[10.5px] text-emerald-300 leading-tight">/**
+ * =========================================================================
+ * AROPPOS CLOUD ERP BACKOFFICE CONNECTOR
+ * OUTLET RESMI: SEBLAK BRENGOS (SB-01)
+ * =========================================================================
+ * Model Bisnis   : Kuliner & Seblak Prasmanan
+ * Tagline        : NIKMATNYA BRUTAL - SPICY. WARM. ADDICTIVE.
+ * Integrasi      : Two-Way Sync POS Kasir &lt;-&gt; Google Spreadsheet ERP
+ * Fitur ERP      : Dashboard Eksekutif, Riwayat Penjualan Hari Ini (Shift Berjalan),
+ *                  Buku Log Closing Harian & Arus Kas, Rekap Penjualan & Closing Bulanan,
+ *                  Buku Besar Transaksi, Master Stok HPP & Resep BOM Otomatis
+ * Status         : 100% Bebas Biaya & Bebas Limit Kuota
+ * =========================================================================
+ * 
+ * PANDUAN CEPAT INSTALASI (HANYA 3 MENIT):
+ * 1. Buka https://sheets.new di browser Anda untuk membuat Spreadsheet baru.
+ * 2. Ganti judul file menjadi: "POS_Backoffice_Seblak_Brengos"
+ * 3. Buka menu atas: "Ekstensi" (Extensions) &gt; "Apps Script".
+ * 4. Hapus seluruh isi kode lama di Apps Script, lalu Tempelkan (Paste) seluruh isi skrip ini.
+ * 5. Pada bar menu fungsi Apps Script di atas, pilih fungsi: "setupSheets", lalu klik "Jalankan" (Run).
+ *    (Beri izin / Review Permissions pada pop-up akun Google Anda).
+ *    -&gt; Sistem otomatis membangun 7 lembar kerja ERP berstandar enterprise:
+ *       1. Ringkasan_KPI_Seblak     : Dashboard Eksekutif ERP, KPI Omzet & Grafik Tren Penjualan
+ *       2. Penjualan_Hari_Ini      : Riwayat Pembelian Hari Ini (Shift Berjalan Sebelum Close Shift)
+ *       3. Riwayat_Closing_Harian  : Buku Log Rekapitulasi Closing Harian & Arus Kas Laci
+ *       4. Rekap_Bulanan           : Rekapitulasi Penjualan & Closing Shift Bulanan
+ *       5. Penjualan_Seblak   : Buku Besar (Ledger) Seluruh Riwayat Penjualan
+ *       6. Master_Stok_Seblak   : Master Inventori Bahan, HPP, Nilai Aset & Pemotongan Otomatis
+ *       7. Master_Menu_Seblak    : Master Katalog Menu, Harga Jual & Formula Resep BOM
+ * 6. Klik tombol biru "Terapkan" (Deploy) di sudut kanan atas &gt; "Penerapan Baru" (New Deployment).
+ * 7. Klik ikon gerigi jenis: pilih "Aplikasi Web" (Web App).
+ * 8. Pada kolom "Jalankan Sebagai" (Execute as): Pilih "Saya" (Akun Google Anda).
+ * 9. Pada kolom "Siapa yang memiliki akses" (Who has access): Pilih "Siapa saja" (Anyone).
+ * 10. Klik "Terapkan" (Deploy). Salin "URL Aplikasi Web" yang diberikan.
+ * 11. Tempelkan URL tersebut ke Backoffice POS pada kolom Webhook Outlet Seblak Brengos!
+ * =========================================================================
+ */
+
+// KONFIGURASI PROFIL OUTLET ERP
+var OUTLET_CONFIG = {
+  id: "seblak",
+  name: "Seblak Brengos",
+  code: "SB-01",
+  themeColor: "#B3261E",
+  salesSheet: "Penjualan_Seblak",
+  todaySalesSheet: "Penjualan_Hari_Ini",
+  closingSheet: "Riwayat_Closing_Harian",
+  monthlySheet: "Rekap_Bulanan",
+  stockSheet: "Master_Stok_Seblak",
+  menuSheet: "Master_Menu_Seblak",
+  kpiSheet: "Ringkasan_KPI_Seblak"
+};
+
+// DATA AWAL MASTER INVENTORI & STOK
+var INITIAL_STOCK_DATA = [
+  {
+    "id": "st1",
+    "name": "Isian / Pelengkap Seblak (Kerupuk & Bumbu)",
+    "unit": "porsi",
+    "qty": 120,
+    "low": 20,
+    "cost": 3500,
+    "notes": "Isian dasar kerupuk seblak, sayur & bumbu kencur"
+  },
+  {
+    "id": "st2",
+    "name": "Ceker Ayam",
+    "unit": "biji",
+    "qty": 100,
+    "low": 15,
+    "cost": 1500,
+    "notes": "Ceker ayam empuk siap masak"
+  },
+  {
+    "id": "st3",
+    "name": "Bakso",
+    "unit": "biji",
+    "qty": 100,
+    "low": 20,
+    "cost": 1200,
+    "notes": "Bakso sapi"
+  },
+  {
+    "id": "st4",
+    "name": "Sosis",
+    "unit": "biji",
+    "qty": 100,
+    "low": 20,
+    "cost": 1500,
+    "notes": "Sosis reguler"
+  },
+  {
+    "id": "st_sosis_besar",
+    "name": "Sosis Besar",
+    "unit": "biji",
+    "qty": 50,
+    "low": 10,
+    "cost": 3500,
+    "notes": "Topping Sosis Besar 6K"
+  },
+  {
+    "id": "st_cilok",
+    "name": "Cilok",
+    "unit": "biji",
+    "qty": 200,
+    "low": 30,
+    "cost": 400,
+    "notes": "Cilok kenyal untuk Seblak & Bakso Aci"
+  },
+  {
+    "id": "st_dumpling",
+    "name": "Dumpling",
+    "unit": "biji",
+    "qty": 80,
+    "low": 15,
+    "cost": 1500,
+    "notes": "Dumpling keju / ayam"
+  },
+  {
+    "id": "st_tulang",
+    "name": "Tulang Ayam",
+    "unit": "biji",
+    "qty": 90,
+    "low": 15,
+    "cost": 1200,
+    "notes": "Tulang rangu / balungan ayam"
+  },
+  {
+    "id": "st_cuanki",
+    "name": "Cuanki Lidah",
+    "unit": "biji",
+    "qty": 120,
+    "low": 20,
+    "cost": 1000,
+    "notes": "Cuanki lidah renyah"
+  },
+  {
+    "id": "st_cuanki_tahu",
+    "name": "Cuanki Tahu",
+    "unit": "biji",
+    "qty": 80,
+    "low": 15,
+    "cost": 1000,
+    "notes": "Cuanki tahu untuk Bakso Aci"
+  },
+  {
+    "id": "st_siomay_mini",
+    "name": "Siomay / Batagor Mini",
+    "unit": "biji",
+    "qty": 300,
+    "low": 50,
+    "cost": 150,
+    "notes": "Siomay / batagor kering mini"
+  },
+  {
+    "id": "st_enoki",
+    "name": "Jamur Enoki",
+    "unit": "porsi",
+    "qty": 60,
+    "low": 10,
+    "cost": 1500,
+    "notes": "Jamur enoki segar"
+  },
+  {
+    "id": "st_pilus",
+    "name": "Pilus",
+    "unit": "porsi",
+    "qty": 100,
+    "low": 20,
+    "cost": 1000,
+    "notes": "Pilus cikur renyah"
+  },
+  {
+    "id": "st_odeng",
+    "name": "Odeng",
+    "unit": "porsi",
+    "qty": 60,
+    "low": 10,
+    "cost": 1500,
+    "notes": "Topping Odeng 2,5K"
+  },
+  {
+    "id": "st_telur",
+    "name": "Telur Utuh",
+    "unit": "butir",
+    "qty": 60,
+    "low": 12,
+    "cost": 2200,
+    "notes": "Topping Telur Utuh 4K"
+  },
+  {
+    "id": "st_chikuwa",
+    "name": "Chikuwa",
+    "unit": "biji",
+    "qty": 60,
+    "low": 12,
+    "cost": 1200,
+    "notes": "Topping Chikuwa (2 Biji) 4K"
+  },
+  {
+    "id": "st_kembang_cumi",
+    "name": "Kembang Cumi",
+    "unit": "porsi",
+    "qty": 50,
+    "low": 10,
+    "cost": 2200,
+    "notes": "Topping Kembang Cumi 4K"
+  },
+  {
+    "id": "st_crab_stik",
+    "name": "Crab Stik",
+    "unit": "porsi",
+    "qty": 50,
+    "low": 10,
+    "cost": 2200,
+    "notes": "Topping Crab Stik 4K"
+  },
+  {
+    "id": "st_mie_ayam",
+    "name": "Porsi Pangsit Mie Ayam Jakarta",
+    "unit": "porsi",
+    "qty": 60,
+    "low": 10,
+    "cost": 6500,
+    "notes": "Menu Baru Pangsit Mie Ayam Jakarta"
+  },
+  {
+    "id": "st_mie_ndoweh",
+    "name": "Porsi Mie Ndoweh",
+    "unit": "porsi",
+    "qty": 60,
+    "low": 10,
+    "cost": 4500,
+    "notes": "Menu Baru Mie Ndoweh Level 1-4"
+  }
+];
+
+// DATA AWAL MASTER KATALOG MENU & RESEP BOM
+var INITIAL_MENU_DATA = [
+  {
+    "id": "sb_spesial",
+    "name": "Seblak Spesial",
+    "category": "Menu Utama",
+    "price": 25000,
+    "stockId": "st1",
+    "usage": 1
+  },
+  {
+    "id": "sb_ceker",
+    "name": "Seblak Ceker",
+    "category": "Menu Utama",
+    "price": 15000,
+    "stockId": "st2",
+    "usage": 2
+  },
+  {
+    "id": "sb_dumpling",
+    "name": "Seblak Dumpling",
+    "category": "Menu Utama",
+    "price": 15000,
+    "stockId": "st_dumpling",
+    "usage": 2
+  },
+  {
+    "id": "sb_tulang",
+    "name": "Seblak Tulang",
+    "category": "Menu Utama",
+    "price": 15000,
+    "stockId": "st_tulang",
+    "usage": 3
+  },
+  {
+    "id": "sb_cilok",
+    "name": "Seblak Cilok",
+    "category": "Menu Utama",
+    "price": 13000,
+    "stockId": "st_cilok",
+    "usage": 4
+  },
+  {
+    "id": "sb_sosis",
+    "name": "Seblak Sosis",
+    "category": "Menu Utama",
+    "price": 15000,
+    "stockId": "st4",
+    "usage": 1.5
+  },
+  {
+    "id": "sb_cuanki",
+    "name": "Seblak Cuanki",
+    "category": "Menu Utama",
+    "price": 15000,
+    "stockId": "st_cuanki",
+    "usage": 5
+  },
+  {
+    "id": "sb_bakso",
+    "name": "Seblak Bakso",
+    "category": "Menu Utama",
+    "price": 15000,
+    "stockId": "st3",
+    "usage": 3
+  },
+  {
+    "id": "sb_baci",
+    "name": "Bakso Aci",
+    "category": "Menu Utama",
+    "price": 15000,
+    "stockId": "st_cilok",
+    "usage": 5
+  },
+  {
+    "id": "sb_pangsit_mie_jkt",
+    "name": "Pangsit Mie Ayam Jakarta",
+    "category": "Menu Baru",
+    "price": 15000,
+    "stockId": "st_mie_ayam",
+    "usage": 1
+  },
+  {
+    "id": "sb_mie_ndoweh",
+    "name": "Mie Ndoweh",
+    "category": "Menu Baru",
+    "price": 10000,
+    "stockId": "st_mie_ndoweh",
+    "usage": 1
+  }
+];
+
+/**
+ * Menu Kustom di Toolbar Google Sheets
+ * Otomatis muncul saat pemilik atau admin membuka file spreadsheet
+ */
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('🏢 ERP AROPPOS Backoffice')
+    .addItem('📊 Tata Ulang & Format Seluruh Sheet ERP', 'setupSheets')
+    .addItem('⚡ Segarkan Penjualan Hari Ini (Shift Berjalan)', 'updateTodayActiveSales')
+    .addItem('📅 Perbarui Rekap Penjualan & Closing Bulanan', 'updateMonthlyRecap')
+    .addItem('📈 Buat / Perbarui Grafik Tren Penjualan', 'createOrUpdateSalesChart')
+    .addItem('⚠️ Cek Status Bahan Menipis / Reorder', 'checkLowStockAlert')
+    .addToUi();
+}
+
+/**
+ * Membangun & Menata Format Seluruh Lembar Kerja Menjadi Standar ERP Enterprise
+ */
+function setupSheets() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // -------------------------------------------------------------
+  // 1. LEMBAR KERJA: BUKU BESAR RIWAYAT TRANSAKSI PENJUALAN
+  // -------------------------------------------------------------
+  var sSales = ss.getSheetByName(OUTLET_CONFIG.salesSheet) || ss.insertSheet(OUTLET_CONFIG.salesSheet);
+  if (sSales.getLastRow() === 0) {
+    sSales.appendRow([
+      "Tanggal & Jam Transaksi",
+      "No Nota / ID Transaksi",
+      "Kode Outlet",
+      "Nama Outlet",
+      "Kasir Bertugas",
+      "Tipe Pemesanan",
+      "Nama Pelanggan",
+      "No Meja",
+      "Metode Pembayaran",
+      "Subtotal (Rp)",
+      "Diskon (Rp)",
+      "Total Bersih (Rp)",
+      "Rincian Menu & Varian Terjual",
+      "Status Transaksi"
+    ]);
+  }
+
+  // Tata format header riwayat penjualan
+  var salesHeaders = sSales.getRange(1, 1, 1, 14);
+  salesHeaders
+    .setFontWeight("bold")
+    .setBackground(OUTLET_CONFIG.themeColor || "#1E293B")
+    .setFontColor("#FFFFFF")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  sSales.setRowHeight(1, 32);
+  sSales.setFrozenRows(1);
+
+  // Lebar kolom presisi agar tidak terpotong
+  sSales.setColumnWidth(1, 160); // Tanggal
+  sSales.setColumnWidth(2, 180); // No Nota
+  sSales.setColumnWidth(3, 85);  // Kode
+  sSales.setColumnWidth(4, 140); // Outlet
+  sSales.setColumnWidth(5, 120); // Kasir
+  sSales.setColumnWidth(6, 110); // Tipe
+  sSales.setColumnWidth(7, 130); // Pelanggan
+  sSales.setColumnWidth(8, 80);  // Meja
+  sSales.setColumnWidth(9, 130); // Metode
+  sSales.setColumnWidth(10, 130); // Subtotal
+  sSales.setColumnWidth(11, 110); // Diskon
+  sSales.setColumnWidth(12, 140); // Total Bersih
+  sSales.setColumnWidth(13, 340); // Rincian Item
+  sSales.setColumnWidth(14, 120); // Status
+
+  // Format angka Rupiah pada kolom Subtotal, Diskon, Total
+  if (sSales.getMaxRows() &gt; 1) {
+    sSales.getRange("J2:L" + sSales.getMaxRows()).setNumberFormat("Rp #,##0");
+    sSales.getRange("A2:A" + sSales.getMaxRows()).setHorizontalAlignment("center");
+    sSales.getRange("B2:B" + sSales.getMaxRows()).setHorizontalAlignment("center");
+    sSales.getRange("N2:N" + sSales.getMaxRows()).setHorizontalAlignment("center");
+  }
+
+  // -------------------------------------------------------------
+  // 2. LEMBAR KERJA: RIWAYAT PENJUALAN HARI INI (SEBELUM CLOSE SHIFT)
+  // -------------------------------------------------------------
+  var sToday = ss.getSheetByName(OUTLET_CONFIG.todaySalesSheet) || ss.insertSheet(OUTLET_CONFIG.todaySalesSheet);
+  if (sToday.getLastRow() === 0) {
+    sToday.getRange("A1:L1").merge()
+      .setValue("🟢 RIWAYAT PENJUALAN HARI INI (SHIFT BERJALAN - SEBELUM CLOSE SHIFT)")
+      .setFontWeight("bold")
+      .setFontSize(11)
+      .setBackground("#15803D")
+      .setFontColor("#FFFFFF")
+      .setHorizontalAlignment("center")
+      .setVerticalAlignment("middle");
+    sToday.setRowHeight(1, 30);
+
+    // Ringkasan Cepat Shift Hari Ini (Formula menggunakan pemisah titik koma ';' aman regional Indonesia)
+    sToday.getRange("A2").setValue("Total Transaksi:").setFontWeight("bold");
+    sToday.getRange("B2").setValue('=COUNTIF(L5:L; "SELESAI")').setFontWeight("bold").setNumberFormat("#,##0");
+    sToday.getRange("C2").setValue("Total Omzet:").setFontWeight("bold");
+    sToday.getRange("D2").setValue('=SUM(J5:J)').setFontWeight("bold").setNumberFormat("Rp #,##0");
+    sToday.getRange("E2").setValue("Total Tunai:").setFontWeight("bold");
+    sToday.getRange("F2").setValue('=SUMIF(G5:G; "*Tunai*"; J5:J)').setFontWeight("bold").setNumberFormat("Rp #,##0");
+    sToday.getRange("G2").setValue("Total Non-Tunai / QRIS:").setFontWeight("bold");
+    sToday.getRange("H2").setValue('=D2-F2').setFontWeight("bold").setNumberFormat("Rp #,##0");
+    sToday.getRange("I2").setValue("Waktu Update:").setFontWeight("bold");
+    sToday.getRange("J2").setValue(Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss")).setFontWeight("bold");
+    sToday.getRange("A2:L2").setBackground("#F0FDF4").setFontColor("#14532D");
+    sToday.setRowHeight(2, 26);
+    sToday.setRowHeight(3, 8);
+
+    sToday.getRange(4, 1, 1, 12).setValues([[
+      "Waktu Transaksi",
+      "No Nota / ID",
+      "Kasir Bertugas",
+      "Tipe Order",
+      "Nama Pelanggan",
+      "No Meja",
+      "Metode Bayar",
+      "Subtotal (Rp)",
+      "Diskon (Rp)",
+      "Total Bersih (Rp)",
+      "Rincian Menu & Varian Terjual",
+      "Status Transaksi"
+    ]])
+    .setFontWeight("bold")
+    .setBackground(OUTLET_CONFIG.themeColor || "#1E293B")
+    .setFontColor("#FFFFFF")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+    sToday.setRowHeight(4, 30);
+  }
+
+  sToday.setFrozenRows(4);
+  sToday.setColumnWidth(1, 160);
+  sToday.setColumnWidth(2, 180);
+  sToday.setColumnWidth(3, 120);
+  sToday.setColumnWidth(4, 110);
+  sToday.setColumnWidth(5, 130);
+  sToday.setColumnWidth(6, 80);
+  sToday.setColumnWidth(7, 130);
+  sToday.setColumnWidth(8, 120);
+  sToday.setColumnWidth(9, 110);
+  sToday.setColumnWidth(10, 140);
+  sToday.setColumnWidth(11, 340);
+  sToday.setColumnWidth(12, 120);
+
+  // -------------------------------------------------------------
+  // 3. LEMBAR KERJA: BUKU LOG REKAPITULASI CLOSING HARIAN & ARUS KAS
+  // -------------------------------------------------------------
+  var sClosing = ss.getSheetByName(OUTLET_CONFIG.closingSheet) || ss.insertSheet(OUTLET_CONFIG.closingSheet);
+  if (sClosing.getLastRow() === 0) {
+    sClosing.appendRow([
+      "Tanggal Closing",
+      "Jam Buka",
+      "Jam Tutup",
+      "Shift",
+      "Kasir Bertugas",
+      "Jumlah Nota",
+      "Total Omzet Bersih (Rp)",
+      "Total Tunai (Rp)",
+      "Total Non-Tunai / QRIS (Rp)",
+      "Modal Awal Kas (Rp)",
+      "Pengeluaran Kas Kecil (Rp)",
+      "Pemasukan Kas Lain (Rp)",
+      "Ekspektasi Kas Laci (Rp)",
+      "Kas Fisik Aktual (Rp)",
+      "Selisih Kas (Rp)",
+      "Status Kas",
+      "Catatan Selisih Kas",
+      "Periode (YYYY-MM)"
+    ]);
+  }
+
+  var closingHeaders = sClosing.getRange(1, 1, 1, 18);
+  closingHeaders
+    .setFontWeight("bold")
+    .setBackground(OUTLET_CONFIG.themeColor || "#1E293B")
+    .setFontColor("#FFFFFF")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  sClosing.setRowHeight(1, 32);
+  sClosing.setFrozenRows(1);
+
+  sClosing.setColumnWidth(1, 130); // Tanggal
+  sClosing.setColumnWidth(2, 90);  // Jam Buka
+  sClosing.setColumnWidth(3, 90);  // Jam Tutup
+  sClosing.setColumnWidth(4, 120); // Shift
+  sClosing.setColumnWidth(5, 120); // Kasir
+  sClosing.setColumnWidth(6, 110); // Jml Nota
+  sClosing.setColumnWidth(7, 160); // Omzet
+  sClosing.setColumnWidth(8, 140); // Tunai
+  sClosing.setColumnWidth(9, 160); // Non-Tunai
+  sClosing.setColumnWidth(10, 140); // Modal Awal
+  sClosing.setColumnWidth(11, 150); // Pengeluaran
+  sClosing.setColumnWidth(12, 140); // Pemasukan
+  sClosing.setColumnWidth(13, 150); // Ekspektasi Kas
+  sClosing.setColumnWidth(14, 150); // Kas Fisik
+  sClosing.setColumnWidth(15, 130); // Selisih
+  sClosing.setColumnWidth(16, 120); // Status
+  sClosing.setColumnWidth(17, 240); // Catatan
+  sClosing.setColumnWidth(18, 130); // Periode
+
+  if (sClosing.getMaxRows() &gt; 1) {
+    sClosing.getRange("G2:O" + sClosing.getMaxRows()).setNumberFormat("Rp #,##0");
+    sClosing.getRange("F2:F" + sClosing.getMaxRows()).setNumberFormat("#,##0");
+    sClosing.getRange("A2:E" + sClosing.getMaxRows()).setHorizontalAlignment("center");
+    sClosing.getRange("P2:P" + sClosing.getMaxRows()).setHorizontalAlignment("center");
+    sClosing.getRange("R2:R" + sClosing.getMaxRows()).setHorizontalAlignment("center");
+  }
+
+  // -------------------------------------------------------------
+  // 4. LEMBAR KERJA: MASTER INVENTORI STOK, HPP & ASET
+  // -------------------------------------------------------------
+  var sStock = ss.getSheetByName(OUTLET_CONFIG.stockSheet) || ss.insertSheet(OUTLET_CONFIG.stockSheet);
+  if (sStock.getLastRow() === 0) {
+    sStock.appendRow([
+      "ID Bahan / Stok",
+      "Nama Bahan / Varian Kaleng",
+      "Satuan",
+      "Stok Saat Ini",
+      "Batas Min Alert",
+      "Status Inventori",
+      "Estimasi HPP (Rp)",
+      "Total Nilai Aset (Rp)",
+      "Rekomendasi Reorder",
+      "Catatan Khusus"
+    ]);
+
+    // Isi data awal bahan baku outlet (Formula menggunakan pemisah titik koma ';' agar valid di regional Indonesia)
+    for (var i = 0; i &lt; INITIAL_STOCK_DATA.length; i++) {
+      var item = INITIAL_STOCK_DATA[i];
+      var rowNum = i + 2;
+      var costVal = Number(item.cost || 10000);
+      sStock.appendRow([
+        item.id,
+        item.name,
+        item.unit,
+        item.qty,
+        item.low,
+        '=IF(D' + rowNum + '&lt;=0; "HABIS"; IF(D' + rowNum + '&lt;=E' + rowNum + '; "MENIPIS"; "AMAN"))',
+        costVal,
+        '=D' + rowNum + '*G' + rowNum,
+        '=IF(D' + rowNum + '&lt;=E' + rowNum + '; "ORDER SEKARANG (" & (E' + rowNum + '*3 - D' + rowNum + ') & " " & C' + rowNum + ' & ")"; "STOK CUKUP")',
+        item.notes || "-"
+      ]);
+    }
+  }
+
+  // Perbaiki otomatis formula status & rekomendasi stok yang sebelumnya memakai koma (,) menjadi titik koma (;)
+  var stockRows = sStock.getLastRow();
+  if (stockRows &gt;= 2) {
+    for (var r = 2; r &lt;= stockRows; r++) {
+      sStock.getRange(r, 6).setValue('=IF(D' + r + '&lt;=0; "HABIS"; IF(D' + r + '&lt;=E' + r + '; "MENIPIS"; "AMAN"))');
+      sStock.getRange(r, 8).setValue('=D' + r + '*G' + r);
+      sStock.getRange(r, 9).setValue('=IF(D' + r + '&lt;=E' + r + '; "ORDER SEKARANG (" & (E' + r + '*3 - D' + r + ') & " " & C' + r + ' & ")"; "STOK CUKUP")');
+    }
+  }
+
+  // Tata format header stok
+  sStock.getRange(1, 1, 1, 10)
+    .setFontWeight("bold")
+    .setBackground("#0F172A")
+    .setFontColor("#FFFFFF")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  sStock.setRowHeight(1, 32);
+  sStock.setFrozenRows(1);
+
+  sStock.setColumnWidth(1, 130); // ID Bahan
+  sStock.setColumnWidth(2, 250); // Nama Bahan
+  sStock.setColumnWidth(3, 85);  // Satuan
+  sStock.setColumnWidth(4, 105); // Qty
+  sStock.setColumnWidth(5, 115); // Batas Min
+  sStock.setColumnWidth(6, 115); // Status
+  sStock.setColumnWidth(7, 135); // HPP
+  sStock.setColumnWidth(8, 150); // Nilai Aset
+  sStock.setColumnWidth(9, 180); // Rekomendasi
+  sStock.setColumnWidth(10, 220); // Catatan
+
+  if (sStock.getMaxRows() &gt; 1) {
+    sStock.getRange("G2:H" + sStock.getMaxRows()).setNumberFormat("Rp #,##0");
+    sStock.getRange("C2:F" + sStock.getMaxRows()).setHorizontalAlignment("center");
+  }
+
+  // -------------------------------------------------------------
+  // 3. LEMBAR KERJA: MASTER MENU, HARGA JUAL & FORMULA RESEP BOM
+  // -------------------------------------------------------------
+  var sMenu = ss.getSheetByName(OUTLET_CONFIG.menuSheet) || ss.insertSheet(OUTLET_CONFIG.menuSheet);
+  if (sMenu.getLastRow() === 0) {
+    sMenu.appendRow([
+      "ID Menu",
+      "Nama Menu / Produk",
+      "Kategori",
+      "Harga Jual (Rp)",
+      "ID Stok Bahan Terkait",
+      "Takaran Resep Terpakai",
+      "Aturan Pemotongan Stok ERP"
+    ]);
+
+    for (var j = 0; j &lt; INITIAL_MENU_DATA.length; j++) {
+      var m = INITIAL_MENU_DATA[j];
+      var rule = "Potong " + (m.usage || 1) + " unit dari " + (m.stockId || "Bahan Utama");
+      if (m.id === "dp_bundle3in1" || (m.name && m.name.toLowerCase().indexOf("bundle") !== -1)) {
+        rule = "Potong 3 Kaleng Varian Biasa (Cumi/Roa/Tuna/Teri/Cakalang) + 1 Kardus Box Trio";
+      }
+      sMenu.appendRow([
+        m.id,
+        m.name,
+        m.category,
+        m.price,
+        m.stockId || "-",
+        m.usage || 1,
+        rule
+      ]);
+    }
+  }
+
+  sMenu.getRange(1, 1, 1, 7)
+    .setFontWeight("bold")
+    .setBackground("#1E293B")
+    .setFontColor("#FFFFFF")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  sMenu.setRowHeight(1, 32);
+  sMenu.setFrozenRows(1);
+
+  sMenu.setColumnWidth(1, 120);
+  sMenu.setColumnWidth(2, 260);
+  sMenu.setColumnWidth(3, 140);
+  sMenu.setColumnWidth(4, 130);
+  sMenu.setColumnWidth(5, 160);
+  sMenu.setColumnWidth(6, 120);
+  sMenu.setColumnWidth(7, 340);
+
+  if (sMenu.getMaxRows() &gt; 1) {
+    sMenu.getRange("D2:D" + sMenu.getMaxRows()).setNumberFormat("Rp #,##0");
+    sMenu.getRange("E2:F" + sMenu.getMaxRows()).setHorizontalAlignment("center");
+  }
+
+  // -------------------------------------------------------------
+  // 4. LEMBAR KERJA: DASHBOARD EKSEKUTIF ERP & TREN GRAFIK
+  // -------------------------------------------------------------
+  var sKpi = ss.getSheetByName(OUTLET_CONFIG.kpiSheet) || ss.insertSheet(OUTLET_CONFIG.kpiSheet);
+  
+  // Header Spanduk Eksekutif
+  sKpi.getRange("A1:C1").merge().setValue("🏢 AROPPOS ENTERPRISE ERP - EXECUTIVE DASHBOARD");
+  sKpi.getRange("A1").setFontWeight("bold").setFontSize(14).setBackground("#0F172A").setFontColor("#F8FAFC").setHorizontalAlignment("center");
+  sKpi.setRowHeight(1, 40);
+
+  sKpi.getRange("A2:C2").merge().setValue("Outlet Resmi: " + OUTLET_CONFIG.name + " (" + OUTLET_CONFIG.code + ") | Status POS: AKTIF & TERHUBUNG");
+  sKpi.getRange("A2").setFontWeight("bold").setFontSize(10).setBackground(OUTLET_CONFIG.themeColor || "#1E293B").setFontColor("#FFFFFF").setHorizontalAlignment("center");
+  sKpi.setRowHeight(2, 24);
+
+  // Bagian Filter & Kontrol
+  sKpi.getRange("A4:C4").merge().setValue("📌 RINGKASAN PERFORMA BISNIS & KEUANGAN");
+  sKpi.getRange("A4").setFontWeight("bold").setFontSize(11).setBackground("#E2E8F0").setFontColor("#1E293B");
+
+  // Karakter pembantu tanda kutip untuk formula Google Sheets (Format Regional Indonesia menggunakan pemisah titik koma ';')
+  var q = String.fromCharCode(34); // "
+  var sq = String.fromCharCode(39); // '
+
+  // Kartu-kartu KPI Utama (semua formula menggunakan pemisah titik koma ';' agar tidak error pada regional Indonesia)
+  var kpiRows = [
+    ["Total Penjualan Bersih (Omzet)", "=SUM(" + sq + OUTLET_CONFIG.salesSheet + sq + "!L2:L)", "Akumulasi Pendapatan Bersih"],
+    ["Total Transaksi Sukses", "=COUNTIF(" + sq + OUTLET_CONFIG.salesSheet + sq + "!N2:N; " + q + "SELESAI" + q + ")", "Jumlah Nota Penjualan Valid"],
+    ["Rata-rata Belanja / Nota (AOV)", "=IFERROR(B5/B6; 0)", "Rata-rata Nilai per Nota"],
+    ["Total Potongan Diskon / Promo", "=SUM(" + sq + OUTLET_CONFIG.salesSheet + sq + "!K2:K)", "Total Potongan Harga Diberikan"],
+    ["Total Nilai Aset Inventori Stok", "=SUM(" + sq + OUTLET_CONFIG.stockSheet + sq + "!H2:H)", "Valuasi Stok Bahan Baku Berdasarkan HPP"],
+    ["Bahan Perlu Reorder / Kritis", "=COUNTIF(" + sq + OUTLET_CONFIG.stockSheet + sq + "!F2:F; " + q + "MENIPIS" + q + ") + COUNTIF(" + sq + OUTLET_CONFIG.stockSheet + sq + "!F2:F; " + q + "HABIS" + q + ")", "Item Stok Dibawah Batas Minimum"],
+    ["Waktu Update Terakhir", new Date(), "Sinkronisasi Realtime POS Kasir"]
+  ];
+
+  for (var k = 0; k &lt; kpiRows.length; k++) {
+    var rIdx = k + 5;
+    sKpi.getRange(rIdx, 1).setValue(kpiRows[k][0]).setFontWeight("bold").setFontColor("#334155");
+    sKpi.getRange(rIdx, 2).setValue(kpiRows[k][1]).setFontWeight("bold").setFontSize(11);
+    sKpi.getRange(rIdx, 3).setValue(kpiRows[k][2]).setFontColor("#64748B").setFontSize(10);
+  }
+
+  // Format Number KPI
+  sKpi.getRange("B5").setNumberFormat("Rp #,##0");
+  sKpi.getRange("B6").setNumberFormat("#,##0");
+  sKpi.getRange("B7").setNumberFormat("Rp #,##0");
+  sKpi.getRange("B8").setNumberFormat("Rp #,##0");
+  sKpi.getRange("B9").setNumberFormat("Rp #,##0");
+  sKpi.getRange("B10").setNumberFormat("#,##0");
+  sKpi.getRange("B11").setNumberFormat("yyyy-mm-dd hh:mm");
+
+  sKpi.setColumnWidth(1, 230);
+  sKpi.setColumnWidth(2, 170);
+  sKpi.setColumnWidth(3, 260);
+
+  // -------------------------------------------------------------
+  // 5. LEMBAR KERJA: REKAPITULASI PENJUALAN & CLOSING BULANAN
+  // -------------------------------------------------------------
+  var sMonthly = ss.getSheetByName(OUTLET_CONFIG.monthlySheet) || ss.insertSheet(OUTLET_CONFIG.monthlySheet);
+  
+  // Header Tabel 1 (Kiri): Rekapitulasi Omzet Penjualan Bulanan
+  sMonthly.getRange("A1:F1").merge()
+    .setValue("📊 REKAPITULASI OMZET PENJUALAN BULANAN")
+    .setFontWeight("bold")
+    .setFontSize(11)
+    .setBackground(OUTLET_CONFIG.themeColor || "#1E293B")
+    .setFontColor("#FFFFFF")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  sMonthly.setRowHeight(1, 30);
+
+  sMonthly.getRange(2, 1, 1, 6).setValues([[
+    "Periode (YYYY-MM)",
+    "Bulan & Tahun",
+    "Jumlah Nota Selesai",
+    "Total Omzet Bersih (Rp)",
+    "Rata-rata Nota / AOV (Rp)",
+    "Total Diskon (Rp)"
+  ]])
+  .setFontWeight("bold")
+  .setBackground("#334155")
+  .setFontColor("#FFFFFF")
+  .setHorizontalAlignment("center")
+  .setVerticalAlignment("middle");
+  sMonthly.setRowHeight(2, 28);
+
+  // Header Tabel 2 (Kanan): Rekapitulasi Closing Shift & Kas Bulanan
+  sMonthly.getRange("H1:O1").merge()
+    .setValue("💰 REKAPITULASI CLOSING SHIFT & ARUS KAS BULANAN")
+    .setFontWeight("bold")
+    .setFontSize(11)
+    .setBackground("#0F766E")
+    .setFontColor("#FFFFFF")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+
+  sMonthly.getRange(2, 8, 1, 8).setValues([[
+    "Periode (YYYY-MM)",
+    "Bulan & Tahun",
+    "Total Shift Closing",
+    "Akumulasi Omzet Closing (Rp)",
+    "Total Kas Tunai (Rp)",
+    "Total QRIS / Transfer (Rp)",
+    "Pengeluaran Kas Kecil (Rp)",
+    "Net Selisih Kas (Rp)"
+  ]])
+  .setFontWeight("bold")
+  .setBackground("#115E59")
+  .setFontColor("#FFFFFF")
+  .setHorizontalAlignment("center")
+  .setVerticalAlignment("middle");
+
+  sMonthly.setFrozenRows(2);
+  sMonthly.setColumnWidth(1, 130);
+  sMonthly.setColumnWidth(2, 160);
+  sMonthly.setColumnWidth(3, 140);
+  sMonthly.setColumnWidth(4, 170);
+  sMonthly.setColumnWidth(5, 170);
+  sMonthly.setColumnWidth(6, 140);
+  sMonthly.setColumnWidth(7, 30);  // Kolom pemisah
+  sMonthly.setColumnWidth(8, 130);
+  sMonthly.setColumnWidth(9, 160);
+  sMonthly.setColumnWidth(10, 140);
+  sMonthly.setColumnWidth(11, 180);
+  sMonthly.setColumnWidth(12, 160);
+  sMonthly.setColumnWidth(13, 170);
+  sMonthly.setColumnWidth(14, 160);
+  sMonthly.setColumnWidth(15, 150);
+
+  // Jalankan kalkulasi sinkronisasi data
+  updateTodayActiveSales();
+  updateMonthlyRecap();
+}
+
+/**
+ * Segarkan Lembar Kerja Penjualan Hari Ini (Shift Berjalan Sebelum Close Shift)
+ */
+function updateTodayActiveSales() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sSales = ss.getSheetByName(OUTLET_CONFIG.salesSheet);
+  var sToday = ss.getSheetByName(OUTLET_CONFIG.todaySalesSheet) || ss.insertSheet(OUTLET_CONFIG.todaySalesSheet);
+  if (!sSales || !sToday) return;
+
+  var todayStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+  var salesData = sSales.getDataRange().getValues();
+
+  var lastRow = sToday.getLastRow();
+  if (lastRow &gt;= 5) {
+    sToday.getRange(5, 1, lastRow - 4, 12).clearContent();
+  }
+
+  var todayRows = [];
+  for (var r = 1; r &lt; salesData.length; r++) {
+    var row = salesData[r];
+    var dateVal = row[0];
+    if (!dateVal) continue;
+    var rowDateStr = "";
+    if (dateVal instanceof Date) {
+      rowDateStr = Utilities.formatDate(dateVal, Session.getScriptTimeZone(), "yyyy-MM-dd");
+    } else {
+      rowDateStr = String(dateVal).substring(0, 10);
+    }
+
+    if (rowDateStr === todayStr) {
+      var dDisplay = (dateVal instanceof Date)
+        ? Utilities.formatDate(dateVal, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss")
+        : String(dateVal);
+      todayRows.push([
+        dDisplay,
+        row[1] || "-",
+        row[4] || "-",
+        row[5] || "-",
+        row[6] || "-",
+        row[7] || "-",
+        row[8] || "-",
+        row[9] || 0,
+        row[10] || 0,
+        row[11] || 0,
+        row[12] || "-",
+        row[13] || "SELESAI"
+      ]);
+    }
+  }
+
+  if (todayRows.length &gt; 0) {
+    sToday.getRange(5, 1, todayRows.length, 12).setValues(todayRows);
+    sToday.getRange(5, 8, todayRows.length, 3).setNumberFormat("Rp #,##0");
+    sToday.getRange(5, 1, todayRows.length, 2).setHorizontalAlignment("center");
+    sToday.getRange(5, 12, todayRows.length, 1).setHorizontalAlignment("center");
+  }
+
+  sToday.getRange("J2").setValue(Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss"));
+}
+
+/**
+ * Menghitung & Menyusun Ulang Rekapitulasi Penjualan & Closing Bulanan
+ * Aman dari error tanda koma/titik-koma dan format tanggal
+ */
+function updateMonthlyRecap() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sSales = ss.getSheetByName(OUTLET_CONFIG.salesSheet);
+  var sClosing = ss.getSheetByName(OUTLET_CONFIG.closingSheet);
+  var sMonthly = ss.getSheetByName(OUTLET_CONFIG.monthlySheet) || ss.insertSheet(OUTLET_CONFIG.monthlySheet);
+  if (!sMonthly) return;
+
+  var monthNames = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ];
+
+  // 1. REKAP PENJUALAN BULANAN (DARI SHEET PENJUALAN)
+  var salesMap = {};
+  if (sSales) {
+    var salesData = sSales.getDataRange().getValues();
+    for (var r = 1; r &lt; salesData.length; r++) {
+      var row = salesData[r];
+      var status = String(row[13] || "").trim().toUpperCase();
+      if (status && status !== "SELESAI") continue;
+
+      var rawDate = row[0];
+      if (!rawDate) continue;
+
+      var d = new Date(rawDate);
+      var mCode = "";
+      var mLabel = "";
+      if (isNaN(d.getTime())) {
+        var match = String(rawDate).match(/(d{4})-(d{2})/);
+        if (match) {
+          var yStr = match[1];
+          var mNum = parseInt(match[2], 10);
+          mCode = yStr + "-" + (mNum &lt; 10 ? "0" + mNum : mNum);
+          mLabel = monthNames[mNum - 1] + " " + yStr;
+        }
+      } else {
+        var y = d.getFullYear();
+        var m = d.getMonth();
+        mCode = y + "-" + ((m + 1) &lt; 10 ? "0" + (m + 1) : (m + 1));
+        mLabel = monthNames[m] + " " + y;
+      }
+
+      if (mCode) {
+        if (!salesMap[mCode]) {
+          salesMap[mCode] = { key: mCode, label: mLabel, count: 0, omzet: 0, diskon: 0 };
+        }
+        salesMap[mCode].count += 1;
+        salesMap[mCode].omzet += Number(row[11] || row[9] || 0);
+        salesMap[mCode].diskon += Number(row[10] || 0);
+      }
+    }
+  }
+
+  // Bersihkan baris data lama di bawah baris 2
+  var mRows = sMonthly.getLastRow();
+  if (mRows &gt;= 3) {
+    sMonthly.getRange(3, 1, mRows - 2, 6).clearContent();
+    sMonthly.getRange(3, 8, mRows - 2, 8).clearContent();
+  }
+
+  var sortedSalesKeys = Object.keys(salesMap).sort();
+  if (sortedSalesKeys.length === 0) {
+    var now = new Date();
+    var curKey = now.getFullYear() + "-" + ((now.getMonth() + 1) &lt; 10 ? "0" + (now.getMonth() + 1) : (now.getMonth() + 1));
+    var curLabel = monthNames[now.getMonth()] + " " + now.getFullYear();
+    sMonthly.getRange(3, 1, 1, 6).setValues([[curKey, curLabel, 0, 0, 0, 0]]);
+  } else {
+    var outSales = [];
+    for (var s = 0; s &lt; sortedSalesKeys.length; s++) {
+      var itm = salesMap[sortedSalesKeys[s]];
+      var aov = itm.count &gt; 0 ? Math.round(itm.omzet / itm.count) : 0;
+      outSales.push([itm.key, itm.label, itm.count, itm.omzet, aov, itm.diskon]);
+    }
+    sMonthly.getRange(3, 1, outSales.length, 6).setValues(outSales);
+    sMonthly.getRange(3, 4, outSales.length, 3).setNumberFormat("Rp #,##0");
+    sMonthly.getRange(3, 3, outSales.length, 1).setNumberFormat("#,##0");
+    sMonthly.getRange(3, 1, outSales.length, 2).setHorizontalAlignment("center");
+  }
+
+  // 2. REKAP CLOSING KAS BULANAN (DARI SHEET RIWAYAT_CLOSING_HARIAN)
+  var closingMap = {};
+  if (sClosing) {
+    var closingData = sClosing.getDataRange().getValues();
+    for (var c = 1; c &lt; closingData.length; c++) {
+      var cRow = closingData[c];
+      var cDateVal = cRow[0];
+      if (!cDateVal) continue;
+      var cPeriod = String(cRow[17] || "").trim();
+      if (!cPeriod || cPeriod.length &lt; 7) {
+        cPeriod = String(cDateVal).substring(0, 7);
+      }
+      var cYear = parseInt(cPeriod.substring(0, 4), 10);
+      var cMoNum = parseInt(cPeriod.substring(5, 7), 10);
+      var cLabel = (cMoNum &gt;= 1 && cMoNum &lt;= 12) ? (monthNames[cMoNum - 1] + " " + cYear) : cPeriod;
+
+      if (!closingMap[cPeriod]) {
+        closingMap[cPeriod] = {
+          key: cPeriod,
+          label: cLabel,
+          shiftsCount: 0,
+          totalOmzet: 0,
+          totalCash: 0,
+          totalNonCash: 0,
+          totalExpense: 0,
+          netDiff: 0
+        };
+      }
+      closingMap[cPeriod].shiftsCount += 1;
+      closingMap[cPeriod].totalOmzet += Number(cRow[6] || 0);
+      closingMap[cPeriod].totalCash += Number(cRow[7] || 0);
+      closingMap[cPeriod].totalNonCash += Number(cRow[8] || 0);
+      closingMap[cPeriod].totalExpense += Number(cRow[10] || 0);
+      closingMap[cPeriod].netDiff += Number(cRow[14] || 0);
+    }
+  }
+
+  var sortedClosingKeys = Object.keys(closingMap).sort();
+  if (sortedClosingKeys.length === 0) {
+    var nowC = new Date();
+    var curCKey = nowC.getFullYear() + "-" + ((nowC.getMonth() + 1) &lt; 10 ? "0" + (nowC.getMonth() + 1) : (nowC.getMonth() + 1));
+    var curCLabel = monthNames[nowC.getMonth()] + " " + nowC.getFullYear();
+    sMonthly.getRange(3, 8, 1, 8).setValues([[curCKey, curCLabel, 0, 0, 0, 0, 0, 0]]);
+  } else {
+    var outClosing = [];
+    for (var k = 0; k &lt; sortedClosingKeys.length; k++) {
+      var cItem = closingMap[sortedClosingKeys[k]];
+      outClosing.push([
+        cItem.key,
+        cItem.label,
+        cItem.shiftsCount,
+        cItem.totalOmzet,
+        cItem.totalCash,
+        cItem.totalNonCash,
+        cItem.totalExpense,
+        cItem.netDiff
+      ]);
+    }
+    sMonthly.getRange(3, 8, outClosing.length, 8).setValues(outClosing);
+    sMonthly.getRange(3, 11, outClosing.length, 5).setNumberFormat("Rp #,##0");
+    sMonthly.getRange(3, 10, outClosing.length, 1).setNumberFormat("#,##0");
+    sMonthly.getRange(3, 8, outClosing.length, 2).setHorizontalAlignment("center");
+  }
+
+  // Perbarui grafik
+  createOrUpdateSalesChart();
+}
+
+/**
+ * Membuat atau Memperbarui Grafik Fluktuasi Tren Penjualan Bulanan & Harian
+ * Menjamin grafik langsung tampil tanpa ketergantungan formula rentan
+ */
+function createOrUpdateSalesChart() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sMonthly = ss.getSheetByName(OUTLET_CONFIG.monthlySheet);
+  var sKpi = ss.getSheetByName(OUTLET_CONFIG.kpiSheet);
+
+  if (sMonthly) {
+    // Hapus grafik lama di sheet Rekap_Bulanan jika ada
+    var mCharts = sMonthly.getCharts();
+    for (var i = 0; i &lt; mCharts.length; i++) {
+      sMonthly.removeChart(mCharts[i]);
+    }
+
+    var mRows = sMonthly.getLastRow();
+    if (mRows &gt;= 2) {
+      // Grafik Kolom Omzet Bulanan
+      var monthlyChart = sMonthly.newChart()
+        .asColumnChart()
+        .addRange(sMonthly.getRange("B1:D" + mRows)) // Kolom Bulan & Omzet
+        .setPosition(2, 8, 10, 10)
+        .setOption('title', '📊 Grafik Tren Pertumbuhan Omzet Bulanan (' + OUTLET_CONFIG.name + ')')
+        .setOption('colors', [OUTLET_CONFIG.themeColor || '#1E293B', '#F59E0B'])
+        .setOption('legend', { position: 'top' })
+        .setOption('hAxis', { title: 'Bulan / Periode', textStyle: { fontSize: 10 } })
+        .setOption('vAxis', { title: 'Omzet Bersih (Rp)' })
+        .setOption('width', 650)
+        .setOption('height', 340)
+        .build();
+
+      sMonthly.insertChart(monthlyChart);
+    }
+  }
+
+  if (sKpi && sMonthly) {
+    // Hapus grafik lama di KPI_Dashboard
+    var kCharts = sKpi.getCharts();
+    for (var j = 0; j &lt; kCharts.length; j++) {
+      sKpi.removeChart(kCharts[j]);
+    }
+
+    var kRows = sMonthly.getLastRow();
+    if (kRows &gt;= 2) {
+      // Pasang grafik ringkasan di dashboard eksekutif membaca dari Rekap_Bulanan
+      var kpiChart = sKpi.newChart()
+        .asColumnChart()
+        .addRange(sMonthly.getRange("B1:D" + kRows))
+        .setPosition(4, 4, 10, 10)
+        .setOption('title', '📈 Tren Performa Penjualan (' + OUTLET_CONFIG.name + ')')
+        .setOption('colors', [OUTLET_CONFIG.themeColor || '#416B56', '#F59E0B'])
+        .setOption('legend', { position: 'top' })
+        .setOption('hAxis', { title: 'Periode', textStyle: { fontSize: 10 } })
+        .setOption('vAxis', { title: 'Total Omzet (Rp)' })
+        .setOption('width', 680)
+        .setOption('height', 330)
+        .build();
+
+      sKpi.insertChart(kpiChart);
+    }
+  }
+}
+
+/**
+ * Peringatan Bahan Baku Menipis
+ */
+function checkLowStockAlert() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sStock = ss.getSheetByName(OUTLET_CONFIG.stockSheet);
+  var data = sStock.getDataRange().getValues();
+  var alerts = [];
+
+  for (var i = 1; i &lt; data.length; i++) {
+    var name = data[i][1];
+    var qty = Number(data[i][3] || 0);
+    var low = Number(data[i][4] || 0);
+    var unit = data[i][2] || "pcs";
+    if (qty &lt;= low) {
+      alerts.push(name + ": Sisa " + qty + " " + unit + " (Batas Min: " + low + " " + unit + ")");
+    }
+  }
+
+  var ui = SpreadsheetApp.getUi();
+  if (alerts.length &gt; 0) {
+    ui.alert("⚠️ PERINGATAN BAHAN KRITIS (" + alerts.length + " ITEM)", alerts.join("\n"), ui.ButtonSet.OK);
+  } else {
+    ui.alert("✅ SEMUA STOK AMAN", "Seluruh bahan baku berada dalam batas aman persediaan.", ui.ButtonSet.OK);
+  }
+}
+
+/**
+ * ENDPOINT GET: Mengambil data Master Stok dan Master Menu dari Google Sheets ke POS
+ * URL panggilan: [WEBHOOK_URL]?action=stock atau ?action=menu
+ */
+function doGet(e) {
+  try {
+    setupSheets();
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "stock";
+
+    if (action === "pull") {
+      var sMenuPull = ss.getSheetByName(OUTLET_CONFIG.menuSheet);
+      var mDataPull = sMenuPull ? sMenuPull.getDataRange().getValues() : [];
+      var pullMenu = [];
+      var pullToppings = [];
+      for (var mp = 1; mp &lt; mDataPull.length; mp++) {
+        var rm = mDataPull[mp];
+        if (rm[0] || rm[1]) {
+          var itemObj = {
+            id: String(rm[0] || ""),
+            name: String(rm[1] || ""),
+            category: String(rm[2] || "Menu Utama"),
+            price: Number(rm[3] || 0),
+            stockId: String(rm[4] === "-" ? "" : (rm[4] || "")),
+            usage: Number(rm[5] || 1),
+            description: String(rm[6] || "")
+          };
+          if (itemObj.category.toLowerCase().indexOf("topping") !== -1 || itemObj.category.toLowerCase().indexOf("add-on") !== -1) {
+            pullToppings.push(itemObj);
+          } else {
+            pullMenu.push(itemObj);
+          }
+        }
+      }
+
+      var sStockPull = ss.getSheetByName(OUTLET_CONFIG.stockSheet) || ss.getSheetByName("Master_Stok_Seblak") || ss.getSheetByName("Master_Stok");
+      var stDataPull = sStockPull ? sStockPull.getDataRange().getValues() : [];
+      var pullStock = [];
+      for (var sp = 1; sp &lt; stDataPull.length; sp++) {
+        var rs = stDataPull[sp];
+        if (rs[0] || rs[1]) {
+          pullStock.push({
+            id: String(rs[0] || ""),
+            name: String(rs[1] || ""),
+            unit: String(rs[2] || "porsi"),
+            qty: Number(rs[3] || 0),
+            low: Number(rs[4] || 10)
+          });
+        }
+      }
+
+      var sSalesPull = ss.getSheetByName(OUTLET_CONFIG.salesSheet) || ss.getSheetByName("Penjualan_Seblak") || ss.getSheetByName("Penjualan");
+      var slDataPull = sSalesPull ? sSalesPull.getDataRange().getValues() : [];
+      var pullSales = [];
+      for (var sl = 1; sl &lt; slDataPull.length; sl++) {
+        var rsl = slDataPull[sl];
+        var txIdPull = String(rsl[1] || "").trim();
+        if (txIdPull && txIdPull !== "-" && txIdPull.toUpperCase().indexOf("ID") === -1) {
+          var rawTimePull = rsl[0];
+          var fmtTimePull = (rawTimePull instanceof Date)
+            ? Utilities.formatDate(rawTimePull, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss")
+            : String(rawTimePull || "");
+          pullSales.push({
+            time: fmtTimePull,
+            id: txIdPull,
+            cashierName: String(rsl[4] || "Kasir"),
+            orderTypeName: String(rsl[5] || "Dine-In"),
+            customerName: String(rsl[6] || "-"),
+            paymentMethodName: String(rsl[8] || "Tunai"),
+            subtotal: Number(rsl[9] || 0),
+            discount: Number(rsl[10] || 0),
+            total: Number(rsl[11] || 0),
+            itemsSummary: String(rsl[12] || ""),
+            isVoid: String(rsl[13] || "").toUpperCase().indexOf("VOID") !== -1 || String(rsl[13] || "").toUpperCase().indexOf("BATAL") !== -1
+          });
+        }
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        outlet: OUTLET_CONFIG.name,
+        stock: pullStock,
+        menu: pullMenu,
+        toppings: pullToppings,
+        sales: pullSales.reverse()
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (action === "menu") {
+      var sMenu = ss.getSheetByName(OUTLET_CONFIG.menuSheet);
+      var mData = sMenu.getDataRange().getValues();
+      var menuList = [];
+      for (var i = 1; i &lt; mData.length; i++) {
+        var r = mData[i];
+        if (r[0] || r[1]) {
+          menuList.push({
+            id: String(r[0] || ""),
+            name: String(r[1] || ""),
+            category: String(r[2] || "Umum"),
+            price: Number(r[3] || 0),
+            stockId: String(r[4] === "-" ? "" : (r[4] || "")),
+            usage: Number(r[5] || 1)
+          });
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        outlet: OUTLET_CONFIG.name,
+        type: "menu",
+        count: menuList.length,
+        data: menuList
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Tarik Transaksi Penjualan dari Spreadsheet ke POS (Sinkronisasi Multi-Device)
+    if (action === "sales" || action === "today_sales" || action === "sync_device") {
+      var sSales = ss.getSheetByName(OUTLET_CONFIG.salesSheet) || ss.getSheetByName("Penjualan");
+      var salesData = sSales ? sSales.getDataRange().getValues() : [];
+      var salesList = [];
+      for (var s = 1; s &lt; salesData.length; s++) {
+        var r = salesData[s];
+        var txId = String(r[1] || "").trim();
+        if (txId && txId !== "-" && txId.toUpperCase().indexOf("ID") === -1) {
+          var rawTimeVal = r[0];
+          var formattedTxTime = (rawTimeVal instanceof Date)
+            ? Utilities.formatDate(rawTimeVal, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss")
+            : String(rawTimeVal || "");
+          salesList.push({
+            time: formattedTxTime,
+            id: txId,
+            branchId: String(r[2] || OUTLET_CONFIG.code || ""),
+            branchName: String(r[3] || OUTLET_CONFIG.name || ""),
+            cashierName: String(r[4] || ""),
+            orderTypeName: String(r[5] || "Dine In"),
+            customerName: String(r[6] || ""),
+            tableNo: String(r[7] || ""),
+            paymentMethodName: String(r[8] || "Tunai"),
+            subtotal: Number(r[9] || 0),
+            discount: Number(r[10] || 0),
+            total: Number(r[11] || 0),
+            itemSummary: String(r[12] || ""),
+            isVoid: String(r[13] || "").toUpperCase().indexOf("VOID") !== -1 || String(r[13] || "").toUpperCase().indexOf("BATAL") !== -1
+          });
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        outlet: OUTLET_CONFIG.name,
+        type: "sales",
+        count: salesList.length,
+        data: salesList
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Default: Ambil Stok
+    var sStock = ss.getSheetByName(OUTLET_CONFIG.stockSheet) ||
+                 ss.getSheetByName("Master_Stok") ||
+                 ss.getSheetByName("Master_Stok_Papada") ||
+                 ss.getSheetByName("Master_Stok_Seblak") ||
+                 ss.getSheetByName("Master_Stok_Sorelia") ||
+                 ss.getSheetByName("Master_Stok_NDS") ||
+                 ss.getSheetByName("Stok");
+    if (!sStock) {
+      setupSheets();
+      sStock = ss.getSheetByName(OUTLET_CONFIG.stockSheet) || ss.getSheetByName("Master_Stok") || ss.getSheets()[0];
+    }
+    var sData = sStock ? sStock.getDataRange().getValues() : [];
+    var stockList = [];
+    for (var j = 1; j &lt; sData.length; j++) {
+      var row = sData[j];
+      if (row[0] || row[1]) {
+        stockList.push({
+          id: String(row[0] || ""),
+          name: String(row[1] || ""),
+          unit: String(row[2] || "pcs"),
+          qty: Number(row[3] || 0),
+          low: Number(row[4] || 5),
+          status: String(row[5] || "AMAN"),
+          cost: Number(row[6] || 0)
+        });
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      outlet: OUTLET_CONFIG.name,
+      type: "stock",
+      count: stockList.length,
+      data: stockList
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      error: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * ENDPOINT PREFLIGHT: Mengizinkan request OPTIONS dari browser tanpa blokir CORS
+ */
+function doOptions(e) {
+  return ContentService.createTextOutput("")
+    .setMimeType(ContentService.MimeType.TEXT);
+}
+
+/**
+ * UJI KONEKSI CEPAT DARI EDITOR APPS SCRIPT
+ * Pilih fungsi ini lalu klik Jalankan (Run) untuk memastikan 7 sheet ERP telah terbentuk sempurna
+ */
+function testConnection() {
+  setupSheets();
+  Logger.log("✅ Koneksi & struktur 7 Lembar Kerja ERP Backoffice " + OUTLET_CONFIG.name + " siap 100%!");
+}
+
+/**
+ * ENDPOINT POST: Menerima transaksi penjualan otomatis dari kasir & update stok
+ * Dilengkapi LockService anti-race condition & proteksi anti-duplikasi nota
+ * KHUSUS BUNDLE 3IN1: Memotong stok kaleng varian biasa (Cumi/Roa/Tuna/Teri/Cakalang) + Kardus Box Trio!
+ */
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  try {
+    // Kunci proses selama maksimal 15 detik agar aman jika ada banyak transaksi masuk serentak
+    lock.tryLock(15000);
+
+    setupSheets();
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sSales = ss.getSheetByName(OUTLET_CONFIG.salesSheet);
+    var sToday = ss.getSheetByName(OUTLET_CONFIG.todaySalesSheet);
+    var sClosing = ss.getSheetByName(OUTLET_CONFIG.closingSheet);
+    var sStock = ss.getSheetByName(OUTLET_CONFIG.stockSheet);
+
+    var rawContent = e.postData.contents;
+    var payload = JSON.parse(rawContent);
+
+    // KASUS 1: Penjualan Nota Tunggal dari Kasir
+    if (payload.type === "sale" && payload.data) {
+      var t = payload.data;
+
+      // Proteksi Anti-Duplikasi: Cek apakah ID Transaksi ini sudah pernah masuk dalam 50 nota terakhir
+      var lastSalesRow = sSales ? sSales.getLastRow() : 0;
+      if (lastSalesRow &gt; 1 && t.id) {
+        var checkRows = Math.min(50, lastSalesRow - 1);
+        var recentIds = sSales.getRange(lastSalesRow - checkRows + 1, 2, checkRows, 1).getValues();
+        for (var cIdx = 0; cIdx &lt; recentIds.length; cIdx++) {
+          if (String(recentIds[cIdx][0]).trim() === String(t.id).trim()) {
+            return ContentService.createTextOutput(JSON.stringify({
+              status: "success",
+              message: "Nota " + t.id + " sudah tercatat di Google Sheets (diabaikan untuk cegah duplikasi)",
+              alreadyRecorded: true
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+      }
+
+      var itemDetails = (t.items || []).map(function(item) {
+        var str = item.qty + "x " + item.name;
+        if (item.spiceName) str += " (" + item.spiceName + ")";
+        if (item.note) str += " [" + item.note + "]";
+        if (item.toppings && item.toppings.length &gt; 0) {
+          str += " + " + item.toppings.map(function(tp) { return tp.name; }).join(", ");
+        }
+        return str;
+      }).join("; ");
+
+      var dateObj = new Date(t.time || new Date());
+      var formattedDate = Utilities.formatDate(dateObj, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss");
+
+      // Catat ke Sheet Riwayat Penjualan (Ledger Transaksi)
+      sSales.appendRow([
+        formattedDate,
+        t.id || "-",
+        OUTLET_CONFIG.code,
+        payload.branchName || OUTLET_CONFIG.name,
+        t.cashierName || "-",
+        t.orderTypeName || t.orderType || "Dine In",
+        t.customerName || "-",
+        t.tableNo || "-",
+        t.paymentMethodName || "-",
+        t.subtotal || t.total || 0,
+        t.discount || 0,
+        t.total || 0,
+        itemDetails,
+        t.isVoid ? "DIBATALKAN (VOID)" : "SELESAI"
+      ]);
+
+      // Catat juga ke Sheet Penjualan_Hari_Ini (Shift Berjalan Sebelum Close Shift)
+      if (sToday) {
+        sToday.appendRow([
+          formattedDate,
+          t.id || "-",
+          t.cashierName || "-",
+          t.orderTypeName || t.orderType || "Dine In",
+          t.customerName || "-",
+          t.tableNo || "-",
+          t.paymentMethodName || "-",
+          t.subtotal || t.total || 0,
+          t.discount || 0,
+          t.total || 0,
+          itemDetails,
+          t.isVoid ? "DIBATALKAN (VOID)" : "SELESAI"
+        ]);
+
+        var tRow = sToday.getLastRow();
+        sToday.getRange(tRow, 8, 1, 3).setNumberFormat("Rp #,##0");
+        sToday.getRange(tRow, 1, 1, 2).setHorizontalAlignment("center");
+        sToday.getRange(tRow, 12).setHorizontalAlignment("center");
+        sToday.getRange("J2").setValue(formattedDate);
+      }
+
+      // Pengurangan Stok Otomatis di Google Sheets
+      if (!t.isVoid && sStock && t.items) {
+        var stockData = sStock.getDataRange().getValues();
+        var stockRowMap = {};
+        for (var sIdx = 1; sIdx &lt; stockData.length; sIdx++) {
+          var sId = String(stockData[sIdx][0]).trim().toLowerCase();
+          var sName = String(stockData[sIdx][1]).trim().toLowerCase();
+          if (sId) stockRowMap[sId] = sIdx + 1;
+          if (sName) stockRowMap[sName] = sIdx + 1;
+        }
+
+        // Iterasi tiap item dalam nota
+        for (var i = 0; i &lt; t.items.length; i++) {
+          var itm = t.items[i];
+          var isBundle = (itm.id === "dp_bundle3in1") || 
+                         (itm.name && itm.name.toLowerCase().indexOf("bundle") !== -1);
+
+          // LOGIKA KHUSUS BUNDLE 3IN1 (DAPUR PAPADA):
+          // Ambil stok dari varian kaleng biasa yang dipilih + kardus hampers trio
+          if (isBundle) {
+            // A. Jika kasir mengirim bundleVariants terstruktur:
+            if (itm.bundleVariants && itm.bundleVariants.length &gt; 0) {
+              for (var bvIdx = 0; bvIdx &lt; itm.bundleVariants.length; bvIdx++) {
+                var bv = itm.bundleVariants[bvIdx];
+                var bvRow = stockRowMap[(bv.stockId || "").toLowerCase()] || 
+                            stockRowMap[(bv.name || "").toLowerCase()];
+                if (bvRow) {
+                  var cQ = Number(sStock.getRange(bvRow, 4).getValue() || 0);
+                  var dQ = Number(bv.qty || 1) * Number(itm.qty || 1);
+                  sStock.getRange(bvRow, 4).setValue(Math.max(0, cQ - dQ));
+                }
+              }
+            } 
+            // B. Parse dari teks catatan nota kasir (contoh: "Bundle 3in1: [Cumi asin pedas + Roa pedas + Tuna asap pedas]")
+            else if (itm.note && itm.note.indexOf("Bundle 3in1:") !== -1) {
+              var vMatch = itm.note.match(/Bundle 3in1:s*[(.*?)]/);
+              if (vMatch && vMatch[1]) {
+                var varNames = vMatch[1].split("+");
+                for (var vn = 0; vn &lt; varNames.length; vn++) {
+                  var cleanName = varNames[vn].replace(/\(Kode:.*?\)/, "").trim().toLowerCase();
+                  var matchedRow = null;
+                  for (var key in stockRowMap) {
+                    if (key && (key.indexOf(cleanName) !== -1 || cleanName.indexOf(key) !== -1)) {
+                      matchedRow = stockRowMap[key];
+                      break;
+                    }
+                  }
+                  if (matchedRow) {
+                    var curKaleng = Number(sStock.getRange(matchedRow, 4).getValue() || 0);
+                    sStock.getRange(matchedRow, 4).setValue(Math.max(0, curKaleng - Number(itm.qty || 1)));
+                  }
+                }
+              }
+            } 
+            // C. Fallback default: potong 3 kaleng varian standar (Cumi, Roa, Tuna) 1 kaleng per bundle
+            else {
+              var defV = ["dpst_cumi", "dpst_roa", "dpst_tuna"];
+              for (var d = 0; d &lt; defV.length; d++) {
+                var dRow = stockRowMap[defV[d]];
+                if (dRow) {
+                  var defCur = Number(sStock.getRange(dRow, 4).getValue() || 0);
+                  sStock.getRange(dRow, 4).setValue(Math.max(0, defCur - Number(itm.qty || 1)));
+                }
+              }
+            }
+
+            // Potong juga kardus box hampers trio 3in1 jika ada
+            var boxRow = stockRowMap["dpst_boxbundle"] || stockRowMap["kardus box hampers trio 3in1"];
+            if (boxRow) {
+              var curBox = Number(sStock.getRange(boxRow, 4).getValue() || 0);
+              sStock.getRange(boxRow, 4).setValue(Math.max(0, curBox - Number(itm.qty || 1)));
+            }
+          } else {
+            // Pemotongan Stok Menu Biasa / Satuan
+            var targetRow = stockRowMap[(itm.stockId || "").toLowerCase()] || stockRowMap[itm.name.toLowerCase()];
+            if (targetRow) {
+              var currentQty = Number(sStock.getRange(targetRow, 4).getValue() || 0);
+              var deductQty = Number(itm.qty || 1) * Number(itm.usage || 1);
+              sStock.getRange(targetRow, 4).setValue(Math.max(0, currentQty - deductQty));
+            }
+          }
+        }
+      }
+    }
+
+    // KASUS 2: Bulk Penjualan (Ekspor Seluruh Transaksi Device ke Spreadsheet)
+    else if (payload.type === "bulk_sales" && Array.isArray(payload.data)) {
+      var lastSalesRow = sSales ? sSales.getLastRow() : 0;
+      var existingIdMap = {};
+      if (lastSalesRow &gt; 1) {
+        var checkCount = Math.min(500, lastSalesRow - 1);
+        var existingIds = sSales.getRange(lastSalesRow - checkCount + 1, 2, checkCount, 1).getValues();
+        for (var eI = 0; eI &lt; existingIds.length; eI++) {
+          var eVal = String(existingIds[eI][0]).trim();
+          if (eVal) existingIdMap[eVal] = true;
+        }
+      }
+
+      var insertedCount = 0;
+      for (var b = 0; b &lt; payload.data.length; b++) {
+        var tx = payload.data[b];
+        if (tx.id && existingIdMap[String(tx.id).trim()]) {
+          continue; // Lewati jika sudah tercatat di spreadsheet untuk cegah duplikasi
+        }
+
+        var details = (tx.items || []).map(function(item) {
+          var str = item.qty + "x " + item.name;
+          if (item.spiceName) str += " (" + item.spiceName + ")";
+          if (item.note) str += " [" + item.note + "]";
+          if (item.toppings && item.toppings.length &gt; 0) {
+            str += " + " + item.toppings.map(function(tp) { return tp.name; }).join(", ");
+          }
+          return str;
+        }).join("; ");
+
+        var dObj = new Date(tx.time || new Date());
+        var fDate = Utilities.formatDate(dObj, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss");
+
+        sSales.appendRow([
+          fDate,
+          tx.id || "-",
+          OUTLET_CONFIG.code,
+          payload.branchName || OUTLET_CONFIG.name,
+          tx.cashierName || "-",
+          tx.orderTypeName || tx.orderType || "-",
+          tx.customerName || "-",
+          tx.tableNo || "-",
+          tx.paymentMethodName || "-",
+          tx.subtotal || tx.total || 0,
+          tx.discount || 0,
+          tx.total || 0,
+          details,
+          tx.isVoid ? "DIBATALKAN (VOID)" : "SELESAI"
+        ]);
+        insertedCount++;
+      }
+      updateTodayActiveSales();
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Berhasil mengekspor " + insertedCount + " transaksi dari device ke Spreadsheet",
+        inserted: insertedCount
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // =========================================================
+    // 3. REKAPITULASI CLOSING HARIAN (CLOSING SHIFT)
+    // =========================================================
+    else if (payload.type === "closing" && payload.data && sClosing) {
+      var c = payload.data;
+      var cDate = c.dateKey || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+      var cOpen = c.openTime ? Utilities.formatDate(new Date(c.openTime), Session.getScriptTimeZone(), "HH:mm") : "-";
+      var cClose = c.closeTime ? Utilities.formatDate(new Date(c.closeTime), Session.getScriptTimeZone(), "HH:mm") : Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "HH:mm");
+      var diff = Number(c.cashDifference || 0);
+      var statusDiff = diff === 0 ? "SESUAI" : (diff &lt; 0 ? "KURANG" : "LEBIH");
+      var monthPeriod = cDate.substring(0, 7);
+
+      var cashTotal = 0;
+      var nonCashTotal = 0;
+      if (c.paymentBreakdown) {
+        for (var pKey in c.paymentBreakdown) {
+          var pVal = Number(c.paymentBreakdown[pKey] || 0);
+          if (pKey.toLowerCase().indexOf("tunai") !== -1 || pKey.toLowerCase().indexOf("cash") !== -1) {
+            cashTotal += pVal;
+          } else {
+            nonCashTotal += pVal;
+          }
+        }
+      }
+
+      var exp = Number(c.totalCashExpenses || 0);
+      var inc = Number(c.totalCashIncome || 0);
+      var init = Number(c.initialCash || 0);
+      var expectedCash = init + cashTotal + inc - exp;
+      var actualCash = c.actualCash !== undefined ? Number(c.actualCash) : expectedCash;
+
+      sClosing.appendRow([
+        cDate,
+        cOpen,
+        cClose,
+        c.shiftName || "Shift Kasir",
+        c.cashierName || "-",
+        c.txCount || 0,
+        c.totalSales || 0,
+        cashTotal,
+        nonCashTotal,
+        init,
+        exp,
+        inc,
+        expectedCash,
+        actualCash,
+        diff,
+        statusDiff,
+        c.cashVarianceNote || "-",
+        monthPeriod
+      ]);
+
+      var closeRow = sClosing.getLastRow();
+      sClosing.getRange(closeRow, 7, 1, 9).setNumberFormat("Rp #,##0");
+      sClosing.getRange(closeRow, 6).setNumberFormat("#,##0");
+      sClosing.getRange(closeRow, 1, 1, 5).setHorizontalAlignment("center");
+      sClosing.getRange(closeRow, 16).setHorizontalAlignment("center");
+      sClosing.getRange(closeRow, 18).setHorizontalAlignment("center");
+
+      // Berikan tanda visual di lembar kerja Penjualan_Hari_Ini bahwa shift ini telah di-close
+      if (sToday) {
+        var noteClose = "🔒 [CLOSE SHIFT SELESAI] Kasir: " + (c.cashierName || "Kasir") + 
+          " | Omzet: Rp " + (c.totalSales || 0) + 
+          " | Kas Fisik: Rp " + actualCash + 
+          " | Selisih: Rp " + diff + " (" + statusDiff + ")";
+        sToday.appendRow([
+          Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss"),
+          "CLOSE-SHIFT",
+          c.cashierName || "-",
+          c.shiftName || "Shift Kasir",
+          "-", "-", "-", 0, 0, c.totalSales || 0,
+          noteClose,
+          "CLOSED"
+        ]);
+        var tagRow = sToday.getLastRow();
+        sToday.getRange(tagRow, 1, 1, 12).setBackground("#FEF3C7").setFontColor("#92400E").setFontWeight("bold");
+      }
+    }
+
+    // =========================================================
+    // 4. SINKRONISASI MASSAL CLOSING HARIAN (BULK CLOSINGS)
+    // =========================================================
+    else if (payload.type === "bulk_closings" && Array.isArray(payload.data) && sClosing) {
+      for (var bc = 0; bc &lt; payload.data.length; bc++) {
+        var cItem = payload.data[bc];
+        var bcDate = cItem.dateKey || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+        var bcOpen = cItem.openTime ? Utilities.formatDate(new Date(cItem.openTime), Session.getScriptTimeZone(), "HH:mm") : "-";
+        var bcClose = cItem.closeTime ? Utilities.formatDate(new Date(cItem.closeTime), Session.getScriptTimeZone(), "HH:mm") : "-";
+        var bcDiff = Number(cItem.cashDifference || 0);
+        var bcStatus = bcDiff === 0 ? "SESUAI" : (bcDiff &lt; 0 ? "KURANG" : "LEBIH");
+        var bcMonth = bcDate.substring(0, 7);
+
+        var bcCash = 0;
+        var bcNonCash = 0;
+        if (cItem.paymentBreakdown) {
+          for (var bk in cItem.paymentBreakdown) {
+            var bVal = Number(cItem.paymentBreakdown[bk] || 0);
+            if (bk.toLowerCase().indexOf("tunai") !== -1 || bk.toLowerCase().indexOf("cash") !== -1) {
+              bcCash += bVal;
+            } else {
+              bcNonCash += bVal;
+            }
+          }
+        }
+        var bcExp = Number(cItem.totalCashExpenses || 0);
+        var bcInc = Number(cItem.totalCashIncome || 0);
+        var bcInit = Number(cItem.initialCash || 0);
+        var bcExpected = bcInit + bcCash + bcInc - bcExp;
+        var bcActual = cItem.actualCash !== undefined ? Number(cItem.actualCash) : bcExpected;
+
+        sClosing.appendRow([
+          bcDate,
+          bcOpen,
+          bcClose,
+          cItem.shiftName || "Shift Kasir",
+          cItem.cashierName || "-",
+          cItem.txCount || 0,
+          cItem.totalSales || 0,
+          bcCash,
+          bcNonCash,
+          bcInit,
+          bcExp,
+          bcInc,
+          bcExpected,
+          bcActual,
+          bcDiff,
+          bcStatus,
+          cItem.cashVarianceNote || "-",
+          bcMonth
+        ]);
+
+        var bRow = sClosing.getLastRow();
+        sClosing.getRange(bRow, 7, 1, 9).setNumberFormat("Rp #,##0");
+        sClosing.getRange(bRow, 6).setNumberFormat("#,##0");
+        sClosing.getRange(bRow, 1, 1, 5).setHorizontalAlignment("center");
+        sClosing.getRange(bRow, 16).setHorizontalAlignment("center");
+        sClosing.getRange(bRow, 18).setHorizontalAlignment("center");
+      }
+    }
+
+    // =========================================================
+    // 5.5. CATAT PEMBELIAN / KULAKAN BAHAN BAKU (PURCHASES)
+    // =========================================================
+    else if (payload.type === "purchase" && payload.data) {
+      var p = payload.data;
+      var sPurchases = ss.getSheetByName("Riwayat_Pembelian");
+      if (!sPurchases) {
+        sPurchases = ss.insertSheet("Riwayat_Pembelian");
+        sPurchases.appendRow([
+          "Tanggal & Waktu",
+          "ID Pembelian",
+          "Nama Bahan Baku",
+          "Jumlah Masuk",
+          "Satuan",
+          "Total Biaya (Rp)",
+          "Harga per Unit (Rp)",
+          "Supplier / Toko",
+          "Catatan"
+        ]);
+        var pHeaders = sPurchases.getRange(1, 1, 1, 9);
+        pHeaders.setFontWeight("bold").setBackground("#065F46").setFontColor("#FFFFFF").setHorizontalAlignment("center");
+        sPurchases.setFrozenRows(1);
+      }
+      var pDate = Utilities.formatDate(new Date(p.time || new Date()), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss");
+      sPurchases.appendRow([
+        pDate,
+        p.id || ("PO-" + Date.now()),
+        p.stockName || "-",
+        Number(p.qty || 0),
+        p.unit || "unit",
+        Number(p.totalCost || 0),
+        Number(p.unitCost || 0),
+        p.supplier || "-",
+        p.note || "-"
+      ]);
+
+      // Tambah stok di Master_Stok jika ada
+      if (sStock && p.stockName) {
+        var stkValues = sStock.getDataRange().getValues();
+        for (var sv = 1; sv &lt; stkValues.length; sv++) {
+          var sRowName = String(stkValues[sv][1] || "").toLowerCase();
+          var sRowId = String(stkValues[sv][0] || "").toLowerCase();
+          if (sRowName === String(p.stockName).toLowerCase() || (p.stockId && sRowId === String(p.stockId).toLowerCase())) {
+            var curQty = Number(sStock.getRange(sv + 1, 4).getValue() || 0);
+            var updatedStockQty = curQty + Number(p.qty || 0);
+            sStock.getRange(sv + 1, 4).setValue(updatedStockQty);
+            if (p.unitCost && Number(p.unitCost) &gt; 0) {
+              sStock.getRange(sv + 1, 7).setValue(Number(p.unitCost)); // update cost
+            }
+            break;
+          }
+        }
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Pembelian " + p.stockName + " berhasil dicatat dan stok bertambah",
+        purchaseId: p.id
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // =========================================================
+    // 5. SINKRONISASI STOK MASSAL DARI POS (BULK STOCK SYNC)
+    // =========================================================
+    else if ((payload.type === "bulk_stock" || payload.type === "stock_sync") && (Array.isArray(payload.data) || Array.isArray(payload.stockItems)) && sStock) {
+      var stockItems = Array.isArray(payload.data) ? payload.data : (Array.isArray(payload.stockItems) ? payload.stockItems : []);
+      var stockData = sStock.getDataRange().getValues();
+      var idToRow = {};
+      var nameToRow = {};
+      
+      for (var rIdx = 1; rIdx &lt; stockData.length; rIdx++) {
+        var existingId = String(stockData[rIdx][0] || "").trim().toLowerCase();
+        var existingName = String(stockData[rIdx][1] || "").trim().toLowerCase();
+        if (existingId) idToRow[existingId] = rIdx + 1;
+        if (existingName) nameToRow[existingName] = rIdx + 1;
+      }
+
+      var updatedCount = 0;
+      var addedCount = 0;
+
+      for (var sI = 0; sI &lt; stockItems.length; sI++) {
+        var itm = stockItems[sI];
+        var sId = String(itm.id || "").trim().toLowerCase();
+        var sName = String(itm.name || "").trim().toLowerCase();
+        var targetRow = idToRow[sId] || nameToRow[sName];
+
+        if (!targetRow && sName) {
+          for (var exName in nameToRow) {
+            if (exName && (exName.indexOf(sName) !== -1 || sName.indexOf(exName) !== -1)) {
+              targetRow = nameToRow[exName];
+              break;
+            }
+          }
+        }
+
+        if (targetRow) {
+          // Update nilai stok yang sudah ada
+          sStock.getRange(targetRow, 4).setValue(Number(itm.qty !== undefined ? itm.qty : 0));
+          if (itm.low !== undefined) sStock.getRange(targetRow, 5).setValue(Number(itm.low));
+          if (itm.unit) sStock.getRange(targetRow, 3).setValue(String(itm.unit));
+          if (itm.cost) sStock.getRange(targetRow, 7).setValue(Number(itm.cost));
+          
+          // Perbarui formula status, aset & rekomendasi (pemisah titik koma ';')
+          sStock.getRange(targetRow, 6).setValue('=IF(D' + targetRow + '&lt;=0; "HABIS"; IF(D' + targetRow + '&lt;=E' + targetRow + '; "MENIPIS"; "AMAN"))');
+          sStock.getRange(targetRow, 8).setValue('=D' + targetRow + '*G' + targetRow);
+          sStock.getRange(targetRow, 9).setValue('=IF(D' + targetRow + '&lt;=E' + targetRow + '; "ORDER SEKARANG (" & (E' + targetRow + '*3 - D' + targetRow + ') & " " & C' + targetRow + ' & ")"; "STOK CUKUP")');
+          updatedCount++;
+        } else {
+          // Tambahkan baris stok baru jika belum terdaftar di spreadsheet
+          var newRow = sStock.getLastRow() + 1;
+          var unitVal = itm.unit || "pcs";
+          var qtyVal = Number(itm.qty !== undefined ? itm.qty : 0);
+          var lowVal = Number(itm.low !== undefined ? itm.low : 5);
+          var costVal = Number(itm.cost || 10000);
+          sStock.appendRow([
+            itm.id || ("item_" + Date.now()),
+            itm.name || "Bahan Baru",
+            unitVal,
+            qtyVal,
+            lowVal,
+            '=IF(D' + newRow + '&lt;=0; "HABIS"; IF(D' + newRow + '&lt;=E' + newRow + '; "MENIPIS"; "AMAN"))',
+            costVal,
+            '=D' + newRow + '*G' + newRow,
+            '=IF(D' + newRow + '&lt;=E' + newRow + '; "ORDER SEKARANG (" & (E' + newRow + '*3 - D' + newRow + ') & " " & C' + newRow + ' & ")"; "STOK CUKUP")',
+            itm.notes || "-"
+          ]);
+          addedCount++;
+        }
+      }
+
+      if (sStock.getMaxRows() &gt; 1) {
+        sStock.getRange("G2:H" + sStock.getMaxRows()).setNumberFormat("Rp #,##0");
+        sStock.getRange("C2:F" + sStock.getMaxRows()).setHorizontalAlignment("center");
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Stok " + OUTLET_CONFIG.name + " berhasil disinkronkan: " + updatedCount + " diupdate, " + addedCount + " baru.",
+        updatedCount: updatedCount,
+        addedCount: addedCount
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // =========================================================
+    // 6. PENYESUAIAN STOK TUNGGAL (INLINE STOCK ADJUSTMENT)
+    // =========================================================
+    else if ((payload.type === "stock_update" || payload.type === "stock_adjustment") && payload.data && sStock) {
+      var itm = payload.data;
+      var sId = String(itm.id || "").trim().toLowerCase();
+      var sName = String(itm.name || "").trim().toLowerCase();
+      var stockData = sStock.getDataRange().getValues();
+      var foundRow = null;
+
+      for (var r = 1; r &lt; stockData.length; r++) {
+        var rowId = String(stockData[r][0] || "").trim().toLowerCase();
+        var rowName = String(stockData[r][1] || "").trim().toLowerCase();
+        if ((sId && rowId === sId) || (sName && rowName === sName) || (sName && rowName && (rowName.indexOf(sName) !== -1 || sName.indexOf(rowName) !== -1))) {
+          foundRow = r + 1;
+          break;
+        }
+      }
+
+      if (foundRow) {
+        var targetQty = Number(itm.newQty !== undefined ? itm.newQty : (itm.qty !== undefined ? itm.qty : 0));
+        sStock.getRange(foundRow, 4).setValue(targetQty);
+        sStock.getRange(foundRow, 6).setValue('=IF(D' + foundRow + '&lt;=0; "HABIS"; IF(D' + foundRow + '&lt;=E' + foundRow + '; "MENIPIS"; "AMAN"))');
+        sStock.getRange(foundRow, 8).setValue('=D' + foundRow + '*G' + foundRow);
+        sStock.getRange(foundRow, 9).setValue('=IF(D' + foundRow + '&lt;=E' + foundRow + '; "ORDER SEKARANG (" & (E' + foundRow + '*3 - D' + foundRow + ') & " " & C' + foundRow + ' & ")"; "STOK CUKUP")');
+        if (itm.note) {
+          sStock.getRange(foundRow, 10).setValue(itm.note);
+        }
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "success",
+          message: "Stok " + itm.name + " berhasil diupdate menjadi " + targetQty
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    // =========================================================
+    // 7. SINKRONISASI MASTER MENU & EXTRA TOPPING (DARI OWNER)
+    // =========================================================
+    else if ((payload.type === "sync_menu_toppings" || payload.type === "bulk_menu") && sMenu) {
+      var allItems = [];
+      if (Array.isArray(payload.menuItems)) {
+        for (var mi = 0; mi &lt; payload.menuItems.length; mi++) {
+          allItems.push(payload.menuItems[mi]);
+        }
+      }
+      if (Array.isArray(payload.toppingItems)) {
+        for (var ti = 0; ti &lt; payload.toppingItems.length; ti++) {
+          var top = payload.toppingItems[ti];
+          allItems.push({
+            id: top.id,
+            name: top.name,
+            category: "Extra Topping",
+            price: top.price,
+            stockId: top.stockId || "-",
+            usage: top.qtyUse || 1,
+            description: "Extra Topping / Add-on"
+          });
+        }
+      }
+      
+      if (allItems.length &gt; 0) {
+        var mExisting = sMenu.getDataRange().getValues();
+        var menuIdToRow = {};
+        for (var mr = 1; mr &lt; mExisting.length; mr++) {
+          var mId = String(mExisting[mr][0] || "").trim().toLowerCase();
+          if (mId) menuIdToRow[mId] = mr + 1;
+        }
+
+        for (var ai = 0; ai &lt; allItems.length; ai++) {
+          var item = allItems[ai];
+          var itemId = String(item.id || "").trim().toLowerCase();
+          var targetRow = menuIdToRow[itemId];
+          if (targetRow) {
+            sMenu.getRange(targetRow, 2).setValue(item.name);
+            sMenu.getRange(targetRow, 3).setValue(item.category || "Menu Utama");
+            sMenu.getRange(targetRow, 4).setValue(Number(item.price || 0));
+            sMenu.getRange(targetRow, 5).setValue(item.stockId || "-");
+            sMenu.getRange(targetRow, 6).setValue(Number(item.usage || 1));
+            if (item.description) {
+              sMenu.getRange(targetRow, 7).setValue(item.description);
+            }
+          } else {
+            sMenu.appendRow([
+              item.id || ("m_" + Date.now() + "_" + ai),
+              item.name,
+              item.category || "Menu Utama",
+              Number(item.price || 0),
+              item.stockId || "-",
+              Number(item.usage || 1),
+              item.description || ""
+            ]);
+          }
+        }
+        if (sMenu.getMaxRows() &gt; 1) {
+          sMenu.getRange("D2:D" + sMenu.getMaxRows()).setNumberFormat("Rp #,##0");
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Master Menu & Topping berhasil disinkronkan ke Spreadsheet",
+        count: allItems.length
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Perbarui otomatis Rekap Bulanan & Grafik Tren Penjualan
+    try {
+      updateMonthlyRecap();
+    } catch (eRecap) {}
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      message: "Data outlet " + OUTLET_CONFIG.name + " berhasil dicatat ke Google Sheets ERP",
+      timestamp: new Date().toISOString()
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    try {
+      lock.releaseLock();
+    } catch (eLock) {}
+  }
+}
+</textarea>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 pt-2 border-t border-stone-800">
+        <button onclick="saveOwnerCloudConfig()" class="flex-1 py-3 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-xs cursor-pointer">💾 Simpan Konfigurasi</button>
+        <button onclick="openSpreadsheetTab()" class="px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs cursor-pointer">📊 Buka Spreadsheet</button>
+        <button onclick="closeSecretCloudModal()" class="px-4 py-3 rounded-xl bg-stone-800 text-stone-300 font-bold text-xs cursor-pointer">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TAMBAH MENU BARU -->
+  <div id="addMenuModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#221712] border-2 border-amber-500/40 w-full max-w-md rounded-3xl p-5 text-white shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+        <h3 class="font-black text-base text-amber-300">+ Tambah Menu Seblak / Minuman Baru</h3>
+        <button onclick="closeAddMenuModal()" class="w-7 h-7 rounded-full bg-stone-800 text-xs font-black cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold uppercase text-stone-300 mb-1">Nama Menu:</label>
+          <input id="newMenuName" type="text" placeholder="Contoh: Seblak Seafood Spesial" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-stone-300 mb-1">Kategori:</label>
+            <input id="newMenuCat" type="text" placeholder="Menu Utama / Menu Baru / Minuman" value="Menu Utama" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-amber-400" />
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-stone-300 mb-1">Harga Jual (Rp):</label>
+            <input id="newMenuPrice" type="number" placeholder="Contoh: 18000" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-emerald-300 font-black text-sm focus:outline-none focus:border-amber-400" />
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-stone-300 mb-1">Estimasi HPP / COGS Modal (Rp):</label>
+          <input id="newMenuCogs" type="number" placeholder="Contoh: 8500" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-amber-300 font-black text-sm focus:outline-none focus:border-amber-400" />
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-stone-300 mb-1">Deskripsi / Isian Menu:</label>
+          <input id="newMenuDesc" type="text" placeholder="Contoh: Isian / pelengkap + udang, cumi, sosis..." class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white focus:outline-none focus:border-amber-400" />
+        </div>
+      </div>
+      <div class="flex gap-2 pt-2 border-t border-stone-800">
+        <button onclick="closeAddMenuModal()" class="px-4 py-2.5 rounded-xl bg-stone-800 text-stone-300 font-bold text-xs cursor-pointer">Batal</button>
+        <button onclick="submitNewMenu()" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer shadow-md">+ Simpan Menu Baru</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TAMBAH ADD-ON / TOPPING BARU -->
+  <div id="addToppingModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#221712] border-2 border-emerald-500/40 w-full max-w-md rounded-3xl p-5 text-white shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+        <h3 class="font-black text-base text-emerald-300">+ Tambah Extra Topping / Add-on Baru</h3>
+        <button onclick="closeAddToppingModal()" class="w-7 h-7 rounded-full bg-stone-800 text-xs font-black cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold uppercase text-stone-300 mb-1">Nama Add-on / Topping:</label>
+          <input id="newToppingName" type="text" placeholder="Contoh: Keju Mozzarella Melt" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-emerald-400" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-stone-300 mb-1">Harga Jual (Rp):</label>
+            <input id="newToppingPrice" type="number" placeholder="Contoh: 5000" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-emerald-300 font-black text-sm focus:outline-none focus:border-emerald-400" />
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-stone-300 mb-1">HPP / Modal (Rp):</label>
+            <input id="newToppingCogs" type="number" placeholder="Contoh: 2500" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-amber-300 font-black text-sm focus:outline-none focus:border-emerald-400" />
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2 pt-2 border-t border-stone-800">
+        <button onclick="closeAddToppingModal()" class="px-4 py-2.5 rounded-xl bg-stone-800 text-stone-300 font-bold text-xs cursor-pointer">Batal</button>
+        <button onclick="submitNewTopping()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs cursor-pointer shadow-md">+ Simpan Add-on Baru</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const NS = 'aroppos_seblak_v2_';
+    const BC_CHANNEL_NAME = 'seblak_brengos_sync';
+
+    // BROADCAST CHANNEL (INSTANT SUB-5MS SYNCHRONIZATION ACROSS TABS / WINDOWS)
+    const syncChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(BC_CHANNEL_NAME) : null;
+    if (syncChannel) {
+      syncChannel.onmessage = (event) => {
+        const payload = event.data || {};
+        if (payload.type === 'TRANSACTION_CREATED' || payload.type === 'TRANSACTION_VOIDED') {
+          txList = getLS('tx_' + todayStr(), txList);
+          stockList = getLS('stock', stockList);
+          renderAllOwnerViews();
+        } else if (payload.type === 'CLOSING_SUBMITTED') {
+          closingList = getLS('closings', closingList);
+          renderAllOwnerViews();
+        }
+      };
+    }
+
+    // CROSS-TAB STORAGE LISTENER (FALLBACK SUPPORT)
+    window.addEventListener('storage', (e) => {
+      if (e.key && e.key.startsWith(NS)) {
+        txList = getLS('tx_' + todayStr(), txList);
+        stockList = getLS('stock', stockList);
+        menuList = getLS('menu', menuList);
+        toppingList = getLS('toppings', toppingList);
+        purchaseList = getLS('purchases', purchaseList);
+        renderAllOwnerViews();
+      }
+    });
+
+    // DEFAULT MENU UTAMA & MINUMAN WITH OFFICIAL COGS / HPP
+    const DEFAULT_MENU = [
+      { id: 'sb_spesial', name: 'Seblak Spesial', price: 25000, cogs: 13500, category: 'Menu Utama', description: 'Isian / pelengkap + sosis 1, bakso 2, cilok 2, dumpling 1, ceker 1, tulang 1, cuanki lidah 1, siomay mini 4, jamur Enoki, pilus' },
+      { id: 'sb_ceker', name: 'Seblak Ceker', price: 15000, cogs: 7500, category: 'Menu Utama', description: 'Isian / pelengkap + ceker 2 bj' },
+      { id: 'sb_dumpling', name: 'Seblak Dumpling', price: 15000, cogs: 8000, category: 'Menu Utama', description: 'Isian / pelengkap + dumpling 2 bj' },
+      { id: 'sb_tulang', name: 'Seblak Tulang', price: 15000, cogs: 7500, category: 'Menu Utama', description: 'Isian / pelengkap + tulang 3 bj' },
+      { id: 'sb_cilok', name: 'Seblak Cilok', price: 13000, cogs: 5500, category: 'Menu Utama', description: 'Isian / pelengkap + cilok 4 bj' },
+      { id: 'sb_sosis', name: 'Seblak Sosis', price: 15000, cogs: 7000, category: 'Menu Utama', description: 'Isian / pelengkap + sosis 1 ½ bj' },
+      { id: 'sb_cuanki', name: 'Seblak Cuanki', price: 15000, cogs: 6500, category: 'Menu Utama', description: 'Isian / pelengkap + cuanki lidah 5 bj' },
+      { id: 'sb_bakso', name: 'Seblak Bakso', price: 15000, cogs: 7500, category: 'Menu Utama', description: 'Isian / pelengkap + bakso 3 bj' },
+      { id: 'sb_baci', name: 'Bakso Aci', price: 15000, cogs: 7000, category: 'Menu Utama', description: 'Cilok 5, cuanki lidah 2, siomay mini 10, cuanki tahu 2, mie, pilus, jeruk limau' },
+      { id: 'sb_pangsit_mie_jkt', name: 'Pangsit Mie Ayam Jakarta', price: 15000, cogs: 7500, category: 'Menu Baru', description: '★ Menu Baru: Pangsit Mie Ayam Jakarta' },
+      { id: 'sb_mie_ndoweh', name: 'Mie Ndoweh', price: 10000, cogs: 4500, category: 'Menu Baru', description: '★ Menu Baru: Pilihan Level 1, Level 2, Level 3, Level 4' }
+    ];
+
+    // DEFAULT 16 EXTRA TOPPINGS WITH OFFICIAL COGS / HPP
+    const DEFAULT_TOPPINGS = [
+      { id: 'top_pilus', name: 'Pilus', price: 2000, cogs: 800, stockId: 'st_pilus', qtyUse: 1 },
+      { id: 'top_enoki', name: 'Enoki', price: 2500, cogs: 1200, stockId: 'st_enoki', qtyUse: 1 },
+      { id: 'top_odeng', name: 'Odeng', price: 2500, cogs: 1200, stockId: 'st_odeng', qtyUse: 1 },
+      { id: 'top_dumpling', name: 'Dumpling', price: 2500, cogs: 1200, stockId: 'st_dumpling', qtyUse: 1 },
+      { id: 'top_cilok', name: 'Cilok (4 Biji)', price: 3000, cogs: 1200, stockId: 'st_cilok', qtyUse: 4 },
+      { id: 'top_cuankilidah', name: 'Cuanki Lidah', price: 3000, cogs: 1200, stockId: 'st_cuanki', qtyUse: 1 },
+      { id: 'top_sosis', name: 'Sosis', price: 3000, cogs: 1400, stockId: 'st4', qtyUse: 1 },
+      { id: 'top_batagormini', name: 'Batagor Mini (15 Biji)', price: 3000, cogs: 1200, stockId: 'st_siomay_mini', qtyUse: 15 },
+      { id: 'top_telur_utuh', name: 'Telur Utuh', price: 4000, cogs: 2000, stockId: 'st_telur', qtyUse: 1 },
+      { id: 'top_bakso', name: 'Bakso', price: 4000, cogs: 2000, stockId: 'st3', qtyUse: 1 },
+      { id: 'top_chikuwa', name: 'Chikuwa (2 Biji)', price: 4000, cogs: 2000, stockId: 'st_chikuwa', qtyUse: 2 },
+      { id: 'top_kembangcumi', name: 'Kembang Cumi', price: 4000, cogs: 2000, stockId: 'st_kembang_cumi', qtyUse: 1 },
+      { id: 'top_crab', name: 'Crab Stik', price: 4000, cogs: 2000, stockId: 'st_crab_stik', qtyUse: 1 },
+      { id: 'top_ceker', name: 'Ceker (2 Biji)', price: 5000, cogs: 2500, stockId: 'st2', qtyUse: 2 },
+      { id: 'top_tulang', name: 'Tulang', price: 5000, cogs: 2500, stockId: 'st_tulang', qtyUse: 1 },
+      { id: 'top_sosisbesar', name: 'Sosis Besar', price: 6000, cogs: 3000, stockId: 'st_sosis_besar', qtyUse: 1 }
+    ];
+
+    // DEFAULT STOK BAHAN BAKU RESMI
+    const DEFAULT_STOCK = [
+      { id: 'st1', name: 'Isian / Pelengkap Seblak (Kerupuk & Bumbu)', unit: 'porsi', qty: 120, low: 20, cost: 3500 },
+      { id: 'st2', name: 'Ceker Ayam', unit: 'biji', qty: 100, low: 15, cost: 1250 },
+      { id: 'st3', name: 'Bakso', unit: 'biji', qty: 100, low: 20, cost: 700 },
+      { id: 'st4', name: 'Sosis', unit: 'biji', qty: 100, low: 20, cost: 800 },
+      { id: 'st_sosis_besar', name: 'Sosis Besar', unit: 'biji', qty: 50, low: 10, cost: 2500 },
+      { id: 'st_cilok', name: 'Cilok', unit: 'biji', qty: 200, low: 30, cost: 300 },
+      { id: 'st_dumpling', name: 'Dumpling', unit: 'biji', qty: 80, low: 15, cost: 1200 },
+      { id: 'st_tulang', name: 'Tulang Ayam', unit: 'biji', qty: 90, low: 15, cost: 800 },
+      { id: 'st_cuanki', name: 'Cuanki Lidah', unit: 'biji', qty: 120, low: 20, cost: 300 },
+      { id: 'st_cuanki_tahu', name: 'Cuanki Tahu', unit: 'biji', qty: 80, low: 15, cost: 400 },
+      { id: 'st_siomay_mini', name: 'Siomay / Batagor Mini', unit: 'biji', qty: 300, low: 50, cost: 100 },
+      { id: 'st_enoki', name: 'Jamur Enoki', unit: 'porsi', qty: 60, low: 10, cost: 1200 },
+      { id: 'st_pilus', name: 'Pilus', unit: 'porsi', qty: 100, low: 20, cost: 800 },
+      { id: 'st_odeng', name: 'Odeng', unit: 'porsi', qty: 60, low: 10, cost: 1200 },
+      { id: 'st_telur', name: 'Telur Utuh', unit: 'butir', qty: 60, low: 12, cost: 2000 },
+      { id: 'st_chikuwa', name: 'Chikuwa', unit: 'biji', qty: 60, low: 12, cost: 1000 },
+      { id: 'st_kembang_cumi', name: 'Kembang Cumi', unit: 'porsi', qty: 50, low: 10, cost: 1500 },
+      { id: 'st_crab_stik', name: 'Crab Stik', unit: 'porsi', qty: 50, low: 10, cost: 1500 },
+      { id: 'st_mie_ayam', name: 'Porsi Pangsit Mie Ayam Jakarta', unit: 'porsi', qty: 60, low: 10, cost: 6500 },
+      { id: 'st_mie_ndoweh', name: 'Porsi Mie Ndoweh', unit: 'porsi', qty: 60, low: 10, cost: 4000 }
+    ];
+
+    // ZERO DATA LOSS PERSISTENCE: Synchronous LocalFirst Storage
+    function getLS(key, fallback) {
+      try {
+        const v = localStorage.getItem(NS + key);
+        return v ? JSON.parse(v) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+    function setLS(key, val) {
+      try {
+        localStorage.setItem(NS + key, JSON.stringify(val));
+      } catch (e) {
+        console.error('Storage quota exceeded or error', e);
+      }
+    }
+    function rp(n) { return 'Rp ' + Math.round(Number(n) || 0).toLocaleString('id-ID'); }
+    function todayStr() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
+    // STATE: Initialized instantly from persistent local storage
+    let cloudCfg = getLS('cloud_cfg', {
+      scriptUrl: "",
+      sheetUrl: "",
+      cashierName: 'Kasir Seblak Brengos',
+      ownerWa: '087898185988'
+    });
+    let menuList = getLS('menu', DEFAULT_MENU);
+    let toppingList = getLS('toppings', DEFAULT_TOPPINGS);
+    let stockList = getLS('stock', DEFAULT_STOCK);
+    let txList = getLS('tx_' + todayStr(), []);
+    let closingList = getLS('closings', []);
+    let purchaseList = getLS('purchases', []);
+
+    // Ensure all menu items have cogs property
+    menuList = menuList.map(m => {
+      if (m.cogs === undefined) {
+        const def = DEFAULT_MENU.find(x => x.id === m.id);
+        m.cogs = def ? def.cogs : Math.round(m.price * 0.5);
+      }
+      return m;
+    });
+    toppingList = toppingList.map(t => {
+      if (t.cogs === undefined) {
+        const def = DEFAULT_TOPPINGS.find(x => x.id === t.id);
+        t.cogs = def ? def.cogs : Math.round(t.price * 0.4);
+      }
+      return t;
+    });
+
+    function verifyPin() {
+      const val = document.getElementById('pinInput').value.trim();
+      if (val === '1111' || val === '8888' || val.toLowerCase() === 'seblak123') {
+        document.getElementById('loginGate').classList.add('hidden');
+        renderAllOwnerViews();
+        if (cloudCfg.scriptUrl) syncFromSpreadsheet(false);
+      } else {
+        document.getElementById('pinErr').classList.remove('hidden');
+      }
+    }
+
+    function switchOwnerTab(tab) {
+      ['dash','cogs','purchase','stock','menu','audit'].forEach(t => {
+        const el = document.getElementById('oview_' + t);
+        if (el) el.classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById('otab_' + t);
+        if (btn) {
+          btn.className = t === tab
+            ? 'px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold bg-[#B3261E] text-white cursor-pointer shadow-xs'
+            : 'px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer';
+        }
+      });
+      renderAllOwnerViews();
+    }
+
+    let activeMenuSubTab = 'main';
+    function switchMenuSubTab(sub) {
+      activeMenuSubTab = sub;
+      document.getElementById('menuSubTab_main').classList.toggle('hidden', sub !== 'main');
+      document.getElementById('menuSubTab_addon').classList.toggle('hidden', sub !== 'addon');
+      document.getElementById('subtab_main').className = sub === 'main'
+        ? 'px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer'
+        : 'px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer';
+      document.getElementById('subtab_addon').className = sub === 'addon'
+        ? 'px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer'
+        : 'px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer';
+    }
+
+    let activeCogsSubTab = 'menu';
+    function switchCogsSubTab(sub) {
+      activeCogsSubTab = sub;
+      document.getElementById('cogsGrid_menu').classList.toggle('hidden', sub !== 'menu');
+      document.getElementById('cogsGrid_addon').classList.toggle('hidden', sub !== 'addon');
+      document.getElementById('cogstab_menu').className = sub === 'menu'
+        ? 'px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer'
+        : 'px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer';
+      document.getElementById('cogstab_addon').className = sub === 'addon'
+        ? 'px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer'
+        : 'px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer';
+    }
+
+    // FAST ASYNC CLOUD SYNC (NON-BLOCKING WITH 5-SECOND TIMEOUT)
+    async function syncFromSpreadsheet(manual = false) {
+      txList = getLS('tx_' + todayStr(), txList);
+      stockList = getLS('stock', stockList);
+      menuList = getLS('menu', menuList);
+      toppingList = getLS('toppings', toppingList);
+      closingList = getLS('closings', closingList);
+      purchaseList = getLS('purchases', purchaseList);
+      renderAllOwnerViews();
+
+      if (!cloudCfg.scriptUrl) {
+        if (manual) alert('Info: URL Google Spreadsheet belum dikonfigurasi. Anda dapat mengaturnya dengan mengetuk teks hak cipta di bagian bawah.');
+        return;
+      }
+
+      const dot = document.getElementById('ownerSyncDot');
+      const txt = document.getElementById('ownerSyncText');
+      if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+      if (txt) txt.textContent = 'Menghubungkan...';
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      try {
+        const res = await fetch(cloudCfg.scriptUrl + '?action=pull&outletId=seblak&t=' + Date.now(), { signal: controller.signal });
+        clearTimeout(timeoutId);
+        const json = await res.json();
+
+        if (Array.isArray(json.stock) && json.stock.length > 0) {
+          stockList = json.stock.map(s => ({
+            id: String(s.id || s.ID_Bahan || ''),
+            name: String(s.name || s.Nama_Bahan || ''),
+            unit: String(s.unit || s.Satuan || 'porsi'),
+            qty: Number(s.qty ?? s.Stok_Saat_Ini ?? 0),
+            low: Number(s.low ?? s.Batas_Minimum ?? 10),
+            cost: Number(s.cost ?? s.HPP_Satuan ?? 0)
+          })).filter(s => s.name);
+          setLS('stock', stockList);
+        }
+
+        if (Array.isArray(json.menu) && json.menu.length > 0) {
+          json.menu.forEach(cm => {
+            const found = menuList.find(m => m.id === cm.id || m.name.toLowerCase() === String(cm.name || '').toLowerCase());
+            if (found) {
+              if (Number(cm.price) > 0) found.price = Number(cm.price);
+              if (Number(cm.cogs) > 0) found.cogs = Number(cm.cogs);
+              if (cm.description) found.description = cm.description;
+            } else if (cm.name) {
+              menuList.push({
+                id: cm.id || ('m_' + Date.now()),
+                name: cm.name,
+                category: cm.category || 'Menu Utama',
+                price: Number(cm.price || 0),
+                cogs: Number(cm.cogs || Math.round(Number(cm.price || 0) * 0.5)),
+                description: cm.description || ''
+              });
+            }
+          });
+          setLS('menu', menuList);
+        }
+
+        if (Array.isArray(json.sales) && json.sales.length > 0) {
+          const existingIds = new Set(txList.map(t => t.id));
+          const newRemote = json.sales.filter(s => !existingIds.has(s.id || s.ID_Transaksi));
+          if (newRemote.length > 0) {
+            newRemote.forEach(s => {
+              txList.unshift({
+                id: String(s.id || s.ID_Transaksi || 'SB'),
+                time: s.time || s.Waktu || new Date().toISOString(),
+                cashierName: s.cashierName || s.Kasir || 'Kasir Seblak',
+                customerName: s.customerName || s.Pelanggan || '-',
+                orderTypeName: s.orderTypeName || s.Tipe_Order || 'Dine-In',
+                paymentMethodName: s.paymentMethodName || s.Metode_Bayar || 'Tunai',
+                isCash: !String(s.paymentMethodName || s.Metode_Bayar || '').toLowerCase().includes('qris') && !String(s.paymentMethodName || s.Metode_Bayar || '').toLowerCase().includes('transfer'),
+                total: Number(s.total ?? s.Total_Bayar ?? 0),
+                isVoid: Boolean(s.isVoid || String(s.Status || '').toUpperCase().includes('VOID')),
+                itemsSummary: String(s.itemsSummary || s.Detail_Pesanan || ''),
+                items: Array.isArray(s.items) ? s.items : []
+              });
+            });
+            setLS('tx_' + todayStr(), txList);
+          }
+        }
+
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        if (txt) txt.textContent = 'Live Terhubung';
+        document.getElementById('lastSyncTimestamp').textContent = 'Sync: ' + new Date().toLocaleTimeString('id-ID');
+        renderAllOwnerViews();
+        if (manual) alert('✅ Live Data Berhasil Diperbarui dari Google Spreadsheet!');
+      } catch (err) {
+        clearTimeout(timeoutId);
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        if (txt) txt.textContent = 'Data Siaga (Lokal)';
+        renderAllOwnerViews();
+        if (manual) alert('Data lokal langsung ditampilkan tanpa hambatan. Pastikan Web App Google Apps Script aktif.');
+      }
+    }
+
+    async function postToCloud(payload) {
+      if (!cloudCfg.scriptUrl) return false;
+      try {
+        const controller = new AbortController();
+        const tid = setTimeout(() => controller.abort(), 6000);
+        await fetch(cloudCfg.scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(tid);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function broadcastUpdate(type, data) {
+      if (syncChannel) {
+        try { syncChannel.postMessage({ type, data }); } catch (e) {}
+      }
+    }
+
+    function renderAllOwnerViews() {
+      const validTx = txList.filter(t => !t.isVoid);
+      const omzet = validTx.reduce((s, t) => s + (Number(t.total) || 0), 0);
+      const cashSum = validTx.filter(t => t.isCash).reduce((s, t) => s + (Number(t.total) || 0), 0);
+      const nonCashSum = omzet - cashSum;
+      const avgBasket = validTx.length > 0 ? Math.round(omzet / validTx.length) : 0;
+
+      // Hitung Estimasi Total COGS (HPP) Terjual Hari Ini
+      let totalCogsSoldToday = 0;
+      validTx.forEach(t => {
+        (t.items || []).forEach(ci => {
+          const m = menuList.find(x => x.id === ci.menuId || x.name === ci.name);
+          const itemCogs = m ? (Number(m.cogs) || 0) : Math.round((Number(ci.basePrice) || 0) * 0.5);
+          let topCogs = 0;
+          (ci.toppings || []).forEach(tp => {
+            const tDef = toppingList.find(x => x.id === tp.id || x.name === tp.name);
+            topCogs += (tDef ? (Number(tDef.cogs) || 0) : Math.round((Number(tp.price) || 0) * 0.4)) * (Number(tp.qty) || 1);
+          });
+          totalCogsSoldToday += (itemCogs + topCogs) * (Number(ci.qty) || 1);
+        });
+      });
+      const grossProfitToday = Math.max(0, omzet - totalCogsSoldToday);
+      const marginPercentToday = omzet > 0 ? Math.round((grossProfitToday / omzet) * 100) : 0;
+
+      // Hitung Total Pembelian Hari Ini
+      const todayDate = todayStr();
+      const todayPurchases = purchaseList.filter(p => (p.time || '').startsWith(todayDate));
+      const totalPurchaseCostToday = todayPurchases.reduce((s, p) => s + (Number(p.totalCost) || 0), 0);
+
+      // KPI CARDS DASHBOARD
+      document.getElementById('kpiGrid').innerHTML = `
+        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-amber-300">Total Omzet Hari Ini</span>
+          <div class="text-xl sm:text-2xl font-black text-white mt-1">${rp(omzet)}</div>
+          <span class="text-[11px] text-emerald-400 font-bold">${validTx.length} Transaksi Sukses</span>
+        </div>
+        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-extrabold uppercase text-emerald-400">Estimasi Laba Kotor</span>
+            <span class="text-[10px] font-black px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">${marginPercentToday}% MARGIN</span>
+          </div>
+          <div class="text-xl sm:text-2xl font-black text-emerald-300 mt-1">${rp(grossProfitToday)}</div>
+          <span class="text-[11px] text-stone-400">HPP: ${rp(totalCogsSoldToday)}</span>
+        </div>
+        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-sky-400">Kas Tunai di Laci</span>
+          <div class="text-xl sm:text-2xl font-black text-sky-300 mt-1">${rp(cashSum)}</div>
+          <span class="text-[11px] text-stone-400">QRIS: ${rp(nonCashSum)}</span>
+        </div>
+        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-amber-400">Belanja Kulakan Hari Ini</span>
+          <div class="text-xl sm:text-2xl font-black text-amber-300 mt-1">${rp(totalPurchaseCostToday)}</div>
+          <span class="text-[11px] text-stone-400">${todayPurchases.length} Pembelian Bahan</span>
+        </div>
+      `;
+
+      // 🔴 LIVE ONGOING DAILY SALES FEED
+      document.getElementById('liveCounterBadge').textContent = txList.length + ' Transaksi Hari Ini (' + validTx.length + ' Sukses)';
+      const liveFeed = document.getElementById('liveSalesFeed');
+      if (txList.length === 0) {
+        liveFeed.innerHTML = '<div class="py-10 text-center text-xs text-stone-500 font-semibold bg-[#160F0C] rounded-2xl border border-stone-800/80">Belum ada transaksi di kasir hari ini.<br/>Transaksi baru dari kasir akan muncul di sini secara seketika (real-time).</div>';
+      } else {
+        liveFeed.innerHTML = txList.map(t => {
+          const timeFormatted = new Date(t.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          const itemsStr = t.itemsSummary || (t.items || []).map(i => {
+            const tops = (i.toppings || []).map(tp => '+' + tp.name).join(' ');
+            return i.qty + 'x ' + i.name + (i.spiceName ? ' (' + i.spiceName + ')' : '') + (tops ? ' [' + tops + ']' : '');
+          }).join(', ');
+
+          return `
+            <div class="p-3.5 rounded-2xl bg-[#160F0C] border ${t.isVoid ? 'border-red-900 bg-red-950/20 opacity-60' : 'border-stone-800 hover:border-amber-500/50'} flex flex-wrap items-center justify-between gap-3 transition-all">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-black text-xs text-amber-300">#${t.id}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-800 text-stone-300">🕒 ${timeFormatted}</span>
+                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${t.isCash ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-sky-950 text-sky-300 border border-sky-800'}">${t.paymentMethodName}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-800 text-stone-300">${t.orderTypeName}</span>
+                  ${t.isVoid ? '<span class="text-[9.5px] font-black px-2 py-0.5 rounded bg-red-600 text-white">VOID / BATAL</span>' : ''}
+                </div>
+                <div class="text-xs text-white font-medium mt-1 truncate">${itemsStr || 'Pesanan Seblak Brengos'}</div>
+                <div class="text-[10.5px] text-stone-400 mt-0.5">Kasir: ${t.cashierName || 'Kasir'} ${t.customerName && t.customerName !== '-' ? '• Pelanggan: ' + t.customerName : ''}</div>
+              </div>
+              <div class="flex items-center gap-2 text-right shrink-0">
+                <span class="font-black text-sm sm:text-base text-white">${rp(t.total)}</span>
+                ${!t.isVoid ? `<button onclick="ownerVoidTx('${t.id}')" class="px-3 py-1.5 rounded-lg bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 text-xs font-bold cursor-pointer">Void</button>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // TOP MENU RANKING
+      const counts = {};
+      validTx.forEach(t => {
+        if (Array.isArray(t.items) && t.items.length > 0) {
+          t.items.forEach(i => { counts[i.name] = (counts[i.name] || 0) + (i.qty || 1); });
+        } else if (t.itemsSummary) {
+          counts[t.itemsSummary] = (counts[t.itemsSummary] || 0) + 1;
+        }
+      });
+      const sortedMenu = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+      document.getElementById('topMenuRanking').innerHTML = sortedMenu.length === 0
+        ? '<div class="py-6 text-center text-xs text-stone-500">Belum ada data penjualan menu hari ini.</div>'
+        : sortedMenu.map(([name, qty], idx) => `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#160F0C] border border-stone-800">
+              <div class="flex items-center gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-[#B3261E] text-white font-black text-xs flex items-center justify-center">#${idx+1}</span>
+                <span class="font-bold text-xs text-white">${name}</span>
+              </div>
+              <span class="font-black text-xs text-amber-300">${qty} Porsi</span>
+            </div>
+          `).join('');
+
+      // CRITICAL STOCK ALERTS
+      const lowItems = stockList.filter(s => s.qty <= s.low);
+      document.getElementById('lowStockAlerts').innerHTML = lowItems.length === 0
+        ? '<div class="py-6 text-center text-xs text-emerald-400 font-bold">✅ Semua bahan baku Seblak Brengos dalam batas AMAN!</div>'
+        : lowItems.map(s => `
+            <div class="p-2.5 rounded-xl bg-red-950/40 border border-red-800/60 flex items-center justify-between">
+              <div>
+                <div class="font-bold text-xs text-red-200">${s.name}</div>
+                <div class="text-[10px] text-red-400">Batas min: ${s.low} ${s.unit}</div>
+              </div>
+              <span class="font-black text-xs px-2 py-0.5 rounded bg-red-600 text-white">Sisa: ${s.qty} ${s.unit}</span>
+            </div>
+          `).join('');
+
+      // CLOSING HISTORY
+      const cBox = document.getElementById('closingHistoryTable');
+      cBox.innerHTML = closingList.length === 0
+        ? '<div class="py-6 text-center text-xs text-stone-500">Belum ada laporan closing shift yang dikirim kasir.</div>'
+        : closingList.map(c => `
+            <div class="p-3 rounded-xl bg-[#160F0C] border border-stone-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div>
+                <div class="font-black text-white">${c.dateKey || '-'} • ${c.shiftName || 'Shift Kasir'}</div>
+                <div class="text-[11px] text-stone-400">Nota: ${c.txCount || 0} | Tunai: ${rp(c.cashSales)} | Non-Tunai: ${rp(c.nonCashSales)}</div>
+              </div>
+              <div class="text-right">
+                <div class="font-black text-amber-300">Omzet: ${rp(c.totalSales)}</div>
+                <div class="text-[11px] ${(c.cashDifference||0) < 0 ? 'text-red-400' : 'text-emerald-400'}">Selisih Kas: ${rp(c.cashDifference || 0)}</div>
+              </div>
+            </div>
+          `).join('');
+
+      // RENDER COGS KPI ROW & GRIDS
+      renderCogsSection(omzet, totalCogsSoldToday, grossProfitToday, marginPercentToday);
+
+      // RENDER PURCHASES VIEW & SELECT OPTIONS
+      renderPurchaseSection();
+
+      // AUDIT NOTA LIST
+      const auditEl = document.getElementById('auditTxList');
+      auditEl.innerHTML = txList.length === 0
+        ? '<div class="p-8 rounded-2xl bg-[#221712] border border-stone-800 text-center text-xs text-stone-500">Belum ada transaksi tercatat hari ini.</div>'
+        : txList.map(t => `
+            <div class="p-3.5 rounded-2xl bg-[#221712] border ${t.isVoid ? 'border-red-900 bg-red-950/20 opacity-70' : 'border-stone-800'} flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-black text-xs text-amber-300">#${t.id}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-stone-800 text-stone-200">${t.orderTypeName}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-stone-800 text-emerald-300">${t.paymentMethodName}</span>
+                  ${t.isVoid ? '<span class="text-[10px] font-black px-2 py-0.5 rounded bg-red-600 text-white">VOID</span>' : ''}
+                </div>
+                <div class="text-xs text-white font-semibold mt-1">${t.itemsSummary || (t.items || []).map(i => i.qty + 'x ' + i.name).join(', ')}</div>
+                <div class="text-[10px] text-stone-400 mt-0.5">${new Date(t.time).toLocaleString('id-ID')} • Kasir: ${t.cashierName || 'Kasir'}</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-black text-sm text-white">${rp(t.total)}</span>
+                ${!t.isVoid ? `<button onclick="ownerVoidTx('${t.id}')" class="px-3 py-1.5 rounded-lg bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 text-xs font-bold cursor-pointer">Void Nota</button>` : ''}
+              </div>
+            </div>
+          `).join('');
+
+      // STOK GUDANG GRID
+      document.getElementById('ownerStockGrid').innerHTML = stockList.map((s, idx) => `
+        <div class="p-3.5 rounded-2xl bg-[#221712] border ${s.qty <= s.low ? 'border-red-600' : 'border-stone-800'} space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="font-extrabold text-xs text-white">${s.name}</div>
+              <span class="text-[10px] text-stone-400">Satuan: ${s.unit} | Min: ${s.low} | Modal: ${rp(s.cost || 0)}</span>
+            </div>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded ${s.qty <= s.low ? 'bg-red-600 text-white' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'}">${s.qty <= s.low ? 'MENIPIS' : 'AMAN'}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="number" value="${s.qty}" onchange="updateLocalStockQty(${idx}, this.value)" class="w-full p-2 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-amber-300" />
+            <button onclick="quickAddOwnerStock(${idx}, 10)" class="px-3 py-2 rounded-xl bg-emerald-900/50 hover:bg-emerald-800 text-emerald-200 font-black text-xs border border-emerald-700 cursor-pointer">+10</button>
+          </div>
+        </div>
+      `).join('');
+
+      // MASTER MENU SUB-TAB
+      document.getElementById('menuCountBadge').textContent = menuList.length;
+      document.getElementById('menuSubTab_main').innerHTML = menuList.map((m, idx) => `
+        <div class="p-3.5 rounded-2xl bg-[#221712] border border-stone-800 space-y-2.5">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase text-amber-400">${m.category || 'Menu Utama'}</span>
+              <div class="font-black text-sm text-white">${m.name}</div>
+            </div>
+            <button onclick="deleteMenuItem(${idx})" class="text-xs text-red-500 hover:text-red-400 p-1 cursor-pointer" title="Hapus Menu">✕</button>
+          </div>
+          ${m.description ? `<p class="text-[10.5px] text-stone-400 line-clamp-2 leading-tight">${m.description}</p>` : ''}
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[10px] text-stone-400 uppercase font-bold">Harga Jual (Rp):</label>
+              <span class="text-[10px] text-emerald-400 font-extrabold">${rp(m.price)}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <input type="number" value="${m.price}" onchange="updateLocalMenuPrice(${idx}, this.value)" class="w-full p-2 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-emerald-300 focus:outline-none focus:border-amber-400" />
+              <button onclick="quickAdjustMenuPrice(${idx}, 1000)" class="px-2.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+1k</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // MASTER ADD-ON / TOPPING SUB-TAB
+      document.getElementById('toppingCountBadge').textContent = toppingList.length;
+      document.getElementById('menuSubTab_addon').innerHTML = toppingList.map((t, idx) => `
+        <div class="p-3.5 rounded-2xl bg-[#221712] border border-stone-800 space-y-2.5">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase text-emerald-400">Extra Topping / Add-on</span>
+              <div class="font-black text-sm text-white">${t.name}</div>
+            </div>
+            <button onclick="deleteToppingItem(${idx})" class="text-xs text-red-500 hover:text-red-400 p-1 cursor-pointer" title="Hapus Topping">✕</button>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[10px] text-stone-400 uppercase font-bold">Harga Jual Add-on (Rp):</label>
+              <span class="text-[10px] text-emerald-400 font-extrabold">${rp(t.price)}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <input type="number" value="${t.price}" onchange="updateLocalToppingPrice(${idx}, this.value)" class="w-full p-2 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-emerald-300 focus:outline-none focus:border-emerald-400" />
+              <button onclick="quickAdjustToppingPrice(${idx}, 500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+500</button>
+              <button onclick="quickAdjustToppingPrice(${idx}, 1000)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+1k</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Update values in secret modal inputs
+      const scriptInp = document.getElementById('ownerScriptUrl');
+      const sheetInp = document.getElementById('ownerSheetUrl');
+      const waInp = document.getElementById('ownerWaInput');
+      if (scriptInp) scriptInp.value = cloudCfg.scriptUrl || '';
+      if (sheetInp) sheetInp.value = cloudCfg.sheetUrl || '';
+      if (waInp) waInp.value = cloudCfg.ownerWa || '087898185988';
+    }
+
+    // ==========================================
+    // COGS & PROFIT MARGIN SECTION
+    // ==========================================
+    function renderCogsSection(omzet, totalCogsSold, grossProfit, marginPercent) {
+      document.getElementById('cogsKpiRow').innerHTML = `
+        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-amber-300">Total Omzet Penjualan</span>
+          <div class="text-xl font-black text-white mt-1">${rp(omzet)}</div>
+          <span class="text-[10.5px] text-stone-400">Total penerimaan kotor</span>
+        </div>
+        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-red-400">Total HPP Bahan Terjual</span>
+          <div class="text-xl font-black text-red-300 mt-1">${rp(totalCogsSold)}</div>
+          <span class="text-[10.5px] text-stone-400">Biaya modal pokok penjualan</span>
+        </div>
+        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-emerald-400">Estimasi Laba Kotor Hari Ini</span>
+          <div class="text-xl font-black text-emerald-300 mt-1">${rp(grossProfit)}</div>
+          <span class="text-[10.5px] text-emerald-400/90 font-bold">Laba Bersih Sebelum Operasional</span>
+        </div>
+        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-sky-400">Rata-Rata Margin Keuntungan</span>
+          <div class="text-xl font-black text-sky-300 mt-1">${marginPercent}%</div>
+          <span class="text-[10.5px] text-stone-400">Persentase laba kotor hari ini</span>
+        </div>
+      `;
+
+      // Render COGS Menu Cards
+      document.getElementById('cogsGrid_menu').innerHTML = menuList.map((m, idx) => {
+        const cogsVal = Number(m.cogs) || 0;
+        const profit = Math.max(0, m.price - cogsVal);
+        const marginPct = m.price > 0 ? Math.round((profit / m.price) * 100) : 0;
+        const isHealthy = marginPct >= 45;
+        const isNormal = marginPct >= 35 && marginPct < 45;
+
+        return `
+          <div class="p-4 rounded-2xl bg-[#221712] border border-stone-800 space-y-3">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">${m.category || 'Menu Utama'}</span>
+                <h4 class="font-black text-sm text-white mt-1">${m.name}</h4>
+              </div>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${isHealthy ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : (isNormal ? 'bg-amber-950 text-amber-300 border border-amber-700' : 'bg-red-950 text-red-300 border border-red-700')}">${marginPct}% MARGIN</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs bg-[#160F0C] p-2.5 rounded-xl border border-stone-800">
+              <div>
+                <span class="text-[10px] text-stone-400 uppercase font-bold block">Harga Jual:</span>
+                <span class="font-black text-emerald-400">${rp(m.price)}</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-stone-400 uppercase font-bold block">Laba Kotor/Porsi:</span>
+                <span class="font-black text-amber-300">${rp(profit)}</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-[10.5px] text-stone-300 uppercase font-extrabold">Atur COGS / HPP Modal (Rp):</label>
+                <span class="text-[10px] text-stone-400">Modal per porsi</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <input type="number" value="${cogsVal}" onchange="updateMenuCogs(${idx}, this.value)" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-amber-300 focus:outline-none focus:border-amber-400" />
+                <button onclick="quickAdjustMenuCogs(${idx}, -500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">-500</button>
+                <button onclick="quickAdjustMenuCogs(${idx}, 500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+500</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Render COGS Topping Cards
+      document.getElementById('cogsGrid_addon').innerHTML = toppingList.map((t, idx) => {
+        const cogsVal = Number(t.cogs) || 0;
+        const profit = Math.max(0, t.price - cogsVal);
+        const marginPct = t.price > 0 ? Math.round((profit / t.price) * 100) : 0;
+
+        return `
+          <div class="p-4 rounded-2xl bg-[#221712] border border-stone-800 space-y-3">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Extra Topping / Add-on</span>
+                <h4 class="font-black text-sm text-white mt-1">${t.name}</h4>
+              </div>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700">${marginPct}% MARGIN</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs bg-[#160F0C] p-2.5 rounded-xl border border-stone-800">
+              <div>
+                <span class="text-[10px] text-stone-400 uppercase font-bold block">Harga Jual:</span>
+                <span class="font-black text-emerald-400">${rp(t.price)}</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-stone-400 uppercase font-bold block">Laba Kotor:</span>
+                <span class="font-black text-amber-300">${rp(profit)}</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-[10.5px] text-stone-300 uppercase font-extrabold">Atur Modal HPP (Rp):</label>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <input type="number" value="${cogsVal}" onchange="updateToppingCogs(${idx}, this.value)" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-amber-300 focus:outline-none focus:border-amber-400" />
+                <button onclick="quickAdjustToppingCogs(${idx}, -500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">-500</button>
+                <button onclick="quickAdjustToppingCogs(${idx}, 500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+500</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateMenuCogs(idx, val) {
+      menuList[idx].cogs = Math.max(0, Number(val) || 0);
+      setLS('menu', menuList);
+      renderAllOwnerViews();
+    }
+    function quickAdjustMenuCogs(idx, delta) {
+      menuList[idx].cogs = Math.max(0, Number(menuList[idx].cogs || 0) + delta);
+      setLS('menu', menuList);
+      renderAllOwnerViews();
+    }
+    function updateToppingCogs(idx, val) {
+      toppingList[idx].cogs = Math.max(0, Number(val) || 0);
+      setLS('toppings', toppingList);
+      renderAllOwnerViews();
+    }
+    function quickAdjustToppingCogs(idx, delta) {
+      toppingList[idx].cogs = Math.max(0, Number(toppingList[idx].cogs || 0) + delta);
+      setLS('toppings', toppingList);
+      renderAllOwnerViews();
+    }
+
+    async function saveAllCogsToCloud() {
+      setLS('menu', menuList);
+      setLS('toppings', toppingList);
+      postToCloud({
+        type: 'sync_menu_toppings',
+        outletId: 'seblak',
+        menuItems: menuList,
+        toppingItems: toppingList
+      });
+      alert('✅ Seluruh data HPP / COGS berhasil disimpan permanen!');
+    }
+
+    // ==========================================
+    // PEMBELIAN / KULAKAN (PURCHASES) SECTION
+    // ==========================================
+    function renderPurchaseSection() {
+      const select = document.getElementById('poStockSelect');
+      if (select) {
+        select.innerHTML = '<option value="">-- Pilih Bahan Baku dari Gudang --</option>' +
+          stockList.map(s => `<option value="${s.id}" data-unit="${s.unit}" data-cost="${s.cost || 0}">${s.name} (Sisa: ${s.qty} ${s.unit})</option>`).join('') +
+          '<option value="__NEW__">+ Input Bahan Baku Baru Lainnya...</option>';
+      }
+
+      document.getElementById('purchaseCountBadge').textContent = purchaseList.length + ' Pembelian Tercatat';
+      const pBox = document.getElementById('purchaseHistoryList');
+      if (purchaseList.length === 0) {
+        pBox.innerHTML = '<div class="py-8 text-center text-xs text-stone-500 bg-[#160F0C] rounded-2xl border border-stone-800">Belum ada catatan pembelian bahan baku. Gunakan formulir di atas untuk mencatat kulakan pertama Anda.</div>';
+      } else {
+        pBox.innerHTML = purchaseList.map((p, pIdx) => `
+          <div class="p-3.5 rounded-2xl bg-[#160F0C] border border-stone-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-black text-amber-300">#${p.id}</span>
+                <span class="font-extrabold text-white">${p.stockName}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">+${p.qty} ${p.unit}</span>
+              </div>
+              <div class="text-[11px] text-stone-400 mt-1">
+                Waktu: ${new Date(p.time).toLocaleString('id-ID')} • Supplier: ${p.supplier || '-'} ${p.note ? '• (' + p.note + ')' : ''}
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-right">
+                <div class="font-black text-sm text-emerald-400">${rp(p.totalCost)}</div>
+                <div class="text-[10px] text-stone-400">@ ${rp(p.unitCost)} / ${p.unit}</div>
+              </div>
+              <button onclick="deletePurchaseRecord(${pIdx})" class="text-xs text-red-500 hover:text-red-400 p-1 cursor-pointer" title="Hapus Catatan">✕</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function onSelectPoStockItem() {
+      const select = document.getElementById('poStockSelect');
+      const opt = select.selectedOptions[0];
+      if (!opt) return;
+      if (opt.value === '__NEW__') {
+        const customName = prompt('Masukkan Nama Bahan Baku Baru:');
+        if (customName) {
+          const unit = prompt('Satuan (misal: kg, biji, butir):') || 'unit';
+          const newId = 'st_' + Date.now().toString(36);
+          stockList.push({ id: newId, name: customName, unit: unit, qty: 0, low: 10, cost: 0 });
+          setLS('stock', stockList);
+          renderPurchaseSection();
+          select.value = newId;
+          document.getElementById('poUnitInput').value = unit;
+        }
+      } else if (opt.value) {
+        document.getElementById('poUnitInput').value = opt.getAttribute('data-unit') || 'unit';
+      }
+    }
+
+    function calcPoUnitCost() {
+      const qty = Number(document.getElementById('poQtyInput').value) || 0;
+      const total = Number(document.getElementById('poTotalCostInput').value) || 0;
+      const unit = document.getElementById('poUnitInput').value.trim() || 'unit';
+      const uCost = qty > 0 ? Math.round(total / qty) : 0;
+      document.getElementById('poUnitCostPreview').textContent = rp(uCost) + ' / ' + unit;
+    }
+
+    function submitNewPurchase() {
+      const select = document.getElementById('poStockSelect');
+      const stockId = select.value;
+      if (!stockId || stockId === '__NEW__') {
+        alert('Pilih bahan baku terlebih dahulu!');
+        return;
+      }
+      const stItem = stockList.find(s => s.id === stockId);
+      if (!stItem) { alert('Bahan baku tidak ditemukan!'); return; }
+
+      const qty = Number(document.getElementById('poQtyInput').value) || 0;
+      const totalCost = Number(document.getElementById('poTotalCostInput').value) || 0;
+      const unit = document.getElementById('poUnitInput').value.trim() || stItem.unit;
+      const supplier = document.getElementById('poSupplierInput').value.trim() || 'Pasar Tradisional';
+      const note = document.getElementById('poNoteInput').value.trim();
+
+      if (qty <= 0) { alert('Jumlah dibeli (Qty) harus lebih dari 0!'); return; }
+      if (totalCost <= 0) { alert('Total biaya pembelian harus lebih dari 0!'); return; }
+
+      const unitCost = Math.round(totalCost / qty);
+
+      const purchaseRecord = {
+        id: 'PO-' + Date.now().toString().slice(-6),
+        time: new Date().toISOString(),
+        stockId: stItem.id,
+        stockName: stItem.name,
+        qty: qty,
+        unit: unit,
+        totalCost: totalCost,
+        unitCost: unitCost,
+        supplier: supplier,
+        note: note
+      };
+
+      // 1. Tambah Stok Gudang Otomatis
+      stItem.qty = Number((stItem.qty + qty).toFixed(2));
+      stItem.cost = unitCost; // perbarui modal unit
+      setLS('stock', stockList);
+
+      // 2. Simpan Riwayat Pembelian
+      purchaseList.unshift(purchaseRecord);
+      setLS('purchases', purchaseList);
+
+      // 3. Broadcast ke Kasir agar stok terupdate instan (<5ms)
+      broadcastUpdate('STOCK_UPDATED', stockList);
+
+      // 4. Background push ke Google Spreadsheet
+      postToCloud({
+        type: 'purchase',
+        outletId: 'seblak',
+        data: purchaseRecord,
+        stockItems: stockList
+      });
+
+      // Reset form
+      document.getElementById('poQtyInput').value = '';
+      document.getElementById('poTotalCostInput').value = '';
+      document.getElementById('poNoteInput').value = '';
+      document.getElementById('poUnitCostPreview').textContent = 'Rp 0 / unit';
+
+      renderAllOwnerViews();
+      alert('✅ Pembelian ' + stItem.name + ' (' + qty + ' ' + unit + ') berhasil dicatat! Stok Gudang bertambah otomatis dan Kasir terupdate seketika.');
+    }
+
+    function deletePurchaseRecord(idx) {
+      if (!confirm('Hapus catatan pembelian ini dari riwayat? (Stok saat ini tidak akan dikurangi otomatis)')) return;
+      purchaseList.splice(idx, 1);
+      setLS('purchases', purchaseList);
+      renderAllOwnerViews();
+    }
+
+    function exportPurchasesCsv() {
+      const rows = [['ID_PO','Tanggal_Waktu','Bahan_Baku','Jumlah','Satuan','Total_Biaya','Harga_Satuan','Supplier','Catatan']];
+      purchaseList.forEach(p => {
+        rows.push([
+          p.id,
+          new Date(p.time).toLocaleString('id-ID'),
+          p.stockName,
+          p.qty,
+          p.unit,
+          p.totalCost,
+          p.unitCost,
+          p.supplier || '-',
+          p.note || '-'
+        ]);
+      });
+      const csv = '\uFEFF' + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(';')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Riwayat_Pembelian_Seblak_Brengos_' + todayStr() + '.csv';
+      a.click();
+    }
+
+    // MENU & TOPPING MANIPULATION (ZERO DATA LOSS)
+    function updateLocalMenuPrice(idx, val) {
+      menuList[idx].price = Math.max(0, Number(val) || 0);
+      setLS('menu', menuList);
+      broadcastUpdate('MENU_UPDATED', menuList);
+      renderAllOwnerViews();
+    }
+    function quickAdjustMenuPrice(idx, delta) {
+      menuList[idx].price = Math.max(0, Number(menuList[idx].price || 0) + delta);
+      setLS('menu', menuList);
+      broadcastUpdate('MENU_UPDATED', menuList);
+      renderAllOwnerViews();
+    }
+
+    function updateLocalToppingPrice(idx, val) {
+      toppingList[idx].price = Math.max(0, Number(val) || 0);
+      setLS('toppings', toppingList);
+      broadcastUpdate('TOPPINGS_UPDATED', toppingList);
+      renderAllOwnerViews();
+    }
+    function quickAdjustToppingPrice(idx, delta) {
+      toppingList[idx].price = Math.max(0, Number(toppingList[idx].price || 0) + delta);
+      setLS('toppings', toppingList);
+      broadcastUpdate('TOPPINGS_UPDATED', toppingList);
+      renderAllOwnerViews();
+    }
+
+    function deleteMenuItem(idx) {
+      if (!confirm('Hapus menu "' + menuList[idx].name + '"?')) return;
+      menuList.splice(idx, 1);
+      setLS('menu', menuList);
+      broadcastUpdate('MENU_UPDATED', menuList);
+      renderAllOwnerViews();
+    }
+    function deleteToppingItem(idx) {
+      if (!confirm('Hapus topping / add-on "' + toppingList[idx].name + '"?')) return;
+      toppingList.splice(idx, 1);
+      setLS('toppings', toppingList);
+      broadcastUpdate('TOPPINGS_UPDATED', toppingList);
+      renderAllOwnerViews();
+    }
+
+    function openAddMenuModal() {
+      document.getElementById('newMenuName').value = '';
+      document.getElementById('newMenuCat').value = 'Menu Utama';
+      document.getElementById('newMenuPrice').value = '';
+      document.getElementById('newMenuCogs').value = '';
+      document.getElementById('newMenuDesc').value = '';
+      document.getElementById('addMenuModal').classList.remove('hidden');
+    }
+    function closeAddMenuModal() { document.getElementById('addMenuModal').classList.add('hidden'); }
+    function submitNewMenu() {
+      const name = document.getElementById('newMenuName').value.trim();
+      const cat = document.getElementById('newMenuCat').value.trim() || 'Menu Utama';
+      const price = Number(document.getElementById('newMenuPrice').value) || 0;
+      const cogs = Number(document.getElementById('newMenuCogs').value) || Math.round(price * 0.5);
+      const desc = document.getElementById('newMenuDesc').value.trim();
+      if (!name) { alert('Nama menu tidak boleh kosong!'); return; }
+      if (price <= 0) { alert('Harga menu harus lebih dari 0!'); return; }
+
+      menuList.push({
+        id: 'sb_' + Date.now().toString(36),
+        name,
+        category: cat,
+        price,
+        cogs,
+        description: desc
+      });
+      setLS('menu', menuList);
+      broadcastUpdate('MENU_UPDATED', menuList);
+      closeAddMenuModal();
+      renderAllOwnerViews();
+      postToCloud({
+        type: 'sync_menu_toppings',
+        outletId: 'seblak',
+        menuItems: menuList,
+        toppingItems: toppingList
+      });
+      alert('✅ Menu baru "' + name + '" berhasil ditambahkan dan langsung aktif di Kasir!');
+    }
+
+    function openAddToppingModal() {
+      document.getElementById('newToppingName').value = '';
+      document.getElementById('newToppingPrice').value = '';
+      document.getElementById('newToppingCogs').value = '';
+      document.getElementById('addToppingModal').classList.remove('hidden');
+    }
+    function closeAddToppingModal() { document.getElementById('addToppingModal').classList.add('hidden'); }
+    function submitNewTopping() {
+      const name = document.getElementById('newToppingName').value.trim();
+      const price = Number(document.getElementById('newToppingPrice').value) || 0;
+      const cogs = Number(document.getElementById('newToppingCogs').value) || Math.round(price * 0.4);
+      if (!name) { alert('Nama add-on / topping tidak boleh kosong!'); return; }
+      if (price <= 0) { alert('Harga add-on harus lebih dari 0!'); return; }
+
+      toppingList.push({
+        id: 'top_' + Date.now().toString(36),
+        name,
+        price,
+        cogs,
+        stockId: null,
+        qtyUse: 1
+      });
+      setLS('toppings', toppingList);
+      broadcastUpdate('TOPPINGS_UPDATED', toppingList);
+      closeAddToppingModal();
+      renderAllOwnerViews();
+      postToCloud({
+        type: 'sync_menu_toppings',
+        outletId: 'seblak',
+        menuItems: menuList,
+        toppingItems: toppingList
+      });
+      alert('✅ Add-on baru "' + name + '" berhasil ditambahkan dan langsung aktif di Kasir!');
+    }
+
+    async function pushOwnerMenuToCloud() {
+      setLS('menu', menuList);
+      setLS('toppings', toppingList);
+      broadcastUpdate('MENU_UPDATED', menuList);
+      broadcastUpdate('TOPPINGS_UPDATED', toppingList);
+      const ok = await postToCloud({
+        type: 'sync_menu_toppings',
+        outletId: 'seblak',
+        menuItems: menuList,
+        toppingItems: toppingList
+      });
+      if (ok) {
+        alert('✅ Seluruh Master Menu & Extra Topping berhasil disimpan ke Google Spreadsheet dan langsung aktif di Kasir!');
+      } else {
+        alert('Data tersimpan aman di perangkat lokal. Spreadsheet akan otomatis tersinkron saat koneksi aktif.');
+      }
+    }
+
+    // STOK MANIPULATION
+    function updateLocalStockQty(idx, val) {
+      stockList[idx].qty = Math.max(0, Number(val) || 0);
+      setLS('stock', stockList);
+      broadcastUpdate('STOCK_UPDATED', stockList);
+    }
+    function quickAddOwnerStock(idx, delta) {
+      stockList[idx].qty = Math.max(0, Number((stockList[idx].qty + delta).toFixed(2)));
+      setLS('stock', stockList);
+      broadcastUpdate('STOCK_UPDATED', stockList);
+      renderAllOwnerViews();
+    }
+    async function pushOwnerStockToCloud() {
+      setLS('stock', stockList);
+      broadcastUpdate('STOCK_UPDATED', stockList);
+      const ok = await postToCloud({ type: 'bulk_stock', outletId: 'seblak', stockItems: stockList });
+      if (ok) alert('✅ Stok Bahan Baku Seblak Brengos berhasil dikirim ke Google Spreadsheet & Kasir!');
+      else alert('Stok tersimpan di perangkat lokal.');
+    }
+
+    // REMOTE VOID
+    async function ownerVoidTx(id) {
+      const reason = prompt('Masukkan alasan Void nota #' + id + ' oleh Owner:');
+      if (!reason) return;
+      txList = txList.map(t => t.id === id ? { ...t, isVoid: true, voidReason: reason } : t);
+      setLS('tx_' + todayStr(), txList);
+      broadcastUpdate('TRANSACTION_VOIDED', { id, reason });
+      await postToCloud({ type: 'void_transaction', outletId: 'seblak', transactionId: id, reason });
+      renderAllOwnerViews();
+      alert('✅ Nota #' + id + ' berhasil dibatalkan (VOID)!');
+    }
+
+    // PEMBERSIHAN DATA TRANSAKSI
+    function cleanOldDemoData() {
+      const pin = prompt('Konfirmasi Pembersihan Data:\nMasukkan PIN Owner (1111 / 8888) untuk mereset riwayat transaksi demo menjadi 0:');
+      if (pin !== '1111' && pin !== '8888') { alert('PIN Owner salah!'); return; }
+      if (!confirm('PERINGATAN: Semua riwayat transaksi hari ini akan dibersihkan menjadi 0.\nDaftar Menu, Topping, Stok, dan HPP tetap aman.\n\nLanjutkan pembersihan?')) return;
+
+      txList = [];
+      setLS('tx_' + todayStr(), []);
+      setLS('open_bills', []);
+      broadcastUpdate('TRANSACTION_VOIDED', { resetAll: true });
+      renderAllOwnerViews();
+      alert('✅ Seluruh data transaksi demo/lama berhasil dibersihkan! Dashboard siap mencatat penjualan bersih.');
+    }
+
+    // DISCREET SECRET CLOUD MODAL (TRIGGERED ONLY BY PIN AT FOOTER)
+    function triggerSecretCloudModal() {
+      const pin = prompt('Akses Pengaturan Cloud & Google Spreadsheet:\nMasukkan PIN Otorisasi Owner (1111 / 8888):');
+      if (pin === '1111' || pin === '8888') {
+        document.getElementById('secretCloudModal').classList.remove('hidden');
+      } else if (pin !== null) {
+        alert('PIN Owner salah! Pengaturan Cloud hanya dapat diakses oleh Owner.');
+      }
+    }
+    function closeSecretCloudModal() {
+      document.getElementById('secretCloudModal').classList.add('hidden');
+    }
+    function saveOwnerCloudConfig() {
+      cloudCfg = {
+        scriptUrl: document.getElementById('ownerScriptUrl').value.trim(),
+        sheetUrl: document.getElementById('ownerSheetUrl').value.trim(),
+        cashierName: 'Kasir Seblak Brengos',
+        ownerWa: document.getElementById('ownerWaInput').value.trim() || '087898185988'
+      };
+      setLS('cloud_cfg', cloudCfg);
+      closeSecretCloudModal();
+      syncFromSpreadsheet(true);
+      alert('✅ Konfigurasi Cloud Spreadsheet berhasil disimpan!');
+    }
+    function openSpreadsheetTab() {
+      if (!cloudCfg.sheetUrl) { alert('Masukkan URL Google Spreadsheet terlebih dahulu!'); return; }
+      window.open(cloudCfg.sheetUrl, '_blank');
+    }
+    function copyAppsScript() {
+      const box = document.getElementById('appsScriptBox');
+      box.select();
+      navigator.clipboard.writeText(box.value);
+      alert('✅ Kode Google Apps Script Seblak Brengos berhasil disalin!');
+    }
+    function exportOwnerReportCsv() {
+      const rows = [['ID','Waktu','Kasir','Pelanggan','Tipe','Metode','Total','Status']];
+      txList.forEach(t => {
+        rows.push([t.id, t.time, t.cashierName, t.customerName, t.orderTypeName, t.paymentMethodName, t.total, t.isVoid ? 'VOID' : 'SUKSES']);
+      });
+      const csv = '\uFEFF' + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(';')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Laporan_Owner_Seblak_Brengos_' + todayStr() + '.csv';
+      a.click();
+    }
+
+    // AUTO REFRESH IN BACKGROUND (EVERY 20 SECONDS - NON-BLOCKING)
+    setInterval(() => {
+      if (cloudCfg.scriptUrl && !document.getElementById('loginGate').classList.contains('hidden')) {
+        syncFromSpreadsheet(false);
+      }
+    }, 20000);
+  </script>
+</body>
+</html>
