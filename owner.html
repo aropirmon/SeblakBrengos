@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -2391,10 +2391,64 @@ function doPost(e) {
             <input id="newToppingCogs" type="number" placeholder="Contoh: 2500" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-amber-300 font-black text-sm focus:outline-none focus:border-emerald-400" />
           </div>
         </div>
+        <div>
+          <label class="block font-bold uppercase text-stone-300 mb-1">Hubungkan ke Stok Bahan Baku (Opsional):</label>
+          <select id="newToppingStockSelect" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-stone-300 font-bold text-xs focus:outline-none focus:border-emerald-400">
+            <option value="">-- Tidak Terhubung ke Stok (Hanya Add-on) --</option>
+          </select>
+          <p class="text-[10px] text-stone-400 mt-1">Jika dipilih, stok gudang otomatis terpotong saat Kasir mencatat pesanan add-on ini.</p>
+        </div>
       </div>
       <div class="flex gap-2 pt-2 border-t border-stone-800">
         <button onclick="closeAddToppingModal()" class="px-4 py-2.5 rounded-xl bg-stone-800 text-stone-300 font-bold text-xs cursor-pointer">Batal</button>
         <button onclick="submitNewTopping()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs cursor-pointer shadow-md">+ Simpan Add-on Baru</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ATUR RESEP BAHAN BAKU (BOM) PER MENU -->
+  <div id="recipeModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#221712] border-2 border-amber-500/50 w-full max-w-lg rounded-3xl p-5 text-white shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-stone-800 pb-3 shrink-0">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">FORMULA RESEP &amp; BOM</span>
+          <h3 id="recipeModalTitle" class="font-black text-base text-white mt-0.5">Atur Resep Menu</h3>
+        </div>
+        <button onclick="closeRecipeModal()" class="w-8 h-8 rounded-full bg-stone-800 text-stone-300 text-xs font-black cursor-pointer">✕</button>
+      </div>
+
+      <div class="overflow-y-auto flex-1 space-y-3.5 pr-1">
+        <p class="text-xs text-stone-400">Tentukan bahan baku yang otomatis berkurang dari stok gudang saat menu ini terjual di Kasir:</p>
+        
+        <!-- List Bahan Saat Ini -->
+        <div id="recipeIngredientsList" class="space-y-2"></div>
+
+        <!-- Tambah Bahan Baru ke Resep -->
+        <div class="p-3 rounded-2xl bg-[#160F0C] border border-stone-800 space-y-2">
+          <label class="block text-[11px] font-extrabold uppercase text-amber-300">+ Tambah Bahan Baku ke Resep Ini:</label>
+          <div class="flex gap-2">
+            <select id="recipeAddStockSelect" class="flex-1 p-2 rounded-xl bg-[#221712] border border-stone-700 text-xs text-white font-bold focus:outline-none focus:border-amber-400">
+            </select>
+            <input id="recipeAddQtyInput" type="number" step="any" placeholder="Takaran" value="1" class="w-20 p-2 rounded-xl bg-[#221712] border border-stone-700 text-xs font-black text-amber-300 text-center focus:outline-none focus:border-amber-400" />
+            <button onclick="addIngredientToRecipe()" class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer">+ Tambah</button>
+          </div>
+        </div>
+
+        <!-- Ringkasan Kalkulasi HPP -->
+        <div class="p-3 rounded-2xl bg-emerald-950/30 border border-emerald-800/60 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] text-emerald-400 font-extrabold uppercase">Total Modal HPP Resep:</span>
+            <div id="recipeTotalCogsPreview" class="text-base font-black text-emerald-300">Rp 0</div>
+          </div>
+          <button onclick="applyRecipeCogsToMenu()" class="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs cursor-pointer shadow-xs">
+            ⚡ Terapkan Jadi HPP
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2 border-t border-stone-800 shrink-0">
+        <button onclick="closeRecipeModal()" class="px-4 py-2.5 rounded-xl bg-stone-800 text-stone-300 font-bold text-xs cursor-pointer">Batal</button>
+        <button onclick="saveRecipeModal()" class="flex-1 py-2.5 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-xs cursor-pointer shadow-md">💾 Simpan Resep Menu</button>
       </div>
     </div>
   </div>
@@ -2431,19 +2485,19 @@ function doPost(e) {
       }
     });
 
-    // DEFAULT MENU UTAMA & MINUMAN WITH OFFICIAL COGS / HPP
+    // DEFAULT MENU UTAMA & MINUMAN WITH OFFICIAL COGS / HPP & RESEP BAHAN
     const DEFAULT_MENU = [
-      { id: 'sb_spesial', name: 'Seblak Spesial', price: 25000, cogs: 13500, category: 'Menu Utama', description: 'Isian / pelengkap + sosis 1, bakso 2, cilok 2, dumpling 1, ceker 1, tulang 1, cuanki lidah 1, siomay mini 4, jamur Enoki, pilus' },
-      { id: 'sb_ceker', name: 'Seblak Ceker', price: 15000, cogs: 7500, category: 'Menu Utama', description: 'Isian / pelengkap + ceker 2 bj' },
-      { id: 'sb_dumpling', name: 'Seblak Dumpling', price: 15000, cogs: 8000, category: 'Menu Utama', description: 'Isian / pelengkap + dumpling 2 bj' },
-      { id: 'sb_tulang', name: 'Seblak Tulang', price: 15000, cogs: 7500, category: 'Menu Utama', description: 'Isian / pelengkap + tulang 3 bj' },
-      { id: 'sb_cilok', name: 'Seblak Cilok', price: 13000, cogs: 5500, category: 'Menu Utama', description: 'Isian / pelengkap + cilok 4 bj' },
-      { id: 'sb_sosis', name: 'Seblak Sosis', price: 15000, cogs: 7000, category: 'Menu Utama', description: 'Isian / pelengkap + sosis 1 ½ bj' },
-      { id: 'sb_cuanki', name: 'Seblak Cuanki', price: 15000, cogs: 6500, category: 'Menu Utama', description: 'Isian / pelengkap + cuanki lidah 5 bj' },
-      { id: 'sb_bakso', name: 'Seblak Bakso', price: 15000, cogs: 7500, category: 'Menu Utama', description: 'Isian / pelengkap + bakso 3 bj' },
-      { id: 'sb_baci', name: 'Bakso Aci', price: 15000, cogs: 7000, category: 'Menu Utama', description: 'Cilok 5, cuanki lidah 2, siomay mini 10, cuanki tahu 2, mie, pilus, jeruk limau' },
-      { id: 'sb_pangsit_mie_jkt', name: 'Pangsit Mie Ayam Jakarta', price: 15000, cogs: 7500, category: 'Menu Baru', description: '★ Menu Baru: Pangsit Mie Ayam Jakarta' },
-      { id: 'sb_mie_ndoweh', name: 'Mie Ndoweh', price: 10000, cogs: 4500, category: 'Menu Baru', description: '★ Menu Baru: Pilihan Level 1, Level 2, Level 3, Level 4' }
+      { id: 'sb_spesial', name: 'Seblak Spesial', price: 25000, cogs: 13500, category: 'Menu Utama', description: 'Isian / pelengkap + sosis 1, bakso 2, cilok 2, dumpling 1, ceker 1, tulang 1, cuanki lidah 1, siomay mini 4, jamur Enoki, pilus', ingredients: [{stockId:'st1',qty:1},{stockId:'st4',qty:1},{stockId:'st3',qty:2},{stockId:'st_cilok',qty:2},{stockId:'st_dumpling',qty:1},{stockId:'st2',qty:1},{stockId:'st_tulang',qty:1},{stockId:'st_cuanki',qty:1},{stockId:'st_siomay_mini',qty:4},{stockId:'st_enoki',qty:1},{stockId:'st_pilus',qty:1}] },
+      { id: 'sb_ceker', name: 'Seblak Ceker', price: 15000, cogs: 7500, category: 'Menu Utama', description: 'Isian / pelengkap + ceker 2 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st2',qty:2}] },
+      { id: 'sb_dumpling', name: 'Seblak Dumpling', price: 15000, cogs: 8000, category: 'Menu Utama', description: 'Isian / pelengkap + dumpling 2 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st_dumpling',qty:2}] },
+      { id: 'sb_tulang', name: 'Seblak Tulang', price: 15000, cogs: 7500, category: 'Menu Utama', description: 'Isian / pelengkap + tulang 3 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st_tulang',qty:3}] },
+      { id: 'sb_cilok', name: 'Seblak Cilok', price: 13000, cogs: 5500, category: 'Menu Utama', description: 'Isian / pelengkap + cilok 4 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st_cilok',qty:4}] },
+      { id: 'sb_sosis', name: 'Seblak Sosis', price: 15000, cogs: 7000, category: 'Menu Utama', description: 'Isian / pelengkap + sosis 1 ½ bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st4',qty:1.5}] },
+      { id: 'sb_cuanki', name: 'Seblak Cuanki', price: 15000, cogs: 6500, category: 'Menu Utama', description: 'Isian / pelengkap + cuanki lidah 5 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st_cuanki',qty:5}] },
+      { id: 'sb_bakso', name: 'Seblak Bakso', price: 15000, cogs: 7500, category: 'Menu Utama', description: 'Isian / pelengkap + bakso 3 bj', ingredients: [{stockId:'st1',qty:1},{stockId:'st3',qty:3}] },
+      { id: 'sb_baci', name: 'Bakso Aci', price: 15000, cogs: 7000, category: 'Menu Utama', description: 'Cilok 5, cuanki lidah 2, siomay mini 10, cuanki tahu 2, mie, pilus, jeruk limau', ingredients: [{stockId:'st_cilok',qty:5},{stockId:'st_cuanki',qty:2},{stockId:'st_siomay_mini',qty:10},{stockId:'st_cuanki_tahu',qty:2},{stockId:'st_pilus',qty:1}] },
+      { id: 'sb_pangsit_mie_jkt', name: 'Pangsit Mie Ayam Jakarta', price: 15000, cogs: 7500, category: 'Menu Baru', description: '★ Menu Baru: Pangsit Mie Ayam Jakarta', ingredients: [{stockId:'st_mie_ayam',qty:1}] },
+      { id: 'sb_mie_ndoweh', name: 'Mie Ndoweh', price: 10000, cogs: 4500, category: 'Menu Baru', description: '★ Menu Baru: Pilihan Level 1, Level 2, Level 3, Level 4', ingredients: [{stockId:'st_mie_ndoweh',qty:1}] }
     ];
 
     // DEFAULT 16 EXTRA TOPPINGS WITH OFFICIAL COGS / HPP
@@ -2928,6 +2982,14 @@ function doPost(e) {
               <button onclick="quickAdjustMenuPrice(${idx}, 1000)" class="px-2.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+1k</button>
             </div>
           </div>
+          <div class="pt-2 border-t border-stone-800/80 flex items-center justify-between gap-2">
+            <div class="text-[10.5px] text-stone-400">
+              Resep: <span class="font-bold text-amber-300">${(m.ingredients || []).length} Bahan (BOM)</span>
+            </div>
+            <button onclick="openRecipeModal(${idx})" class="px-2.5 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-extrabold text-[11px] flex items-center gap-1 cursor-pointer">
+              <span>📋</span> Atur Resep Bahan
+            </button>
+          </div>
         </div>
       `).join('');
 
@@ -3031,6 +3093,9 @@ function doPost(e) {
                 <button onclick="quickAdjustMenuCogs(${idx}, -500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">-500</button>
                 <button onclick="quickAdjustMenuCogs(${idx}, 500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+500</button>
               </div>
+              <button onclick="openRecipeModal(${idx})" class="w-full mt-2 py-1.5 px-3 rounded-xl bg-stone-800/80 hover:bg-stone-800 border border-stone-700 hover:border-amber-500/50 text-stone-300 font-bold text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>📋</span> Formula Resep (BOM) &amp; Hitung Otomatis
+              </button>
             </div>
           </div>
         `;
@@ -3306,6 +3371,12 @@ function doPost(e) {
       setLS('menu', menuList);
       broadcastUpdate('MENU_UPDATED', menuList);
       renderAllOwnerViews();
+      postToCloud({
+        type: 'sync_menu_toppings',
+        outletId: 'seblak',
+        menuItems: menuList,
+        toppingItems: toppingList
+      });
     }
     function deleteToppingItem(idx) {
       if (!confirm('Hapus topping / add-on "' + toppingList[idx].name + '"?')) return;
@@ -3313,6 +3384,12 @@ function doPost(e) {
       setLS('toppings', toppingList);
       broadcastUpdate('TOPPINGS_UPDATED', toppingList);
       renderAllOwnerViews();
+      postToCloud({
+        type: 'sync_menu_toppings',
+        outletId: 'seblak',
+        menuItems: menuList,
+        toppingItems: toppingList
+      });
     }
 
     function openAddMenuModal() {
@@ -3339,7 +3416,8 @@ function doPost(e) {
         category: cat,
         price,
         cogs,
-        description: desc
+        description: desc,
+        ingredients: []
       });
       setLS('menu', menuList);
       broadcastUpdate('MENU_UPDATED', menuList);
@@ -3354,10 +3432,165 @@ function doPost(e) {
       alert('✅ Menu baru "' + name + '" berhasil ditambahkan dan langsung aktif di Kasir!');
     }
 
+    // ==========================================
+    // RESEP BAHAN BAKU (BOM) PER MENU
+    // ==========================================
+    let currentEditingRecipeIdx = -1;
+    let tempRecipeIngredients = [];
+
+    function openRecipeModal(idx) {
+      currentEditingRecipeIdx = idx;
+      const m = menuList[idx];
+      if (!m) return;
+      document.getElementById('recipeModalTitle').textContent = 'Formula Resep: ' + m.name;
+      // Clone existing ingredients or init empty
+      tempRecipeIngredients = JSON.parse(JSON.stringify(m.ingredients || []));
+
+      // Populate stock select
+      const sel = document.getElementById('recipeAddStockSelect');
+      sel.innerHTML = stockList.map(s => `
+        <option value="${s.id}">${s.name} (${s.unit}) - Modal: ${rp(s.cost || 0)}</option>
+      `).join('');
+      document.getElementById('recipeAddQtyInput').value = '1';
+
+      renderRecipeIngredientsList();
+      document.getElementById('recipeModal').classList.remove('hidden');
+    }
+
+    function closeRecipeModal() {
+      document.getElementById('recipeModal').classList.add('hidden');
+      currentEditingRecipeIdx = -1;
+      tempRecipeIngredients = [];
+    }
+
+    function renderRecipeIngredientsList() {
+      const box = document.getElementById('recipeIngredientsList');
+      if (tempRecipeIngredients.length === 0) {
+        box.innerHTML = '<div class="p-4 rounded-xl bg-[#160F0C] border border-stone-800 text-center text-xs text-stone-500">Belum ada bahan baku yang terdaftar di resep ini. Tambahkan bahan di bawah.</div>';
+        document.getElementById('recipeTotalCogsPreview').textContent = 'Rp 0';
+        return;
+      }
+
+      let totalBOM = 0;
+      box.innerHTML = tempRecipeIngredients.map((ing, i) => {
+        const st = stockList.find(s => s.id === ing.stockId);
+        const stName = st ? st.name : (ing.stockName || ing.stockId);
+        const unit = st ? st.unit : (ing.unit || 'unit');
+        const unitCost = st ? (st.cost || 0) : (ing.cost || 0);
+        const subtotal = Math.round(unitCost * ing.qty);
+        totalBOM += subtotal;
+
+        return `
+          <div class="p-2.5 rounded-xl bg-[#160F0C] border border-stone-800 flex items-center justify-between gap-2 text-xs">
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-white truncate">${stName}</div>
+              <div class="text-[10px] text-stone-400">@ ${rp(unitCost)} / ${unit}</div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <input type="number" step="any" value="${ing.qty}" onchange="updateRecipeIngredientQty(${i}, this.value)" class="w-16 p-1.5 rounded-lg bg-[#221712] border border-stone-700 text-xs font-black text-amber-300 text-center focus:outline-none focus:border-amber-400" />
+              <span class="text-[11px] text-stone-400 font-bold w-8">${unit}</span>
+              <span class="font-extrabold text-emerald-400 text-xs w-20 text-right">${rp(subtotal)}</span>
+              <button onclick="removeRecipeIngredient(${i})" class="w-6 h-6 rounded-md bg-red-950/80 hover:bg-red-900 text-red-400 text-xs font-bold cursor-pointer">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('recipeTotalCogsPreview').textContent = rp(totalBOM);
+    }
+
+    function addIngredientToRecipe() {
+      const sel = document.getElementById('recipeAddStockSelect');
+      const stockId = sel.value;
+      const qty = parseFloat(document.getElementById('recipeAddQtyInput').value) || 0;
+      if (!stockId) { alert('Pilih bahan baku terlebih dahulu!'); return; }
+      if (qty <= 0) { alert('Takaran bahan harus lebih dari 0!'); return; }
+
+      const st = stockList.find(s => s.id === stockId);
+      if (!st) return;
+
+      const existing = tempRecipeIngredients.find(x => x.stockId === stockId);
+      if (existing) {
+        existing.qty = Number((existing.qty + qty).toFixed(2));
+      } else {
+        tempRecipeIngredients.push({
+          stockId: st.id,
+          stockName: st.name,
+          unit: st.unit,
+          qty: qty,
+          cost: st.cost || 0
+        });
+      }
+      renderRecipeIngredientsList();
+    }
+
+    function removeRecipeIngredient(i) {
+      tempRecipeIngredients.splice(i, 1);
+      renderRecipeIngredientsList();
+    }
+
+    function updateRecipeIngredientQty(i, val) {
+      const q = parseFloat(val) || 0;
+      if (tempRecipeIngredients[i]) {
+        tempRecipeIngredients[i].qty = Math.max(0.01, q);
+        renderRecipeIngredientsList();
+      }
+    }
+
+    function calcTotalBomCost() {
+      let total = 0;
+      tempRecipeIngredients.forEach(ing => {
+        const st = stockList.find(s => s.id === ing.stockId);
+        const cost = st ? (st.cost || 0) : (ing.cost || 0);
+        total += Math.round(cost * ing.qty);
+      });
+      return total;
+    }
+
+    function applyRecipeCogsToMenu() {
+      if (currentEditingRecipeIdx < 0 || !menuList[currentEditingRecipeIdx]) return;
+      const totalBOM = calcTotalBomCost();
+      if (totalBOM <= 0) {
+        alert('Modal HPP dari resep adalah Rp 0. Pastikan modal bahan baku di stok gudang sudah diisi!');
+        return;
+      }
+      menuList[currentEditingRecipeIdx].cogs = totalBOM;
+      alert('⚡ HPP Menu diatur otomatis menjadi ' + rp(totalBOM) + ' berdasarkan total kalkulasi resep bahan baku!');
+    }
+
+    function saveRecipeModal() {
+      if (currentEditingRecipeIdx < 0 || !menuList[currentEditingRecipeIdx]) return;
+      const m = menuList[currentEditingRecipeIdx];
+      m.ingredients = JSON.parse(JSON.stringify(tempRecipeIngredients));
+
+      // Optional auto update COGS if cogs was 0 or user wants
+      const totalBOM = calcTotalBomCost();
+      if (totalBOM > 0 && (!m.cogs || m.cogs === 0)) {
+        m.cogs = totalBOM;
+      }
+
+      setLS('menu', menuList);
+      broadcastUpdate('MENU_UPDATED', menuList);
+      closeRecipeModal();
+      renderAllOwnerViews();
+      postToCloud({
+        type: 'sync_menu_toppings',
+        outletId: 'seblak',
+        menuItems: menuList,
+        toppingItems: toppingList
+      });
+      alert('✅ Resep bahan baku untuk "' + m.name + '" berhasil disimpan! Bahan baku akan otomatis terpotong saat Kasir mencatat penjualan.');
+    }
+
     function openAddToppingModal() {
       document.getElementById('newToppingName').value = '';
       document.getElementById('newToppingPrice').value = '';
       document.getElementById('newToppingCogs').value = '';
+      const stockSel = document.getElementById('newToppingStockSelect');
+      if (stockSel) {
+        stockSel.innerHTML = '<option value="">-- Tidak Terhubung ke Stok (Hanya Add-on) --</option>' +
+          stockList.map(s => `<option value="${s.id}">${s.name} (${s.unit})</option>`).join('');
+      }
       document.getElementById('addToppingModal').classList.remove('hidden');
     }
     function closeAddToppingModal() { document.getElementById('addToppingModal').classList.add('hidden'); }
@@ -3365,6 +3598,7 @@ function doPost(e) {
       const name = document.getElementById('newToppingName').value.trim();
       const price = Number(document.getElementById('newToppingPrice').value) || 0;
       const cogs = Number(document.getElementById('newToppingCogs').value) || Math.round(price * 0.4);
+      const stockId = document.getElementById('newToppingStockSelect')?.value || null;
       if (!name) { alert('Nama add-on / topping tidak boleh kosong!'); return; }
       if (price <= 0) { alert('Harga add-on harus lebih dari 0!'); return; }
 
@@ -3373,7 +3607,7 @@ function doPost(e) {
         name,
         price,
         cogs,
-        stockId: null,
+        stockId: stockId || null,
         qtyUse: 1
       });
       setLS('toppings', toppingList);
