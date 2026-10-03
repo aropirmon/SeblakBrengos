@@ -2776,12 +2776,15 @@ function doPost(e) {
         }
 
         if (Array.isArray(json.sales) && json.sales.length > 0) {
-          const existingIds = new Set(txList.map(t => t.id));
-          const newRemote = json.sales.filter(s => !existingIds.has(s.id || s.ID_Transaksi));
-          if (newRemote.length > 0) {
-            newRemote.forEach(s => {
+          const existingIds = new Set(txList.map(t => String(t.id).trim()));
+          let hasNewSales = false;
+          json.sales.forEach(s => {
+            const sid = String(s.id || s.ID_Transaksi || '').trim();
+            if (sid && !existingIds.has(sid)) {
+              existingIds.add(sid);
+              hasNewSales = true;
               txList.unshift({
-                id: String(s.id || s.ID_Transaksi || 'SB'),
+                id: sid,
                 time: s.time || s.Waktu || new Date().toISOString(),
                 cashierName: s.cashierName || s.Kasir || 'Kasir Seblak',
                 customerName: s.customerName || s.Pelanggan || '-',
@@ -2793,7 +2796,10 @@ function doPost(e) {
                 itemsSummary: String(s.itemsSummary || s.Detail_Pesanan || ''),
                 items: Array.isArray(s.items) ? s.items : []
               });
-            });
+            }
+          });
+          if (hasNewSales || txList.length === 0) {
+            txList.sort((a, b) => new Date(b.time || 0).getTime() - new Date(a.time || 0).getTime());
             setLS('tx_' + todayStr(), txList);
           }
         }
@@ -3853,12 +3859,12 @@ function doPost(e) {
       a.click();
     }
 
-    // AUTO REFRESH IN BACKGROUND (EVERY 20 SECONDS - NON-BLOCKING)
+    // AUTO REFRESH IN BACKGROUND (EVERY 12 SECONDS - NON-BLOCKING REALTIME)
     setInterval(() => {
       if (cloudCfg.scriptUrl && document.getElementById('loginGate').classList.contains('hidden')) {
         syncFromSpreadsheet(false);
       }
-    }, 20000);
+    }, 12000);
   </script>
 </body>
 </html>
