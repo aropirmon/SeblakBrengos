@@ -324,9 +324,21 @@
       <div class="p-4 overflow-y-auto flex-1 bg-stone-50 flex justify-center">
         <div id="receiptPreviewBox" class="bg-white p-4 rounded-xl shadow-xs border border-stone-200 w-full font-mono text-xs text-stone-900"></div>
       </div>
-      <div class="p-3 bg-white border-t border-stone-200 grid grid-cols-2 gap-2">
-        <button onclick="window.print()" class="py-2.5 rounded-xl bg-[#2B1B14] text-white font-black text-xs cursor-pointer">🖨️ Cetak Thermal</button>
-        <button onclick="sendReceiptWa()" class="py-2.5 rounded-xl bg-emerald-600 text-white font-black text-xs cursor-pointer">📲 Kirim WA</button>
+      <div class="p-3 bg-[#FAF6F0] border-t border-stone-200 space-y-2">
+        <div class="flex gap-1.5">
+          <input id="waCustomerInput" type="tel" placeholder="No. WA Pelanggan (contoh: 0812...)" class="flex-1 p-2 rounded-xl border border-stone-300 bg-white text-xs font-bold text-stone-900 focus:outline-none focus:border-emerald-600" />
+          <button type="button" onclick="sendReceiptWaDirect()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs cursor-pointer flex items-center gap-1 shadow-xs">
+            <span>📲 Kirim WA</span>
+          </button>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="printReceipt()" class="py-2.5 rounded-xl bg-[#2B1B14] hover:bg-stone-800 text-white font-black text-xs cursor-pointer flex items-center justify-center gap-1 shadow-xs">
+            <span>🖨️ Cetak Struk</span>
+          </button>
+          <button type="button" onclick="copyReceiptText()" id="copyReceiptBtn" class="py-2.5 rounded-xl bg-white hover:bg-stone-100 border border-stone-300 text-stone-800 font-extrabold text-xs cursor-pointer flex items-center justify-center gap-1">
+            <span>📋 Salin Struk</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -531,12 +543,23 @@
     }
 
     // STATE
-    let cloudCfg = getLS('cloud_cfg', {
-      scriptUrl: "",
-      sheetUrl: "",
-      cashierName: 'Kasir Seblak Brengos',
-      ownerWa: '087898185988'
-    });
+    const BAKED_WEBHOOK = "https://script.google.com/macros/s/AKfycbzIxwEi1PxP53oGMuG7yz3Fkcf9UkESvtKB_FzK2GhiAIuvlAb68IuZg7EoX7b9Cb7RBA/exec";
+    const BAKED_SHEET = "https://docs.google.com/spreadsheets/d/1xpfaKm9sdSmFR_XA0x7I7kcBNhVAMDFEFQY4Poc5F30/edit?gid=947867420#gid=947867420";
+    let cloudCfg = getLS('cloud_cfg', null);
+    if (!cloudCfg || !cloudCfg.scriptUrl) {
+      cloudCfg = {
+        scriptUrl: BAKED_WEBHOOK,
+        sheetUrl: BAKED_SHEET,
+        cashierName: 'Kasir Seblak Brengos',
+        ownerWa: '087898185988'
+      };
+      setLS('cloud_cfg', cloudCfg);
+    } else if (BAKED_WEBHOOK && cloudCfg.scriptUrl !== BAKED_WEBHOOK) {
+      // If HTML was compiled with a new/different webhook, auto-update stored config
+      cloudCfg.scriptUrl = BAKED_WEBHOOK;
+      if (BAKED_SHEET) cloudCfg.sheetUrl = BAKED_SHEET;
+      setLS('cloud_cfg', cloudCfg);
+    }
     let menuList = getLS('menu', DEFAULT_MENU);
     if (!Array.isArray(menuList) || menuList.length === 0) {
       menuList = [...DEFAULT_MENU];
@@ -975,7 +998,7 @@
         `;
       }).join('');
 
-      document.getElementById('receiptPreviewBox').innerHTML = `
+      const receiptHtml = `
         <div class="text-center pb-2 border-b border-stone-300 space-y-0.5">
           <div class="font-black text-sm">SEBLAK BRENGOS</div>
           <div class="text-[10px] text-stone-600">The Rebellious Spice • Nikmatnya Brutal</div>
@@ -1002,22 +1025,94 @@
           Terima kasih atas kunjungan Anda!<br/>Follow IG/TikTok: @seblakbrengos
         </div>
       `;
+
+      document.getElementById('receiptPreviewBox').innerHTML = receiptHtml;
+      const printArea = document.getElementById('printArea');
+      if (printArea) printArea.innerHTML = receiptHtml;
+
+      const m = (tx.customerName || '').match(/(08\d{8,12})/);
+      const waInp = document.getElementById('waCustomerInput');
+      if (waInp) waInp.value = m ? m[1] : '';
+
       document.getElementById('receiptModal').classList.remove('hidden');
     }
     function closeReceiptModal() { document.getElementById('receiptModal').classList.add('hidden'); }
 
-    function sendReceiptWa() {
+    function printReceipt() {
+      const box = document.getElementById('receiptPreviewBox');
+      const printArea = document.getElementById('printArea');
+      if (box && printArea) {
+        printArea.innerHTML = box.innerHTML;
+      }
+      setTimeout(() => {
+        window.print();
+      }, 50);
+    }
+
+    function sendReceiptWaDirect() {
       if (!lastReceiptTx) return;
-      const phone = prompt('Masukkan Nomor WhatsApp Pelanggan (contoh: 08123456789):');
-      if (!phone) return;
+      let phone = (document.getElementById('waCustomerInput')?.value || '').trim();
+      if (!phone) {
+        phone = prompt('Masukkan Nomor WhatsApp Pelanggan (contoh: 08123456789):');
+        if (!phone) return;
+      }
       const formattedPhone = phone.replace(/^0/, '62').replace(/\D/g, '');
+      if (formattedPhone.length < 9) {
+        alert('Nomor WhatsApp tidak valid (minimal 10 digit)!');
+        return;
+      }
+
       const itemsList = (lastReceiptTx.items || []).map(i => {
         const tops = (i.toppings || []).map(t => '+' + t.name).join(' ');
         return `• ${i.qty}x ${i.name} ${i.spiceName ? '(' + i.spiceName + ')' : ''} ${tops ? '[' + tops + ']' : ''} = ${rp(itemUnitTotal(i))}`;
       }).join('%0A');
 
       const msg = `*STRUK PEMBELIAN SEBLAK BRENGOS*%0ANo. Nota: #${lastReceiptTx.id}%0AWaktu: ${new Date(lastReceiptTx.time).toLocaleString('id-ID')}%0A----------------------------%0A${itemsList}%0A----------------------------%0A*Total Bayar: ${rp(lastReceiptTx.total)}*%0AMetode: ${lastReceiptTx.paymentMethodName}%0AStatus: *LUNAS*%0A%0ATerima kasih telah menikmati Seblak Brengos!`;
-      window.open('https://wa.me/' + formattedPhone + '?text=' + msg, '_blank');
+
+      const waUrl = 'https://api.whatsapp.com/send?phone=' + formattedPhone + '&text=' + msg;
+
+      // Direct redirection so it is NEVER blocked by browser pop-up blockers on mobile/tablet
+      const win = window.open(waUrl, '_blank');
+      if (!win || win.closed || typeof win.closed === 'undefined') {
+        window.location.href = waUrl;
+      }
+    }
+
+    function sendReceiptWa() {
+      sendReceiptWaDirect();
+    }
+
+    function copyReceiptText() {
+      if (!lastReceiptTx) return;
+      const tx = lastReceiptTx;
+      const itemsList = (tx.items || []).map(i => {
+        const tops = (i.toppings || []).map(t => '+' + t.name).join(' ');
+        return `${i.qty}x ${i.name} ${i.spiceName ? '(' + i.spiceName + ')' : ''} ${tops ? '[' + tops + ']' : ''} = ${rp(itemUnitTotal(i))}`;
+      }).join('\n');
+
+      const text = `============================\n       SEBLAK BRENGOS       \n The Rebellious Spice • Nikmatnya Brutal\n============================\nNo. Nota: #${tx.id}\nWaktu: ${new Date(tx.time).toLocaleString('id-ID')}\nKasir: ${tx.cashierName || 'Kasir'}\nPelanggan: ${tx.customerName || '-'}\n----------------------------\n${itemsList}\n----------------------------\nSubtotal: ${rp(tx.subtotal || tx.total)}\n${tx.discount > 0 ? `Diskon: -${rp(tx.discount)}\n` : ''}TOTAL: ${rp(tx.total)}\nMetode: ${tx.paymentMethodName} (LUNAS)\n============================\nTerima kasih atas kunjungan Anda!\n============================`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById('copyReceiptBtn');
+          if (btn) {
+            btn.innerHTML = '<span>✅ Tersalin!</span>';
+            setTimeout(() => { btn.innerHTML = '<span>📋 Salin Struk</span>'; }, 2000);
+          }
+        }).catch(() => fallbackCopyText(text));
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      alert('✅ Teks struk berhasil disalin ke clipboard!');
     }
 
     // FAST ASYNC CLOUD DISPATCH WITH TIMEOUT & OFFLINE QUEUE
