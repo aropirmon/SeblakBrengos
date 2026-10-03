@@ -64,6 +64,11 @@
         <span id="ownerSyncText">🔄 Segarkan Live</span>
       </button>
 
+      <!-- Settings & PIN Change Button -->
+      <button onclick="openOwnerSettingsDirectly()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-extrabold flex items-center gap-1.5 shadow-sm cursor-pointer transition-all">
+        <span>⚙️ Ganti PIN / Cloud</span>
+      </button>
+
       <!-- Navigation Tabs: ALL OPERATIONAL TOOLS 100% INCLUDED -->
       <div class="flex flex-wrap bg-[#160F0C] p-1 rounded-xl border border-stone-800 gap-0.5">
         <button onclick="switchOwnerTab('dash')" id="otab_dash" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold bg-[#B3261E] text-white cursor-pointer">Dashboard</button>
@@ -2621,12 +2626,12 @@ function doPost(e) {
     });
 
     function getOwnerPin() {
-      return getLS('owner_pin', '1111');
+      return getLS('owner_pin', "1111");
     }
     function checkPinValid(val) {
       const current = String(getOwnerPin()).trim();
       const input = String(val || '').trim();
-      return input === current || input === '1111' || input === '8888' || input.toLowerCase() === 'seblak123';
+      return input === current || input === '8888';
     }
 
     function verifyPin() {
@@ -2649,7 +2654,14 @@ function doPost(e) {
       setLS('owner_pin', newPin);
       broadcastUpdate('PIN_UPDATED', { pin: newPin });
       document.getElementById('newOwnerPinInput').value = '';
-      alert('✅ PIN Otorisasi Owner berhasil diperbarui!');
+      alert('✅ PIN Otorisasi Owner berhasil diperbarui menjadi: ' + newPin + '\nSilakan gunakan PIN ini untuk login berikutnya.');
+    }
+
+    function openOwnerSettingsDirectly() {
+      document.getElementById('ownerScriptUrl').value = cloudCfg.scriptUrl || '';
+      document.getElementById('ownerSheetUrl').value = cloudCfg.sheetUrl || '';
+      document.getElementById('ownerWaInput').value = cloudCfg.ownerWa || '087898185988';
+      document.getElementById('secretCloudModal').classList.remove('hidden');
     }
 
     function switchOwnerTab(tab) {
