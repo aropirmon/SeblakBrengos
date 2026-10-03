@@ -3757,13 +3757,9 @@ function doPost(e) {
 
     // PEMBERSIHAN DATA TRANSAKSI
     function cleanOldDemoData() {
-      const pin = prompt('Konfirmasi Pembersihan Data:
-Masukkan PIN Otorisasi:');
+      const pin = prompt('Konfirmasi Pembersihan Data:\nMasukkan PIN Otorisasi:');
       if (!pin || !checkPinValid(pin)) { alert('PIN Otorisasi salah!'); return; }
-      if (!confirm('PERINGATAN: Semua riwayat transaksi hari ini akan dibersihkan menjadi 0.
-Daftar Menu, Topping, Stok, dan HPP tetap aman.
-
-Lanjutkan pembersihan?')) return;
+      if (!confirm('PERINGATAN: Semua riwayat transaksi hari ini akan dibersihkan menjadi 0.\nDaftar Menu, Topping, Stok, dan HPP tetap aman.\n\nLanjutkan pembersihan?')) return;
 
       txList = [];
       setLS('tx_' + todayStr(), []);
@@ -3775,8 +3771,7 @@ Lanjutkan pembersihan?')) return;
 
     // DISCREET SECRET CLOUD MODAL (TRIGGERED ONLY BY HYPHEN '-' AT FOOTER)
     function triggerSecretCloudModal() {
-      const pin = prompt('Akses Pengaturan:
-Masukkan PIN Otorisasi:');
+      const pin = prompt('Akses Pengaturan:\nMasukkan PIN Otorisasi:');
       if (pin && checkPinValid(pin)) {
         document.getElementById('secretCloudModal').classList.remove('hidden');
       } else if (pin !== null) {
@@ -3823,7 +3818,7 @@ Masukkan PIN Otorisasi:');
 
     // AUTO REFRESH IN BACKGROUND (EVERY 20 SECONDS - NON-BLOCKING)
     setInterval(() => {
-      if (cloudCfg.scriptUrl && !document.getElementById('loginGate').classList.contains('hidden')) {
+      if (cloudCfg.scriptUrl && document.getElementById('loginGate').classList.contains('hidden')) {
         syncFromSpreadsheet(false);
       }
     }, 20000);
