@@ -360,7 +360,7 @@
             <span class="font-extrabold uppercase text-red-400">🧹 Pembersihan Data (Reset Bersih):</span>
             <button onclick="cleanOldDemoData()" class="px-3 py-1 rounded-lg bg-red-950 hover:bg-red-900 border border-red-800 text-red-300 font-black text-xs cursor-pointer">Bersihkan Data Transaksi</button>
           </div>
-          <p class="text-[10.5px] text-stone-400">Membersihkan transaksi demo/lama dan memulai hari baru dengan omzet nol, tanpa mengubah daftar menu, topping, dan stok resmi.</p>
+          <p class="text-[10.5px] text-stone-400">Menghapus riwayat transaksi di Spreadsheet, tablet kasir, dan HP ini lalu memulai dengan omzet nol, tanpa mengubah daftar menu, topping, dan stok.</p>
         </div>
 
         <div class="pt-2 border-t border-stone-800 space-y-2">
@@ -1525,6 +1525,14 @@ function doGet(e) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var action = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action) ? e.parameter.action : "stock";
 
+    // Ringan: hanya mengembalikan penanda "reset data" (dipakai untuk verifikasi reset)
+    if (action === "epoch") {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        resetEpoch: Number(PropertiesService.getScriptProperties().getProperty("reset_epoch") || 0)
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     if (action === "pull") {
       var sMenuPull = ss.getSheetByName(OUTLET_CONFIG.menuSheet);
       var mDataPull = sMenuPull ? sMenuPull.getDataRange().getValues() : [];
@@ -1605,7 +1613,8 @@ function doGet(e) {
         stock: pullStock,
         menu: pullMenu,
         toppings: pullToppings,
-        sales: pullSales.reverse()
+        sales: pullSales.reverse(),
+        resetEpoch: Number(PropertiesService.getScriptProperties().getProperty("reset_epoch") || 0)
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -1934,6 +1943,19 @@ function doPost(e) {
           if (String(vIds2[vj][0]).trim() === vId) { sToday.getRange(vj + 2, 12).setValue(vLabel); break; }
         }
       }
+    }
+
+    // KASUS 1c: Reset transaksi (mulai baru). Mengosongkan riwayat penjualan di Spreadsheet
+    // dan memasang penanda waktu agar kasir &amp; owner ikut mengosongkan data lokalnya.
+    else if (payload.type === "reset_transactions") {
+      if (sSales &amp;&amp; sSales.getLastRow() &gt; 1) {
+        sSales.getRange(2, 1, sSales.getLastRow() - 1, sSales.getMaxColumns()).clearContent();
+      }
+      if (sToday &amp;&amp; sToday.getLastRow() &gt; 4) {
+        sToday.getRange(5, 1, sToday.getLastRow() - 4, 12).clearContent();
+      }
+      PropertiesService.getScriptProperties().setProperty("reset_epoch", String(Date.now()));
+      try { updateMonthlyRecap(); } catch (eRecap) {}
     }
 
     // KASUS 2: Bulk Penjualan (Ekspor Seluruh Transaksi Device ke Spreadsheet)
@@ -2787,6 +2809,30 @@ function doPost(e) {
     }
 
     // FAST ASYNC CLOUD SYNC (NON-BLOCKING WITH 5-SECOND TIMEOUT)
+    // ---------- Reset data bersama (Spreadsheet + semua perangkat) ----------
+    function txMs(t) { return new Date(String((t && t.time) || '').replace(' ', 'T')).getTime() || 0; }
+    function getResetEpoch() { return Number(getLS('reset_epoch', 0)) || 0; }
+    function applyResetEpoch(ep) {
+      ep = Number(ep) || 0;
+      if (ep > getResetEpoch()) {
+        setLS('reset_epoch', ep);
+        txList = txList.filter(t => txMs(t) > ep);
+        setLS('tx_' + todayStr(), txList);
+        setLS('open_bills', []);
+        return true;
+      }
+      return false;
+    }
+    async function fetchServerEpoch() {
+      try {
+        const c = new AbortController(); const id = setTimeout(() => c.abort(), 20000);
+        const r = await fetch(cloudCfg.scriptUrl + '?action=epoch&t=' + Date.now(), { signal: c.signal });
+        clearTimeout(id);
+        const j = await r.json();
+        return Number(j.resetEpoch) || 0;
+      } catch (e) { return -1; }
+    }
+
     // ---------- Helper sinkronisasi (anti-campur-hari & rekonstruksi item) ----------
     function isTodayTime(v) {
       const s = String(v || '');
@@ -2859,6 +2905,7 @@ function doPost(e) {
         const res = await fetch(cloudCfg.scriptUrl + '?action=pull&outletId=seblak&t=' + Date.now(), { signal: controller.signal });
         clearTimeout(timeoutId);
         const json = await res.json();
+        applyResetEpoch(json.resetEpoch);
 
         if (Array.isArray(json.stock) && json.stock.length > 0) {
           stockList = json.stock.map(s => ({
@@ -2912,6 +2959,7 @@ function doPost(e) {
               return;
             }
             if (!isTodayTime(timeVal)) return; // hanya nota hari ini
+            if (txMs({ time: timeVal }) <= getResetEpoch()) return; // nota sebelum reset
             const pm = String(s.paymentMethodName || s.Metode_Bayar || 'Tunai');
             const pml = pm.toLowerCase();
             const nt = {
@@ -3930,18 +3978,42 @@ function doPost(e) {
       alert('✅ Nota #' + id + ' berhasil dibatalkan (VOID)!');
     }
 
-    // PEMBERSIHAN DATA TRANSAKSI
-    function cleanOldDemoData() {
+    // PEMBERSIHAN DATA TRANSAKSI (Spreadsheet + Kasir + HP Owner)
+    async function cleanOldDemoData() {
       const pin = prompt('Konfirmasi Pembersihan Data:\nMasukkan PIN Otorisasi:');
       if (!pin || !checkPinValid(pin)) { alert('PIN Otorisasi salah!'); return; }
-      if (!confirm('PERINGATAN: Semua riwayat transaksi hari ini akan dibersihkan menjadi 0.\nDaftar Menu, Topping, Stok, dan HPP tetap aman.\n\nLanjutkan pembersihan?')) return;
+      if (!confirm('PERINGATAN: Riwayat transaksi akan DIHAPUS di Google Spreadsheet, tablet kasir, dan HP ini.\nDaftar Menu, Topping, Stok, dan HPP tetap aman (stok tidak dikembalikan otomatis).\n\nLanjutkan?')) return;
 
+      if (!cloudCfg.scriptUrl) {
+        txList = [];
+        setLS('tx_' + todayStr(), []);
+        setLS('open_bills', []);
+        broadcastUpdate('TRANSACTION_VOIDED', { resetAll: true });
+        renderAllOwnerViews();
+        alert('✅ Data di perangkat ini dibersihkan. (URL Spreadsheet belum diatur, jadi hanya di perangkat ini.)');
+        return;
+      }
+
+      const prev = await fetchServerEpoch();
+      if (prev < 0) { alert('⚠️ Tidak bisa terhubung ke Spreadsheet (cek internet / URL Apps Script). Data TIDAK dihapus.'); return; }
+      await postToCloud({ type: 'reset_transactions', outletId: 'seblak' });
+      let ep = 0;
+      for (let i = 0; i < 5; i++) {
+        await new Promise(r => setTimeout(r, 2500));
+        ep = await fetchServerEpoch();
+        if (ep > Math.max(prev, 0)) break;
+      }
+      if (!(ep > Math.max(prev, 0))) {
+        alert('⚠️ Pembersihan BELUM terkonfirmasi oleh Spreadsheet, jadi data TIDAK dihapus.\n\nPastikan internet aktif dan Apps Script sudah memakai kode terbaru (Terapkan > Kelola penerapan > Versi baru), lalu coba lagi.');
+        return;
+      }
+      setLS('reset_epoch', ep);
       txList = [];
       setLS('tx_' + todayStr(), []);
       setLS('open_bills', []);
       broadcastUpdate('TRANSACTION_VOIDED', { resetAll: true });
       renderAllOwnerViews();
-      alert('✅ Seluruh data transaksi demo/lama berhasil dibersihkan! Dashboard siap mencatat penjualan bersih.');
+      alert('✅ Data transaksi dibersihkan di Spreadsheet & HP ini.\nTablet kasir akan ikut bersih otomatis dalam beberapa detik setelah tersambung internet.');
     }
 
     // DISCREET SECRET CLOUD MODAL (TRIGGERED ONLY BY HYPHEN '-' AT FOOTER)
