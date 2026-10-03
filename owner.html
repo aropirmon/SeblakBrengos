@@ -2586,8 +2586,20 @@ function doPost(e) {
       ownerWa: '087898185988'
     });
     let menuList = getLS('menu', DEFAULT_MENU);
+    if (!Array.isArray(menuList) || menuList.length === 0) {
+      menuList = [...DEFAULT_MENU];
+      setLS('menu', menuList);
+    }
     let toppingList = getLS('toppings', DEFAULT_TOPPINGS);
+    if (!Array.isArray(toppingList) || toppingList.length === 0) {
+      toppingList = [...DEFAULT_TOPPINGS];
+      setLS('toppings', toppingList);
+    }
     let stockList = getLS('stock', DEFAULT_STOCK);
+    if (!Array.isArray(stockList) || stockList.length === 0) {
+      stockList = [...DEFAULT_STOCK];
+      setLS('stock', stockList);
+    }
     let txList = getLS('tx_' + todayStr(), []);
     let closingList = getLS('closings', []);
     let purchaseList = getLS('purchases', []);
