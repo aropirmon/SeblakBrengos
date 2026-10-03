@@ -218,7 +218,7 @@
         <div class="pt-2 border-t border-stone-200 flex items-center justify-between">
           <div>
             <span class="font-extrabold uppercase text-red-600">🧹 Bersihkan Transaksi Demo Hari Ini:</span>
-            <p class="text-[10px] text-stone-500">Mereset nota transaksi hari ini ke 0 tanpa mengubah menu.</p>
+            <p class="text-[10px] text-stone-500">Menghapus nota di Spreadsheet, tablet ini, dan HP Owner (menu tetap aman).</p>
           </div>
           <button onclick="cleanKasirDemoData()" class="px-3 py-1.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 font-extrabold text-xs cursor-pointer">Bersihkan</button>
         </div>
@@ -616,6 +616,44 @@
     let openBills = getLS('open_bills', []);
     let offlineQueue = getLS('offline_queue', []);
     const lastResendAt = {};
+    function txMs(t) { return new Date(String((t && t.time) || '').replace(' ', 'T')).getTime() || 0; }
+    function getResetEpoch() { return Number(getLS('reset_epoch', 0)) || 0; }
+    async function rawPost(payload) {
+      try {
+        const c = new AbortController(); const id = setTimeout(() => c.abort(), 30000);
+        await fetch(cloudCfg.scriptUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload), signal: c.signal });
+        clearTimeout(id);
+        return true;
+      } catch (e) { return false; }
+    }
+    async function fetchServerEpoch() {
+      try {
+        const c = new AbortController(); const id = setTimeout(() => c.abort(), 20000);
+        const r = await fetch(cloudCfg.scriptUrl + '?action=epoch&t=' + Date.now(), { signal: c.signal });
+        clearTimeout(id);
+        const j = await r.json();
+        return Number(j.resetEpoch) || 0;
+      } catch (e) { return -1; }
+    }
+    // Kembalikan stok bahan baku dari nota (dipakai saat nota di-void oleh Owner)
+    function restoreStockForTx(tx) {
+      (tx.items || []).forEach(ci => {
+        const m = menuList.find(x => x.id === ci.menuId);
+        if (m && Array.isArray(m.ingredients)) {
+          m.ingredients.forEach(ing => {
+            const st = stockList.find(s => s.id === ing.stockId);
+            if (st) st.qty = Number((st.qty + ing.qty * ci.qty).toFixed(2));
+          });
+        }
+        (ci.toppings || []).forEach(tp => {
+          const tDef = toppingList.find(x => x.id === tp.id);
+          if (tDef && tDef.stockId) {
+            const st = stockList.find(s => s.id === tDef.stockId);
+            if (st) st.qty = Number((st.qty + (tDef.qtyUse || 1) * (tp.qty || 1) * ci.qty).toFixed(2));
+          }
+        });
+      });
+    }
     const txAge = t => Date.now() - new Date(t.time).getTime();
     function pendingTx() { return txList.filter(t => !t.synced); }
     function recentPendingTx() { return pendingTx().filter(t => txAge(t) < 1800000); }
@@ -1705,6 +1743,17 @@
         clearTimeout(tid);
         const data = await res.json();
 
+        // Reset data dari Owner/Spreadsheet: kosongkan nota lokal yang lebih lama dari waktu reset
+        const srvEpoch = Number(data.resetEpoch) || 0;
+        if (srvEpoch > getResetEpoch()) {
+          setLS('reset_epoch', srvEpoch);
+          txList = txList.filter(t => txMs(t) > srvEpoch);
+          setLS('tx_' + todayStr(), txList);
+          offlineQueue = offlineQueue.filter(p => !(p && p.type === 'sale' && p.data && txMs(p.data) <= srvEpoch));
+          setLS('offline_queue', offlineQueue);
+          setLS('open_bills', []);
+        }
+
         // Verifikasi: nota dianggap terkirim bila sudah muncul di Spreadsheet
         const remoteSales = Array.isArray(data.sales) ? data.sales : [];
         const remoteIds = new Set(remoteSales.map(s => String(s.id || '').trim()));
@@ -1730,7 +1779,25 @@
           }
         });
         // Jangan timpa stok lokal dengan angka Spreadsheet selagi masih ada nota yang belum tercatat
-        const holdStock = recentPendingTx().length > 0 || offlineQueue.length > 0;
+        // Terapkan void yang dilakukan Owner dari HP (stok ikut dikembalikan)
+        let voidApplied = false;
+        remoteSales.forEach(s => {
+          if (!s.isVoid) return;
+          const lt = txList.find(t => String(t.id).trim() === String(s.id || '').trim());
+          if (lt && !lt.isVoid) {
+            restoreStockForTx(lt);
+            lt.isVoid = true;
+            lt.voidReason = 'Dibatalkan oleh Owner';
+            voidApplied = true;
+          }
+        });
+        if (voidApplied) {
+          setLS('stock', stockList);
+          setLS('tx_' + todayStr(), txList);
+          sendToCloud({ type: 'bulk_stock', outletId: 'seblak', stockItems: stockList });
+          if (syncChannel) { try { syncChannel.postMessage({ type: 'STOCK_UPDATED', data: stockList }); } catch (e) {} }
+        }
+        const holdStock = voidApplied || recentPendingTx().length > 0 || offlineQueue.length > 0;
 
         if (!holdStock && Array.isArray(data.stock) && data.stock.length > 0) {
           stockList = data.stock.map(s => ({
@@ -2037,20 +2104,39 @@
       pullFromCloud(true);
       alert('✅ Konfigurasi Cloud Spreadsheet berhasil disimpan!');
     }
-    function cleanKasirDemoData() {
+    async function cleanKasirDemoData() {
       const pin = prompt('Konfirmasi Pembersihan Data:\nMasukkan PIN Otorisasi:');
       if (!pin || !checkPinValid(pin)) { alert('PIN Otorisasi salah!'); return; }
-      if (!confirm('Bersihkan seluruh nota transaksi hari ini menjadi 0? (Daftar menu & topping tetap aman)')) return;
+      if (!confirm('Hapus seluruh nota transaksi di Google Spreadsheet, tablet ini, dan HP Owner? (Menu, topping & stok tetap aman; stok tidak dikembalikan otomatis)')) return;
+
+      if (cloudCfg.scriptUrl) {
+        const prev = await fetchServerEpoch();
+        if (prev < 0) { alert('⚠️ Tidak bisa terhubung ke Spreadsheet (cek internet / URL Apps Script). Data TIDAK dihapus.'); return; }
+        await rawPost({ type: 'reset_transactions', outletId: 'seblak' });
+        let ep = 0;
+        for (let i = 0; i < 5; i++) {
+          await new Promise(r => setTimeout(r, 2500));
+          ep = await fetchServerEpoch();
+          if (ep > Math.max(prev, 0)) break;
+        }
+        if (!(ep > Math.max(prev, 0))) {
+          alert('⚠️ Pembersihan BELUM terkonfirmasi oleh Spreadsheet, jadi data TIDAK dihapus.\n\nPastikan internet aktif dan Apps Script sudah memakai kode terbaru (Versi baru), lalu coba lagi.');
+          return;
+        }
+        setLS('reset_epoch', ep);
+      }
       txList = [];
       setLS('tx_' + todayStr(), []);
       setLS('open_bills', []);
+      offlineQueue = offlineQueue.filter(p => !(p && p.type === 'sale'));
+      setLS('offline_queue', offlineQueue);
       if (syncChannel) {
         try { syncChannel.postMessage({ type: 'TRANSACTION_VOIDED', resetAll: true }); } catch (e) {}
       }
       renderCart();
       renderTxHistory();
       closeSecretCloudModal();
-      alert('✅ Data transaksi hari ini telah dibersihkan!');
+      alert('✅ Data transaksi dibersihkan di Spreadsheet & tablet ini. HP Owner ikut bersih otomatis dalam beberapa detik.');
     }
     function resetDefaultSeblakData() {
       if (!confirm('Reset Menu, 16 Extra Topping & Stok ke daftar resmi Seblak Brengos?')) return;
