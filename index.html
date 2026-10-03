@@ -404,12 +404,12 @@
 
     // PIN SECURITY HELPERS
     function getOwnerPin() {
-      return getLS('owner_pin', '1111');
+      return getLS('owner_pin', "1111");
     }
     function checkPinValid(val) {
       const current = String(getOwnerPin()).trim();
       const input = String(val || '').trim();
-      return input === current || input === '1111' || input === '8888' || input.toLowerCase() === 'seblak123';
+      return input === current || input === '8888';
     }
     function saveNewPinFromKasirModal() {
       const newPin = (document.getElementById('cfgNewPinInput')?.value || '').trim();
@@ -422,7 +422,7 @@
         try { syncChannel.postMessage({ type: 'PIN_UPDATED', pin: newPin }); } catch (e) {}
       }
       document.getElementById('cfgNewPinInput').value = '';
-      alert('✅ PIN Otorisasi berhasil diperbarui!');
+      alert('✅ PIN Otorisasi berhasil diperbarui menjadi: ' + newPin);
     }
 
     // CROSS-TAB STORAGE LISTENER
