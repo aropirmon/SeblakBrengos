@@ -1315,8 +1315,7 @@
 
     // DISCREET SECRET CLOUD MODAL (TRIGGERED BY PIN FROM FOOTER COPYRIGHT TEXT)
     function triggerSecretCloudModal() {
-      const pin = prompt('Akses Pengaturan:
-Masukkan PIN Otorisasi:');
+      const pin = prompt('Akses Pengaturan:\nMasukkan PIN Otorisasi:');
       if (pin && checkPinValid(pin)) {
         document.getElementById('cfgScriptUrl').value = cloudCfg.scriptUrl || '';
         document.getElementById('cfgSheetUrl').value = cloudCfg.sheetUrl || '';
@@ -1343,8 +1342,7 @@ Masukkan PIN Otorisasi:');
       alert('✅ Konfigurasi Cloud Spreadsheet berhasil disimpan!');
     }
     function cleanKasirDemoData() {
-      const pin = prompt('Konfirmasi Pembersihan Data:
-Masukkan PIN Otorisasi:');
+      const pin = prompt('Konfirmasi Pembersihan Data:\nMasukkan PIN Otorisasi:');
       if (!pin || !checkPinValid(pin)) { alert('PIN Otorisasi salah!'); return; }
       if (!confirm('Bersihkan seluruh nota transaksi hari ini menjadi 0? (Daftar menu & topping tetap aman)')) return;
       txList = [];
