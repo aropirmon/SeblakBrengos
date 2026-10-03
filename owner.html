@@ -2584,12 +2584,22 @@ function doPost(e) {
     }
 
     // STATE: Initialized instantly from persistent local storage
-    let cloudCfg = getLS('cloud_cfg', {
-      scriptUrl: "",
-      sheetUrl: "",
-      cashierName: 'Kasir Seblak Brengos',
-      ownerWa: '087898185988'
-    });
+    const BAKED_WEBHOOK = "https://script.google.com/macros/s/AKfycbzIxwEi1PxP53oGMuG7yz3Fkcf9UkESvtKB_FzK2GhiAIuvlAb68IuZg7EoX7b9Cb7RBA/exec";
+    const BAKED_SHEET = "https://docs.google.com/spreadsheets/d/1xpfaKm9sdSmFR_XA0x7I7kcBNhVAMDFEFQY4Poc5F30/edit?gid=947867420#gid=947867420";
+    let cloudCfg = getLS('cloud_cfg', null);
+    if (!cloudCfg || !cloudCfg.scriptUrl) {
+      cloudCfg = {
+        scriptUrl: BAKED_WEBHOOK,
+        sheetUrl: BAKED_SHEET,
+        cashierName: 'Kasir Seblak Brengos',
+        ownerWa: '087898185988'
+      };
+      setLS('cloud_cfg', cloudCfg);
+    } else if (BAKED_WEBHOOK && cloudCfg.scriptUrl !== BAKED_WEBHOOK) {
+      cloudCfg.scriptUrl = BAKED_WEBHOOK;
+      if (BAKED_SHEET) cloudCfg.sheetUrl = BAKED_SHEET;
+      setLS('cloud_cfg', cloudCfg);
+    }
     let menuList = getLS('menu', DEFAULT_MENU);
     if (!Array.isArray(menuList) || menuList.length === 0) {
       menuList = [...DEFAULT_MENU];
@@ -3819,7 +3829,10 @@ function doPost(e) {
     }
     function openSpreadsheetTab() {
       if (!cloudCfg.sheetUrl) { alert('Masukkan URL Google Spreadsheet terlebih dahulu!'); return; }
-      window.open(cloudCfg.sheetUrl, '_blank');
+      const win = window.open(cloudCfg.sheetUrl, '_blank');
+      if (!win || win.closed || typeof win.closed === 'undefined') {
+        window.location.href = cloudCfg.sheetUrl;
+      }
     }
     function copyAppsScript() {
       const box = document.getElementById('appsScriptBox');
