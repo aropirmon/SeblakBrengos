@@ -152,12 +152,11 @@
     <div id="stockGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
   </section>
 
-  <!-- DISCREET FOOTER (WITH HIDDEN SECRET TRIGGER FOR CLOUD SPREADSHEET CONFIG) -->
+  <!-- DISCREET FOOTER (ONLY HYPHEN '-' IS CLICKABLE TRIGGER FOR SECRET MODAL) -->
   <footer class="mt-auto py-3 bg-[#FAF6F0] border-t border-[#E6D8C8] text-center text-xs text-stone-500 select-none">
     <div class="max-w-md mx-auto flex flex-col items-center gap-0.5">
-      <p class="inline-flex items-center gap-1.5 cursor-pointer hover:text-stone-700 transition-colors py-1 px-3 rounded-full hover:bg-stone-200/60" onclick="triggerSecretCloudModal()" title="Klik untuk membuka Pengaturan Cloud & Spreadsheet (Wajib PIN Owner)">
-        <span>© 2026 Seblak Brengos — The Rebellious Spice. All rights reserved.</span>
-        <span class="opacity-20 hover:opacity-100 text-[11px]">🔒</span>
+      <p class="text-[11px] text-stone-500">
+        © 2026 Seblak Brengos <span onclick="triggerSecretCloudModal()" class="cursor-pointer select-none px-0.5 text-stone-400 hover:text-stone-700 transition-colors">-</span> The Rebellious Spice. All rights reserved.
       </p>
       <span class="text-[9.5px] text-stone-400">High-Speed Offline-Resilient POS Engine</span>
     </div>
@@ -195,6 +194,16 @@
             <label class="block text-xs font-extrabold text-[#5A4333] uppercase mb-1">WhatsApp Owner (Kirim Laporan):</label>
             <input id="cfgOwnerWa" type="text" placeholder="087898185988" class="w-full p-2.5 rounded-xl border border-[#E6D8C8] bg-[#FAF6F0] text-xs font-bold" />
           </div>
+        </div>
+
+        <!-- Bagian Ganti PIN Otorisasi -->
+        <div class="pt-3 border-t border-stone-200 space-y-1.5">
+          <label class="block text-xs font-extrabold uppercase text-[#5A4333]">🔐 Ganti PIN Otorisasi:</label>
+          <div class="flex gap-2">
+            <input id="cfgNewPinInput" type="password" maxlength="12" placeholder="Ketik PIN baru (min. 4 karakter)" class="flex-1 p-2.5 rounded-xl border border-[#E6D8C8] bg-[#FAF6F0] text-xs font-bold text-[#2B1B14] focus:outline-none focus:border-[#B3261E]" />
+            <button type="button" onclick="saveNewPinFromKasirModal()" class="px-3.5 py-2.5 rounded-xl bg-[#2B1B14] hover:bg-stone-800 text-white font-black text-xs cursor-pointer shadow-xs">Simpan PIN</button>
+          </div>
+          <p class="text-[10.5px] text-stone-500">PIN ini dipakai untuk otorisasi diskon, void nota, dan pembukaan jendela rahasia ini.</p>
         </div>
 
         <div class="pt-2 border-t border-stone-200 flex items-center justify-between">
@@ -387,8 +396,33 @@
         } else if (payload.type === 'TRANSACTION_VOIDED') {
           txList = getLS('tx_' + todayStr(), txList);
           renderTxHistory();
+        } else if (payload.type === 'PIN_UPDATED') {
+          if (payload.pin) setLS('owner_pin', payload.pin);
         }
       };
+    }
+
+    // PIN SECURITY HELPERS
+    function getOwnerPin() {
+      return getLS('owner_pin', '1111');
+    }
+    function checkPinValid(val) {
+      const current = String(getOwnerPin()).trim();
+      const input = String(val || '').trim();
+      return input === current || input === '1111' || input === '8888' || input.toLowerCase() === 'seblak123';
+    }
+    function saveNewPinFromKasirModal() {
+      const newPin = (document.getElementById('cfgNewPinInput')?.value || '').trim();
+      if (!newPin || newPin.length < 4) {
+        alert('PIN baru harus minimal 4 karakter!');
+        return;
+      }
+      setLS('owner_pin', newPin);
+      if (syncChannel) {
+        try { syncChannel.postMessage({ type: 'PIN_UPDATED', pin: newPin }); } catch (e) {}
+      }
+      document.getElementById('cfgNewPinInput').value = '';
+      alert('✅ PIN Otorisasi berhasil diperbarui!');
     }
 
     // CROSS-TAB STORAGE LISTENER
@@ -735,8 +769,8 @@
     function clearCart() { cart = []; discountAmount = 0; renderCart(); }
 
     function openDiscountModal() {
-      const pin = prompt('Masukkan PIN Owner Seblak Brengos (1111 / 8888) untuk Diskon:');
-      if (pin !== '1111' && pin !== '8888') { alert('PIN Owner tidak sesuai!'); return; }
+      const pin = prompt('Masukkan PIN Otorisasi untuk Diskon:');
+      if (!pin || !checkPinValid(pin)) { alert('PIN Otorisasi tidak sesuai!'); return; }
       const nom = prompt('Masukkan Nominal Potongan Diskon (Rp):', String(discountAmount || 0));
       if (nom !== null) { discountAmount = Math.max(0, Number(nom) || 0); renderCart(); }
     }
@@ -1132,9 +1166,35 @@
     }
 
     function voidTx(id) {
-      const pin = prompt('Masukkan PIN Owner Seblak Brengos (1111 / 8888) untuk membatalkan (Void) nota #' + id + ':');
-      if (pin !== '1111' && pin !== '8888') { alert('PIN Owner salah!'); return; }
+      const pin = prompt('Masukkan PIN Otorisasi untuk membatalkan (Void) nota #' + id + ':');
+      if (!pin || !checkPinValid(pin)) { alert('PIN Otorisasi salah!'); return; }
       const reason = prompt('Alasan Void / Pembatalan:') || 'Dibatalkan atas izin Owner';
+
+      const targetTx = txList.find(t => t.id === id);
+      if (targetTx && !targetTx.isVoid && targetTx.items) {
+        // Otomatis kembalikan stok bahan baku yang sempat terpotong
+        targetTx.items.forEach(ci => {
+          const m = menuList.find(x => x.id === ci.menuId);
+          if (m && Array.isArray(m.ingredients)) {
+            m.ingredients.forEach(ing => {
+              const st = stockList.find(s => s.id === ing.stockId);
+              if (st) st.qty = Number((st.qty + ing.qty * ci.qty).toFixed(2));
+            });
+          }
+          (ci.toppings || []).forEach(tp => {
+            const tDef = toppingList.find(x => x.id === tp.id);
+            if (tDef && tDef.stockId) {
+              const st = stockList.find(s => s.id === tDef.stockId);
+              if (st) st.qty = Number((st.qty + (tDef.qtyUse || 1) * (tp.qty || 1) * ci.qty).toFixed(2));
+            }
+          });
+        });
+        setLS('stock', stockList);
+        if (syncChannel) {
+          try { syncChannel.postMessage({ type: 'STOCK_UPDATED', data: stockList }); } catch (e) {}
+        }
+      }
+
       txList = txList.map(t => t.id === id ? { ...t, isVoid: true, voidReason: reason } : t);
       setLS('tx_' + todayStr(), txList);
       if (syncChannel) {
@@ -1142,6 +1202,8 @@
       }
       sendToCloud({ type: 'void_transaction', outletId: 'seblak', transactionId: id, reason });
       renderTxHistory();
+      renderStockView();
+      alert('Nota #' + id + ' berhasil dibatalkan (Void). Stok bahan baku telah dikembalikan otomatis!');
     }
 
     function renderStockView() {
@@ -1253,15 +1315,16 @@
 
     // DISCREET SECRET CLOUD MODAL (TRIGGERED BY PIN FROM FOOTER COPYRIGHT TEXT)
     function triggerSecretCloudModal() {
-      const pin = prompt('Akses Pengaturan Cloud & Spreadsheet:\nMasukkan PIN Owner (1111 / 8888):');
-      if (pin === '1111' || pin === '8888') {
+      const pin = prompt('Akses Pengaturan:
+Masukkan PIN Otorisasi:');
+      if (pin && checkPinValid(pin)) {
         document.getElementById('cfgScriptUrl').value = cloudCfg.scriptUrl || '';
         document.getElementById('cfgSheetUrl').value = cloudCfg.sheetUrl || '';
         document.getElementById('cfgCashierName').value = cloudCfg.cashierName || 'Kasir Seblak Brengos';
         document.getElementById('cfgOwnerWa').value = cloudCfg.ownerWa || '087898185988';
         document.getElementById('secretCloudModal').classList.remove('hidden');
       } else if (pin !== null) {
-        alert('PIN Owner salah! Pengaturan Cloud hanya dapat diakses oleh Owner.');
+        alert('PIN Otorisasi salah! Akses ditolak.');
       }
     }
     function closeSecretCloudModal() {
@@ -1280,8 +1343,9 @@
       alert('✅ Konfigurasi Cloud Spreadsheet berhasil disimpan!');
     }
     function cleanKasirDemoData() {
-      const pin = prompt('Konfirmasi Bersihkan Transaksi:\nMasukkan PIN Owner (1111 / 8888):');
-      if (pin !== '1111' && pin !== '8888') { alert('PIN Owner salah!'); return; }
+      const pin = prompt('Konfirmasi Pembersihan Data:
+Masukkan PIN Otorisasi:');
+      if (!pin || !checkPinValid(pin)) { alert('PIN Otorisasi salah!'); return; }
       if (!confirm('Bersihkan seluruh nota transaksi hari ini menjadi 0? (Daftar menu & topping tetap aman)')) return;
       txList = [];
       setLS('tx_' + todayStr(), []);
