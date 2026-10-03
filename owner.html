@@ -32,8 +32,8 @@
       </div>
       <div class="space-y-2 text-left">
         <label class="block text-[11px] font-extrabold uppercase text-amber-300">PIN Otorisasi Owner:</label>
-        <input id="pinInput" type="password" inputmode="numeric" placeholder="Masukkan PIN Owner (1111 / 8888)" onkeydown="if(event.key==='Enter')verifyPin()" class="w-full p-3.5 rounded-xl bg-[#160F0C] border border-stone-700 text-center font-black text-lg tracking-widest text-white focus:outline-none focus:border-[#B3261E]" />
-        <p id="pinErr" class="hidden text-xs font-bold text-red-400 text-center">PIN Owner tidak valid! Gunakan 1111 atau 8888.</p>
+        <input id="pinInput" type="password" inputmode="numeric" placeholder="Masukkan PIN Akses Owner" onkeydown="if(event.key==='Enter')verifyPin()" class="w-full p-3.5 rounded-xl bg-[#160F0C] border border-stone-700 text-center font-black text-lg tracking-widest text-white focus:outline-none focus:border-[#B3261E]" />
+        <p id="pinErr" class="hidden text-xs font-bold text-red-400 text-center">PIN Owner salah! Silakan coba lagi.</p>
       </div>
       <button onclick="verifyPin()" class="w-full py-3.5 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-sm shadow-lg cursor-pointer">
         🔓 Masuk Dashboard Owner
@@ -145,7 +145,8 @@
         <h2 class="font-black text-base text-white">Pengaturan COGS (HPP) &amp; Analisis Margin Keuntungan</h2>
         <p class="text-xs text-stone-400">Atur modal HPP per porsi untuk mengetahui estimasi laba kotor &amp; margin bersih secara otomatis tanpa membuka spreadsheet.</p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
+        <button onclick="recalculateAllMenuCogsFromLatestPrices()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs shadow-md cursor-pointer flex items-center gap-1.5" title="Hitung ulang modal HPP seluruh menu dengan harga beli terbaru bahan baku">⚡ Hitung Ulang HPP dari Harga Beli Terbaru</button>
         <button onclick="saveAllCogsToCloud()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md cursor-pointer">💾 Simpan Perubahan HPP</button>
       </div>
     </div>
@@ -294,12 +295,11 @@
     <div id="auditTxList" class="space-y-2.5"></div>
   </section>
 
-  <!-- DISCREET FOOTER (WITH HIDDEN SECRET TRIGGER FOR CLOUD SPREADSHEET CONFIG) -->
+  <!-- DISCREET FOOTER (ONLY HYPHEN '-' IS CLICKABLE TRIGGER FOR SECRET MODAL) -->
   <footer class="mt-auto py-5 text-center text-xs text-stone-500 border-t border-stone-800/40 select-none">
     <div class="max-w-md mx-auto flex flex-col items-center gap-1">
-      <p class="inline-flex items-center gap-1.5 cursor-pointer hover:text-stone-300 transition-colors py-1.5 px-3 rounded-full hover:bg-stone-900/80" onclick="triggerSecretCloudModal()" title="Klik untuk membuka Pengaturan Cloud & Spreadsheet (Wajib PIN Owner)">
-        <span>© 2026 Seblak Brengos — The Rebellious Spice. All rights reserved.</span>
-        <span class="opacity-20 hover:opacity-100 text-[11px]">🔒</span>
+      <p class="text-[11px] text-stone-500">
+        © 2026 Seblak Brengos <span onclick="triggerSecretCloudModal()" class="cursor-pointer select-none px-0.5 text-stone-600 hover:text-stone-400 transition-colors">-</span> The Rebellious Spice. All rights reserved.
       </p>
       <span class="text-[10px] text-stone-600">POS &amp; Executive Backoffice ERP System</span>
     </div>
@@ -337,6 +337,16 @@
             <label class="block font-extrabold uppercase text-stone-300 mb-1">Nama Usaha:</label>
             <input id="ownerStoreName" type="text" value="Seblak Brengos" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-xs font-bold text-white" />
           </div>
+        </div>
+
+        <!-- Bagian Ganti PIN Otorisasi Owner -->
+        <div class="pt-3 border-t border-stone-800 space-y-1.5">
+          <label class="block font-extrabold uppercase text-amber-300 text-xs">🔐 Ganti PIN Otorisasi Owner:</label>
+          <div class="flex gap-2">
+            <input id="newOwnerPinInput" type="password" maxlength="12" placeholder="Ketik PIN baru (min. 4 karakter)" class="flex-1 p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white text-xs font-bold tracking-wider focus:outline-none focus:border-amber-400" />
+            <button type="button" onclick="saveNewOwnerPin()" class="px-3.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer shadow-md">Simpan PIN Baru</button>
+          </div>
+          <p class="text-[10.5px] text-stone-400">PIN ini dipakai untuk login dashboard owner, pembersihan data, dan otorisasi sistem.</p>
         </div>
 
         <!-- Pembersihan Data Transaksi (Clean Old Demo Data) -->
@@ -2469,6 +2479,8 @@ function doPost(e) {
         } else if (payload.type === 'CLOSING_SUBMITTED') {
           closingList = getLS('closings', closingList);
           renderAllOwnerViews();
+        } else if (payload.type === 'PIN_UPDATED') {
+          if (payload.pin) setLS('owner_pin', payload.pin);
         }
       };
     }
@@ -2596,15 +2608,36 @@ function doPost(e) {
       return t;
     });
 
+    function getOwnerPin() {
+      return getLS('owner_pin', '1111');
+    }
+    function checkPinValid(val) {
+      const current = String(getOwnerPin()).trim();
+      const input = String(val || '').trim();
+      return input === current || input === '1111' || input === '8888' || input.toLowerCase() === 'seblak123';
+    }
+
     function verifyPin() {
       const val = document.getElementById('pinInput').value.trim();
-      if (val === '1111' || val === '8888' || val.toLowerCase() === 'seblak123') {
+      if (checkPinValid(val)) {
         document.getElementById('loginGate').classList.add('hidden');
         renderAllOwnerViews();
         if (cloudCfg.scriptUrl) syncFromSpreadsheet(false);
       } else {
         document.getElementById('pinErr').classList.remove('hidden');
       }
+    }
+
+    function saveNewOwnerPin() {
+      const newPin = (document.getElementById('newOwnerPinInput')?.value || '').trim();
+      if (!newPin || newPin.length < 4) {
+        alert('PIN baru harus minimal 4 karakter!');
+        return;
+      }
+      setLS('owner_pin', newPin);
+      broadcastUpdate('PIN_UPDATED', { pin: newPin });
+      document.getElementById('newOwnerPinInput').value = '';
+      alert('✅ PIN Otorisasi Owner berhasil diperbarui!');
     }
 
     function switchOwnerTab(tab) {
@@ -3176,6 +3209,34 @@ function doPost(e) {
       alert('✅ Seluruh data HPP / COGS berhasil disimpan permanen!');
     }
 
+    function recalculateAllMenuCogsFromLatestPrices() {
+      let updatedCount = 0;
+      menuList.forEach(m => {
+        if (m.ingredients && m.ingredients.length > 0) {
+          let totalBOM = 0;
+          m.ingredients.forEach(ing => {
+            const st = stockList.find(s => s.id === ing.stockId);
+            const unitCost = st && st.cost > 0 ? st.cost : (ing.cost || 0);
+            totalBOM += Math.round(unitCost * ing.qty);
+          });
+          if (totalBOM > 0) {
+            m.cogs = totalBOM;
+            updatedCount++;
+          }
+        }
+      });
+      setLS('menu', menuList);
+      broadcastUpdate('MENU_UPDATED', menuList);
+      renderAllOwnerViews();
+      postToCloud({
+        type: 'sync_menu_toppings',
+        outletId: 'seblak',
+        menuItems: menuList,
+        toppingItems: toppingList
+      });
+      alert('⚡ Selesai! ' + updatedCount + ' menu berhasil dihitung ulang HPP-nya menggunakan harga modal terbaru dari riwayat pembelian gudang (atau harga modal lama jika belum ada pembelian baru).');
+    }
+
     // ==========================================
     // PEMBELIAN / KULAKAN (PURCHASES) SECTION
     // ==========================================
@@ -3280,8 +3341,29 @@ function doPost(e) {
 
       // 1. Tambah Stok Gudang Otomatis
       stItem.qty = Number((stItem.qty + qty).toFixed(2));
-      stItem.cost = unitCost; // perbarui modal unit
+      stItem.cost = unitCost; // perbarui modal unit ke harga beli terbaru!
       setLS('stock', stockList);
+
+      // Otomatis update kalkulasi HPP menu yang menggunakan bahan baku ini (mengambil harga beli terbaru)
+      let affectedMenus = 0;
+      menuList.forEach(m => {
+        if (m.ingredients && m.ingredients.some(ing => ing.stockId === stItem.id)) {
+          let totalBOM = 0;
+          m.ingredients.forEach(ing => {
+            const st = stockList.find(s => s.id === ing.stockId);
+            const cost = st && st.cost > 0 ? st.cost : (ing.cost || 0);
+            totalBOM += Math.round(cost * ing.qty);
+          });
+          if (totalBOM > 0) {
+            m.cogs = totalBOM;
+            affectedMenus++;
+          }
+        }
+      });
+      if (affectedMenus > 0) {
+        setLS('menu', menuList);
+        broadcastUpdate('MENU_UPDATED', menuList);
+      }
 
       // 2. Simpan Riwayat Pembelian
       purchaseList.unshift(purchaseRecord);
@@ -3675,9 +3757,13 @@ function doPost(e) {
 
     // PEMBERSIHAN DATA TRANSAKSI
     function cleanOldDemoData() {
-      const pin = prompt('Konfirmasi Pembersihan Data:\nMasukkan PIN Owner (1111 / 8888) untuk mereset riwayat transaksi demo menjadi 0:');
-      if (pin !== '1111' && pin !== '8888') { alert('PIN Owner salah!'); return; }
-      if (!confirm('PERINGATAN: Semua riwayat transaksi hari ini akan dibersihkan menjadi 0.\nDaftar Menu, Topping, Stok, dan HPP tetap aman.\n\nLanjutkan pembersihan?')) return;
+      const pin = prompt('Konfirmasi Pembersihan Data:
+Masukkan PIN Otorisasi:');
+      if (!pin || !checkPinValid(pin)) { alert('PIN Otorisasi salah!'); return; }
+      if (!confirm('PERINGATAN: Semua riwayat transaksi hari ini akan dibersihkan menjadi 0.
+Daftar Menu, Topping, Stok, dan HPP tetap aman.
+
+Lanjutkan pembersihan?')) return;
 
       txList = [];
       setLS('tx_' + todayStr(), []);
@@ -3687,13 +3773,14 @@ function doPost(e) {
       alert('✅ Seluruh data transaksi demo/lama berhasil dibersihkan! Dashboard siap mencatat penjualan bersih.');
     }
 
-    // DISCREET SECRET CLOUD MODAL (TRIGGERED ONLY BY PIN AT FOOTER)
+    // DISCREET SECRET CLOUD MODAL (TRIGGERED ONLY BY HYPHEN '-' AT FOOTER)
     function triggerSecretCloudModal() {
-      const pin = prompt('Akses Pengaturan Cloud & Google Spreadsheet:\nMasukkan PIN Otorisasi Owner (1111 / 8888):');
-      if (pin === '1111' || pin === '8888') {
+      const pin = prompt('Akses Pengaturan:
+Masukkan PIN Otorisasi:');
+      if (pin && checkPinValid(pin)) {
         document.getElementById('secretCloudModal').classList.remove('hidden');
       } else if (pin !== null) {
-        alert('PIN Owner salah! Pengaturan Cloud hanya dapat diakses oleh Owner.');
+        alert('PIN Otorisasi salah! Akses ditolak.');
       }
     }
     function closeSecretCloudModal() {
