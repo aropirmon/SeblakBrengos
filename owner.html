@@ -373,13 +373,13 @@
  * AROPPOS CLOUD ERP BACKOFFICE CONNECTOR
  * OUTLET RESMI: SEBLAK BRENGOS (SB-01)
  * =========================================================================
- * Model Bisnis   : Kuliner & Seblak Prasmanan
+ * Model Bisnis   : Kuliner &amp; Seblak Prasmanan
  * Tagline        : NIKMATNYA BRUTAL - SPICY. WARM. ADDICTIVE.
  * Integrasi      : Two-Way Sync POS Kasir &lt;-&gt; Google Spreadsheet ERP
  * Fitur ERP      : Dashboard Eksekutif, Riwayat Penjualan Hari Ini (Shift Berjalan),
- *                  Buku Log Closing Harian & Arus Kas, Rekap Penjualan & Closing Bulanan,
- *                  Buku Besar Transaksi, Master Stok HPP & Resep BOM Otomatis
- * Status         : 100% Bebas Biaya & Bebas Limit Kuota
+ *                  Buku Log Closing Harian &amp; Arus Kas, Rekap Penjualan &amp; Closing Bulanan,
+ *                  Buku Besar Transaksi, Master Stok HPP &amp; Resep BOM Otomatis
+ * Status         : 100% Bebas Biaya &amp; Bebas Limit Kuota
  * =========================================================================
  * 
  * PANDUAN CEPAT INSTALASI (HANYA 3 MENIT):
@@ -390,13 +390,13 @@
  * 5. Pada bar menu fungsi Apps Script di atas, pilih fungsi: "setupSheets", lalu klik "Jalankan" (Run).
  *    (Beri izin / Review Permissions pada pop-up akun Google Anda).
  *    -&gt; Sistem otomatis membangun 7 lembar kerja ERP berstandar enterprise:
- *       1. Ringkasan_KPI_Seblak     : Dashboard Eksekutif ERP, KPI Omzet & Grafik Tren Penjualan
+ *       1. Ringkasan_KPI_Seblak     : Dashboard Eksekutif ERP, KPI Omzet &amp; Grafik Tren Penjualan
  *       2. Penjualan_Hari_Ini      : Riwayat Pembelian Hari Ini (Shift Berjalan Sebelum Close Shift)
- *       3. Riwayat_Closing_Harian  : Buku Log Rekapitulasi Closing Harian & Arus Kas Laci
- *       4. Rekap_Bulanan           : Rekapitulasi Penjualan & Closing Shift Bulanan
+ *       3. Riwayat_Closing_Harian  : Buku Log Rekapitulasi Closing Harian &amp; Arus Kas Laci
+ *       4. Rekap_Bulanan           : Rekapitulasi Penjualan &amp; Closing Shift Bulanan
  *       5. Penjualan_Seblak   : Buku Besar (Ledger) Seluruh Riwayat Penjualan
- *       6. Master_Stok_Seblak   : Master Inventori Bahan, HPP, Nilai Aset & Pemotongan Otomatis
- *       7. Master_Menu_Seblak    : Master Katalog Menu, Harga Jual & Formula Resep BOM
+ *       6. Master_Stok_Seblak   : Master Inventori Bahan, HPP, Nilai Aset &amp; Pemotongan Otomatis
+ *       7. Master_Menu_Seblak    : Master Katalog Menu, Harga Jual &amp; Formula Resep BOM
  * 6. Klik tombol biru "Terapkan" (Deploy) di sudut kanan atas &gt; "Penerapan Baru" (New Deployment).
  * 7. Klik ikon gerigi jenis: pilih "Aplikasi Web" (Web App).
  * 8. Pada kolom "Jalankan Sebagai" (Execute as): Pilih "Saya" (Akun Google Anda).
@@ -421,16 +421,16 @@ var OUTLET_CONFIG = {
   kpiSheet: "Ringkasan_KPI_Seblak"
 };
 
-// DATA AWAL MASTER INVENTORI & STOK
+// DATA AWAL MASTER INVENTORI &amp; STOK
 var INITIAL_STOCK_DATA = [
   {
     "id": "st1",
-    "name": "Isian / Pelengkap Seblak (Kerupuk & Bumbu)",
+    "name": "Isian / Pelengkap Seblak (Kerupuk &amp; Bumbu)",
     "unit": "porsi",
     "qty": 120,
     "low": 20,
     "cost": 3500,
-    "notes": "Isian dasar kerupuk seblak, sayur & bumbu kencur"
+    "notes": "Isian dasar kerupuk seblak, sayur &amp; bumbu kencur"
   },
   {
     "id": "st2",
@@ -475,7 +475,7 @@ var INITIAL_STOCK_DATA = [
     "qty": 200,
     "low": 30,
     "cost": 400,
-    "notes": "Cilok kenyal untuk Seblak & Bakso Aci"
+    "notes": "Cilok kenyal untuk Seblak &amp; Bakso Aci"
   },
   {
     "id": "st_dumpling",
@@ -605,7 +605,7 @@ var INITIAL_STOCK_DATA = [
   }
 ];
 
-// DATA AWAL MASTER KATALOG MENU & RESEP BOM
+// DATA AWAL MASTER KATALOG MENU &amp; RESEP BOM
 var INITIAL_MENU_DATA = [
   {
     "id": "sb_spesial",
@@ -704,16 +704,16 @@ var INITIAL_MENU_DATA = [
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('🏢 ERP AROPPOS Backoffice')
-    .addItem('📊 Tata Ulang & Format Seluruh Sheet ERP', 'setupSheets')
+    .addItem('📊 Tata Ulang &amp; Format Seluruh Sheet ERP', 'setupSheets')
     .addItem('⚡ Segarkan Penjualan Hari Ini (Shift Berjalan)', 'updateTodayActiveSales')
-    .addItem('📅 Perbarui Rekap Penjualan & Closing Bulanan', 'updateMonthlyRecap')
+    .addItem('📅 Perbarui Rekap Penjualan &amp; Closing Bulanan', 'updateMonthlyRecap')
     .addItem('📈 Buat / Perbarui Grafik Tren Penjualan', 'createOrUpdateSalesChart')
     .addItem('⚠️ Cek Status Bahan Menipis / Reorder', 'checkLowStockAlert')
     .addToUi();
 }
 
 /**
- * Membangun & Menata Format Seluruh Lembar Kerja Menjadi Standar ERP Enterprise
+ * Membangun &amp; Menata Format Seluruh Lembar Kerja Menjadi Standar ERP Enterprise
  */
 function setupSheets() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -724,7 +724,7 @@ function setupSheets() {
   var sSales = ss.getSheetByName(OUTLET_CONFIG.salesSheet) || ss.insertSheet(OUTLET_CONFIG.salesSheet);
   if (sSales.getLastRow() === 0) {
     sSales.appendRow([
-      "Tanggal & Jam Transaksi",
+      "Tanggal &amp; Jam Transaksi",
       "No Nota / ID Transaksi",
       "Kode Outlet",
       "Nama Outlet",
@@ -736,7 +736,7 @@ function setupSheets() {
       "Subtotal (Rp)",
       "Diskon (Rp)",
       "Total Bersih (Rp)",
-      "Rincian Menu & Varian Terjual",
+      "Rincian Menu &amp; Varian Terjual",
       "Status Transaksi"
     ]);
   }
@@ -817,7 +817,7 @@ function setupSheets() {
       "Subtotal (Rp)",
       "Diskon (Rp)",
       "Total Bersih (Rp)",
-      "Rincian Menu & Varian Terjual",
+      "Rincian Menu &amp; Varian Terjual",
       "Status Transaksi"
     ]])
     .setFontWeight("bold")
@@ -843,7 +843,7 @@ function setupSheets() {
   sToday.setColumnWidth(12, 120);
 
   // -------------------------------------------------------------
-  // 3. LEMBAR KERJA: BUKU LOG REKAPITULASI CLOSING HARIAN & ARUS KAS
+  // 3. LEMBAR KERJA: BUKU LOG REKAPITULASI CLOSING HARIAN &amp; ARUS KAS
   // -------------------------------------------------------------
   var sClosing = ss.getSheetByName(OUTLET_CONFIG.closingSheet) || ss.insertSheet(OUTLET_CONFIG.closingSheet);
   if (sClosing.getLastRow() === 0) {
@@ -907,7 +907,7 @@ function setupSheets() {
   }
 
   // -------------------------------------------------------------
-  // 4. LEMBAR KERJA: MASTER INVENTORI STOK, HPP & ASET
+  // 4. LEMBAR KERJA: MASTER INVENTORI STOK, HPP &amp; ASET
   // -------------------------------------------------------------
   var sStock = ss.getSheetByName(OUTLET_CONFIG.stockSheet) || ss.insertSheet(OUTLET_CONFIG.stockSheet);
   if (sStock.getLastRow() === 0) {
@@ -938,19 +938,19 @@ function setupSheets() {
         '=IF(D' + rowNum + '&lt;=0; "HABIS"; IF(D' + rowNum + '&lt;=E' + rowNum + '; "MENIPIS"; "AMAN"))',
         costVal,
         '=D' + rowNum + '*G' + rowNum,
-        '=IF(D' + rowNum + '&lt;=E' + rowNum + '; "ORDER SEKARANG (" & (E' + rowNum + '*3 - D' + rowNum + ') & " " & C' + rowNum + ' & ")"; "STOK CUKUP")',
+        '=IF(D' + rowNum + '&lt;=E' + rowNum + '; "ORDER SEKARANG (" &amp; (E' + rowNum + '*3 - D' + rowNum + ') &amp; " " &amp; C' + rowNum + ' &amp; ")"; "STOK CUKUP")',
         item.notes || "-"
       ]);
     }
   }
 
-  // Perbaiki otomatis formula status & rekomendasi stok yang sebelumnya memakai koma (,) menjadi titik koma (;)
+  // Perbaiki otomatis formula status &amp; rekomendasi stok yang sebelumnya memakai koma (,) menjadi titik koma (;)
   var stockRows = sStock.getLastRow();
   if (stockRows &gt;= 2) {
     for (var r = 2; r &lt;= stockRows; r++) {
       sStock.getRange(r, 6).setValue('=IF(D' + r + '&lt;=0; "HABIS"; IF(D' + r + '&lt;=E' + r + '; "MENIPIS"; "AMAN"))');
       sStock.getRange(r, 8).setValue('=D' + r + '*G' + r);
-      sStock.getRange(r, 9).setValue('=IF(D' + r + '&lt;=E' + r + '; "ORDER SEKARANG (" & (E' + r + '*3 - D' + r + ') & " " & C' + r + ' & ")"; "STOK CUKUP")');
+      sStock.getRange(r, 9).setValue('=IF(D' + r + '&lt;=E' + r + '; "ORDER SEKARANG (" &amp; (E' + r + '*3 - D' + r + ') &amp; " " &amp; C' + r + ' &amp; ")"; "STOK CUKUP")');
     }
   }
 
@@ -981,7 +981,7 @@ function setupSheets() {
   }
 
   // -------------------------------------------------------------
-  // 3. LEMBAR KERJA: MASTER MENU, HARGA JUAL & FORMULA RESEP BOM
+  // 3. LEMBAR KERJA: MASTER MENU, HARGA JUAL &amp; FORMULA RESEP BOM
   // -------------------------------------------------------------
   var sMenu = ss.getSheetByName(OUTLET_CONFIG.menuSheet) || ss.insertSheet(OUTLET_CONFIG.menuSheet);
   if (sMenu.getLastRow() === 0) {
@@ -998,7 +998,7 @@ function setupSheets() {
     for (var j = 0; j &lt; INITIAL_MENU_DATA.length; j++) {
       var m = INITIAL_MENU_DATA[j];
       var rule = "Potong " + (m.usage || 1) + " unit dari " + (m.stockId || "Bahan Utama");
-      if (m.id === "dp_bundle3in1" || (m.name && m.name.toLowerCase().indexOf("bundle") !== -1)) {
+      if (m.id === "dp_bundle3in1" || (m.name &amp;&amp; m.name.toLowerCase().indexOf("bundle") !== -1)) {
         rule = "Potong 3 Kaleng Varian Biasa (Cumi/Roa/Tuna/Teri/Cakalang) + 1 Kardus Box Trio";
       }
       sMenu.appendRow([
@@ -1036,7 +1036,7 @@ function setupSheets() {
   }
 
   // -------------------------------------------------------------
-  // 4. LEMBAR KERJA: DASHBOARD EKSEKUTIF ERP & TREN GRAFIK
+  // 4. LEMBAR KERJA: DASHBOARD EKSEKUTIF ERP &amp; TREN GRAFIK
   // -------------------------------------------------------------
   var sKpi = ss.getSheetByName(OUTLET_CONFIG.kpiSheet) || ss.insertSheet(OUTLET_CONFIG.kpiSheet);
   
@@ -1045,12 +1045,12 @@ function setupSheets() {
   sKpi.getRange("A1").setFontWeight("bold").setFontSize(14).setBackground("#0F172A").setFontColor("#F8FAFC").setHorizontalAlignment("center");
   sKpi.setRowHeight(1, 40);
 
-  sKpi.getRange("A2:C2").merge().setValue("Outlet Resmi: " + OUTLET_CONFIG.name + " (" + OUTLET_CONFIG.code + ") | Status POS: AKTIF & TERHUBUNG");
+  sKpi.getRange("A2:C2").merge().setValue("Outlet Resmi: " + OUTLET_CONFIG.name + " (" + OUTLET_CONFIG.code + ") | Status POS: AKTIF &amp; TERHUBUNG");
   sKpi.getRange("A2").setFontWeight("bold").setFontSize(10).setBackground(OUTLET_CONFIG.themeColor || "#1E293B").setFontColor("#FFFFFF").setHorizontalAlignment("center");
   sKpi.setRowHeight(2, 24);
 
-  // Bagian Filter & Kontrol
-  sKpi.getRange("A4:C4").merge().setValue("📌 RINGKASAN PERFORMA BISNIS & KEUANGAN");
+  // Bagian Filter &amp; Kontrol
+  sKpi.getRange("A4:C4").merge().setValue("📌 RINGKASAN PERFORMA BISNIS &amp; KEUANGAN");
   sKpi.getRange("A4").setFontWeight("bold").setFontSize(11).setBackground("#E2E8F0").setFontColor("#1E293B");
 
   // Karakter pembantu tanda kutip untuk formula Google Sheets (Format Regional Indonesia menggunakan pemisah titik koma ';')
@@ -1089,7 +1089,7 @@ function setupSheets() {
   sKpi.setColumnWidth(3, 260);
 
   // -------------------------------------------------------------
-  // 5. LEMBAR KERJA: REKAPITULASI PENJUALAN & CLOSING BULANAN
+  // 5. LEMBAR KERJA: REKAPITULASI PENJUALAN &amp; CLOSING BULANAN
   // -------------------------------------------------------------
   var sMonthly = ss.getSheetByName(OUTLET_CONFIG.monthlySheet) || ss.insertSheet(OUTLET_CONFIG.monthlySheet);
   
@@ -1106,7 +1106,7 @@ function setupSheets() {
 
   sMonthly.getRange(2, 1, 1, 6).setValues([[
     "Periode (YYYY-MM)",
-    "Bulan & Tahun",
+    "Bulan &amp; Tahun",
     "Jumlah Nota Selesai",
     "Total Omzet Bersih (Rp)",
     "Rata-rata Nota / AOV (Rp)",
@@ -1119,9 +1119,9 @@ function setupSheets() {
   .setVerticalAlignment("middle");
   sMonthly.setRowHeight(2, 28);
 
-  // Header Tabel 2 (Kanan): Rekapitulasi Closing Shift & Kas Bulanan
+  // Header Tabel 2 (Kanan): Rekapitulasi Closing Shift &amp; Kas Bulanan
   sMonthly.getRange("H1:O1").merge()
-    .setValue("💰 REKAPITULASI CLOSING SHIFT & ARUS KAS BULANAN")
+    .setValue("💰 REKAPITULASI CLOSING SHIFT &amp; ARUS KAS BULANAN")
     .setFontWeight("bold")
     .setFontSize(11)
     .setBackground("#0F766E")
@@ -1131,7 +1131,7 @@ function setupSheets() {
 
   sMonthly.getRange(2, 8, 1, 8).setValues([[
     "Periode (YYYY-MM)",
-    "Bulan & Tahun",
+    "Bulan &amp; Tahun",
     "Total Shift Closing",
     "Akumulasi Omzet Closing (Rp)",
     "Total Kas Tunai (Rp)",
@@ -1228,7 +1228,7 @@ function updateTodayActiveSales() {
 }
 
 /**
- * Menghitung & Menyusun Ulang Rekapitulasi Penjualan & Closing Bulanan
+ * Menghitung &amp; Menyusun Ulang Rekapitulasi Penjualan &amp; Closing Bulanan
  * Aman dari error tanda koma/titik-koma dan format tanggal
  */
 function updateMonthlyRecap() {
@@ -1250,7 +1250,7 @@ function updateMonthlyRecap() {
     for (var r = 1; r &lt; salesData.length; r++) {
       var row = salesData[r];
       var status = String(row[13] || "").trim().toUpperCase();
-      if (status && status !== "SELESAI") continue;
+      if (status &amp;&amp; status !== "SELESAI") continue;
 
       var rawDate = row[0];
       if (!rawDate) continue;
@@ -1324,7 +1324,7 @@ function updateMonthlyRecap() {
       }
       var cYear = parseInt(cPeriod.substring(0, 4), 10);
       var cMoNum = parseInt(cPeriod.substring(5, 7), 10);
-      var cLabel = (cMoNum &gt;= 1 && cMoNum &lt;= 12) ? (monthNames[cMoNum - 1] + " " + cYear) : cPeriod;
+      var cLabel = (cMoNum &gt;= 1 &amp;&amp; cMoNum &lt;= 12) ? (monthNames[cMoNum - 1] + " " + cYear) : cPeriod;
 
       if (!closingMap[cPeriod]) {
         closingMap[cPeriod] = {
@@ -1379,7 +1379,7 @@ function updateMonthlyRecap() {
 }
 
 /**
- * Membuat atau Memperbarui Grafik Fluktuasi Tren Penjualan Bulanan & Harian
+ * Membuat atau Memperbarui Grafik Fluktuasi Tren Penjualan Bulanan &amp; Harian
  * Menjamin grafik langsung tampil tanpa ketergantungan formula rentan
  */
 function createOrUpdateSalesChart() {
@@ -1399,7 +1399,7 @@ function createOrUpdateSalesChart() {
       // Grafik Kolom Omzet Bulanan
       var monthlyChart = sMonthly.newChart()
         .asColumnChart()
-        .addRange(sMonthly.getRange("B1:D" + mRows)) // Kolom Bulan & Omzet
+        .addRange(sMonthly.getRange("B1:D" + mRows)) // Kolom Bulan &amp; Omzet
         .setPosition(2, 8, 10, 10)
         .setOption('title', '📊 Grafik Tren Pertumbuhan Omzet Bulanan (' + OUTLET_CONFIG.name + ')')
         .setOption('colors', [OUTLET_CONFIG.themeColor || '#1E293B', '#F59E0B'])
@@ -1414,7 +1414,7 @@ function createOrUpdateSalesChart() {
     }
   }
 
-  if (sKpi && sMonthly) {
+  if (sKpi &amp;&amp; sMonthly) {
     // Hapus grafik lama di KPI_Dashboard
     var kCharts = sKpi.getCharts();
     for (var j = 0; j &lt; kCharts.length; j++) {
@@ -1470,14 +1470,60 @@ function checkLowStockAlert() {
 }
 
 /**
+ * VERSI RINGAN: hanya membangun sheet jika ada yang belum ada.
+ * (setupSheets() memformat 7 lembar kerja, terlalu lambat bila dipanggil di setiap request)
+ */
+function ensureSheets_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var needed = [OUTLET_CONFIG.salesSheet, OUTLET_CONFIG.todaySalesSheet, OUTLET_CONFIG.closingSheet,
+                OUTLET_CONFIG.stockSheet, OUTLET_CONFIG.menuSheet];
+  for (var i = 0; i &lt; needed.length; i++) {
+    if (!ss.getSheetByName(needed[i])) { setupSheets(); return; }
+  }
+  // Migrasi: kolom ke-15 menyimpan item nota (JSON) agar HPP &amp; menu terlaris di Owner akurat
+  var sS = ss.getSheetByName(OUTLET_CONFIG.salesSheet);
+  if (sS &amp;&amp; String(sS.getRange(1, 15).getValue()) !== "Data_Item_JSON") {
+    if (sS.getMaxColumns() &lt; 15) sS.insertColumnsAfter(sS.getMaxColumns(), 15 - sS.getMaxColumns());
+    sS.getRange(1, 15).setValue("Data_Item_JSON")
+      .setFontWeight("bold").setBackground(OUTLET_CONFIG.themeColor || "#1E293B")
+      .setFontColor("#FFFFFF").setHorizontalAlignment("center");
+    sS.setColumnWidth(15, 160);
+  }
+}
+
+/** Ringkas item nota menjadi JSON kecil (disimpan di kolom 15 Penjualan) */
+function itemsToJson_(items) {
+  try {
+    return JSON.stringify((items || []).map(function(it) {
+      return {
+        menuId: it.menuId || "", name: it.name || "", basePrice: Number(it.basePrice || 0),
+        qty: Number(it.qty || 1), spiceName: it.spiceName || "", note: it.note || "",
+        toppings: (it.toppings || []).map(function(tp) {
+          return { id: tp.id || "", name: tp.name || "", price: Number(tp.price || 0), qty: Number(tp.qty || 1) };
+        })
+      };
+    }));
+  } catch (e) { return ""; }
+}
+
+function parseItemsJson_(v) {
+  try {
+    var s = String(v || "");
+    if (!s) return [];
+    var a = JSON.parse(s);
+    return Array.isArray(a) ? a : [];
+  } catch (e) { return []; }
+}
+
+/**
  * ENDPOINT GET: Mengambil data Master Stok dan Master Menu dari Google Sheets ke POS
  * URL panggilan: [WEBHOOK_URL]?action=stock atau ?action=menu
  */
 function doGet(e) {
   try {
-    setupSheets();
+    ensureSheets_();
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "stock";
+    var action = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action) ? e.parameter.action : "stock";
 
     if (action === "pull") {
       var sMenuPull = ss.getSheetByName(OUTLET_CONFIG.menuSheet);
@@ -1521,12 +1567,17 @@ function doGet(e) {
       }
 
       var sSalesPull = ss.getSheetByName(OUTLET_CONFIG.salesSheet) || ss.getSheetByName("Penjualan_Seblak") || ss.getSheetByName("Penjualan");
-      var slDataPull = sSalesPull ? sSalesPull.getDataRange().getValues() : [];
+      var slDataPull = [];
+      if (sSalesPull &amp;&amp; sSalesPull.getLastRow() &gt; 1) {
+        var lastRowPull = sSalesPull.getLastRow();
+        var startRowPull = Math.max(2, lastRowPull - 299);
+        slDataPull = [[]].concat(sSalesPull.getRange(startRowPull, 1, lastRowPull - startRowPull + 1, Math.min(15, sSalesPull.getMaxColumns())).getValues());
+      }
       var pullSales = [];
       for (var sl = 1; sl &lt; slDataPull.length; sl++) {
         var rsl = slDataPull[sl];
         var txIdPull = String(rsl[1] || "").trim();
-        if (txIdPull && txIdPull !== "-" && txIdPull.toUpperCase().indexOf("ID") === -1) {
+        if (txIdPull &amp;&amp; txIdPull !== "-" &amp;&amp; txIdPull.toUpperCase().indexOf("ID") === -1) {
           var rawTimePull = rsl[0];
           var fmtTimePull = (rawTimePull instanceof Date)
             ? Utilities.formatDate(rawTimePull, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss")
@@ -1542,6 +1593,7 @@ function doGet(e) {
             discount: Number(rsl[10] || 0),
             total: Number(rsl[11] || 0),
             itemsSummary: String(rsl[12] || ""),
+            items: parseItemsJson_(rsl[14]),
             isVoid: String(rsl[13] || "").toUpperCase().indexOf("VOID") !== -1 || String(rsl[13] || "").toUpperCase().indexOf("BATAL") !== -1
           });
         }
@@ -1591,7 +1643,7 @@ function doGet(e) {
       for (var s = 1; s &lt; salesData.length; s++) {
         var r = salesData[s];
         var txId = String(r[1] || "").trim();
-        if (txId && txId !== "-" && txId.toUpperCase().indexOf("ID") === -1) {
+        if (txId &amp;&amp; txId !== "-" &amp;&amp; txId.toUpperCase().indexOf("ID") === -1) {
           var rawTimeVal = r[0];
           var formattedTxTime = (rawTimeVal instanceof Date)
             ? Utilities.formatDate(rawTimeVal, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss")
@@ -1681,12 +1733,12 @@ function doOptions(e) {
  */
 function testConnection() {
   setupSheets();
-  Logger.log("✅ Koneksi & struktur 7 Lembar Kerja ERP Backoffice " + OUTLET_CONFIG.name + " siap 100%!");
+  Logger.log("✅ Koneksi &amp; struktur 7 Lembar Kerja ERP Backoffice " + OUTLET_CONFIG.name + " siap 100%!");
 }
 
 /**
- * ENDPOINT POST: Menerima transaksi penjualan otomatis dari kasir & update stok
- * Dilengkapi LockService anti-race condition & proteksi anti-duplikasi nota
+ * ENDPOINT POST: Menerima transaksi penjualan otomatis dari kasir &amp; update stok
+ * Dilengkapi LockService anti-race condition &amp; proteksi anti-duplikasi nota
  * KHUSUS BUNDLE 3IN1: Memotong stok kaleng varian biasa (Cumi/Roa/Tuna/Teri/Cakalang) + Kardus Box Trio!
  */
 function doPost(e) {
@@ -1695,7 +1747,7 @@ function doPost(e) {
     // Kunci proses selama maksimal 15 detik agar aman jika ada banyak transaksi masuk serentak
     lock.tryLock(15000);
 
-    setupSheets();
+    ensureSheets_();
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sSales = ss.getSheetByName(OUTLET_CONFIG.salesSheet);
     var sToday = ss.getSheetByName(OUTLET_CONFIG.todaySalesSheet);
@@ -1706,13 +1758,13 @@ function doPost(e) {
     var payload = JSON.parse(rawContent);
 
     // KASUS 1: Penjualan Nota Tunggal dari Kasir
-    if (payload.type === "sale" && payload.data) {
+    if (payload.type === "sale" &amp;&amp; payload.data) {
       var t = payload.data;
 
       // Proteksi Anti-Duplikasi: Cek apakah ID Transaksi ini sudah pernah masuk dalam 50 nota terakhir
       var lastSalesRow = sSales ? sSales.getLastRow() : 0;
-      if (lastSalesRow &gt; 1 && t.id) {
-        var checkRows = Math.min(50, lastSalesRow - 1);
+      if (lastSalesRow &gt; 1 &amp;&amp; t.id) {
+        var checkRows = Math.min(300, lastSalesRow - 1);
         var recentIds = sSales.getRange(lastSalesRow - checkRows + 1, 2, checkRows, 1).getValues();
         for (var cIdx = 0; cIdx &lt; recentIds.length; cIdx++) {
           if (String(recentIds[cIdx][0]).trim() === String(t.id).trim()) {
@@ -1729,7 +1781,7 @@ function doPost(e) {
         var str = item.qty + "x " + item.name;
         if (item.spiceName) str += " (" + item.spiceName + ")";
         if (item.note) str += " [" + item.note + "]";
-        if (item.toppings && item.toppings.length &gt; 0) {
+        if (item.toppings &amp;&amp; item.toppings.length &gt; 0) {
           str += " + " + item.toppings.map(function(tp) { return tp.name; }).join(", ");
         }
         return str;
@@ -1753,7 +1805,8 @@ function doPost(e) {
         t.discount || 0,
         t.total || 0,
         itemDetails,
-        t.isVoid ? "DIBATALKAN (VOID)" : "SELESAI"
+        t.isVoid ? "DIBATALKAN (VOID)" : "SELESAI",
+        itemsToJson_(t.items)
       ]);
 
       // Catat juga ke Sheet Penjualan_Hari_Ini (Shift Berjalan Sebelum Close Shift)
@@ -1781,7 +1834,7 @@ function doPost(e) {
       }
 
       // Pengurangan Stok Otomatis di Google Sheets
-      if (!t.isVoid && sStock && t.items) {
+      if (!t.isVoid &amp;&amp; sStock &amp;&amp; t.items) {
         var stockData = sStock.getDataRange().getValues();
         var stockRowMap = {};
         for (var sIdx = 1; sIdx &lt; stockData.length; sIdx++) {
@@ -1795,13 +1848,13 @@ function doPost(e) {
         for (var i = 0; i &lt; t.items.length; i++) {
           var itm = t.items[i];
           var isBundle = (itm.id === "dp_bundle3in1") || 
-                         (itm.name && itm.name.toLowerCase().indexOf("bundle") !== -1);
+                         (itm.name &amp;&amp; itm.name.toLowerCase().indexOf("bundle") !== -1);
 
           // LOGIKA KHUSUS BUNDLE 3IN1 (DAPUR PAPADA):
           // Ambil stok dari varian kaleng biasa yang dipilih + kardus hampers trio
           if (isBundle) {
             // A. Jika kasir mengirim bundleVariants terstruktur:
-            if (itm.bundleVariants && itm.bundleVariants.length &gt; 0) {
+            if (itm.bundleVariants &amp;&amp; itm.bundleVariants.length &gt; 0) {
               for (var bvIdx = 0; bvIdx &lt; itm.bundleVariants.length; bvIdx++) {
                 var bv = itm.bundleVariants[bvIdx];
                 var bvRow = stockRowMap[(bv.stockId || "").toLowerCase()] || 
@@ -1814,15 +1867,15 @@ function doPost(e) {
               }
             } 
             // B. Parse dari teks catatan nota kasir (contoh: "Bundle 3in1: [Cumi asin pedas + Roa pedas + Tuna asap pedas]")
-            else if (itm.note && itm.note.indexOf("Bundle 3in1:") !== -1) {
+            else if (itm.note &amp;&amp; itm.note.indexOf("Bundle 3in1:") !== -1) {
               var vMatch = itm.note.match(/Bundle 3in1:s*[(.*?)]/);
-              if (vMatch && vMatch[1]) {
+              if (vMatch &amp;&amp; vMatch[1]) {
                 var varNames = vMatch[1].split("+");
                 for (var vn = 0; vn &lt; varNames.length; vn++) {
                   var cleanName = varNames[vn].replace(/\(Kode:.*?\)/, "").trim().toLowerCase();
                   var matchedRow = null;
                   for (var key in stockRowMap) {
-                    if (key && (key.indexOf(cleanName) !== -1 || cleanName.indexOf(key) !== -1)) {
+                    if (key &amp;&amp; (key.indexOf(cleanName) !== -1 || cleanName.indexOf(key) !== -1)) {
                       matchedRow = stockRowMap[key];
                       break;
                     }
@@ -1865,8 +1918,26 @@ function doPost(e) {
       }
     }
 
+    // KASUS 1b: Void nota dari kasir -&gt; tandai baris di Penjualan &amp; Penjualan_Hari_Ini
+    else if (payload.type === "void_transaction" &amp;&amp; payload.transactionId) {
+      var vId = String(payload.transactionId).trim();
+      var vLabel = "DIBATALKAN (VOID)";
+      if (sSales &amp;&amp; sSales.getLastRow() &gt; 1) {
+        var vIds = sSales.getRange(2, 2, sSales.getLastRow() - 1, 1).getValues();
+        for (var vi = vIds.length - 1; vi &gt;= 0; vi--) {
+          if (String(vIds[vi][0]).trim() === vId) { sSales.getRange(vi + 2, 14).setValue(vLabel); break; }
+        }
+      }
+      if (sToday &amp;&amp; sToday.getLastRow() &gt; 1) {
+        var vIds2 = sToday.getRange(2, 2, sToday.getLastRow() - 1, 1).getValues();
+        for (var vj = vIds2.length - 1; vj &gt;= 0; vj--) {
+          if (String(vIds2[vj][0]).trim() === vId) { sToday.getRange(vj + 2, 12).setValue(vLabel); break; }
+        }
+      }
+    }
+
     // KASUS 2: Bulk Penjualan (Ekspor Seluruh Transaksi Device ke Spreadsheet)
-    else if (payload.type === "bulk_sales" && Array.isArray(payload.data)) {
+    else if (payload.type === "bulk_sales" &amp;&amp; Array.isArray(payload.data)) {
       var lastSalesRow = sSales ? sSales.getLastRow() : 0;
       var existingIdMap = {};
       if (lastSalesRow &gt; 1) {
@@ -1881,7 +1952,7 @@ function doPost(e) {
       var insertedCount = 0;
       for (var b = 0; b &lt; payload.data.length; b++) {
         var tx = payload.data[b];
-        if (tx.id && existingIdMap[String(tx.id).trim()]) {
+        if (tx.id &amp;&amp; existingIdMap[String(tx.id).trim()]) {
           continue; // Lewati jika sudah tercatat di spreadsheet untuk cegah duplikasi
         }
 
@@ -1889,7 +1960,7 @@ function doPost(e) {
           var str = item.qty + "x " + item.name;
           if (item.spiceName) str += " (" + item.spiceName + ")";
           if (item.note) str += " [" + item.note + "]";
-          if (item.toppings && item.toppings.length &gt; 0) {
+          if (item.toppings &amp;&amp; item.toppings.length &gt; 0) {
             str += " + " + item.toppings.map(function(tp) { return tp.name; }).join(", ");
           }
           return str;
@@ -1912,7 +1983,8 @@ function doPost(e) {
           tx.discount || 0,
           tx.total || 0,
           details,
-          tx.isVoid ? "DIBATALKAN (VOID)" : "SELESAI"
+          tx.isVoid ? "DIBATALKAN (VOID)" : "SELESAI",
+          itemsToJson_(tx.items)
         ]);
         insertedCount++;
       }
@@ -1928,7 +2000,7 @@ function doPost(e) {
     // =========================================================
     // 3. REKAPITULASI CLOSING HARIAN (CLOSING SHIFT)
     // =========================================================
-    else if (payload.type === "closing" && payload.data && sClosing) {
+    else if (payload.type === "closing" &amp;&amp; payload.data &amp;&amp; sClosing) {
       var c = payload.data;
       var cDate = c.dateKey || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
       var cOpen = c.openTime ? Utilities.formatDate(new Date(c.openTime), Session.getScriptTimeZone(), "HH:mm") : "-";
@@ -2007,7 +2079,7 @@ function doPost(e) {
     // =========================================================
     // 4. SINKRONISASI MASSAL CLOSING HARIAN (BULK CLOSINGS)
     // =========================================================
-    else if (payload.type === "bulk_closings" && Array.isArray(payload.data) && sClosing) {
+    else if (payload.type === "bulk_closings" &amp;&amp; Array.isArray(payload.data) &amp;&amp; sClosing) {
       for (var bc = 0; bc &lt; payload.data.length; bc++) {
         var cItem = payload.data[bc];
         var bcDate = cItem.dateKey || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
@@ -2068,13 +2140,13 @@ function doPost(e) {
     // =========================================================
     // 5.5. CATAT PEMBELIAN / KULAKAN BAHAN BAKU (PURCHASES)
     // =========================================================
-    else if (payload.type === "purchase" && payload.data) {
+    else if (payload.type === "purchase" &amp;&amp; payload.data) {
       var p = payload.data;
       var sPurchases = ss.getSheetByName("Riwayat_Pembelian");
       if (!sPurchases) {
         sPurchases = ss.insertSheet("Riwayat_Pembelian");
         sPurchases.appendRow([
-          "Tanggal & Waktu",
+          "Tanggal &amp; Waktu",
           "ID Pembelian",
           "Nama Bahan Baku",
           "Jumlah Masuk",
@@ -2102,16 +2174,16 @@ function doPost(e) {
       ]);
 
       // Tambah stok di Master_Stok jika ada
-      if (sStock && p.stockName) {
+      if (sStock &amp;&amp; p.stockName) {
         var stkValues = sStock.getDataRange().getValues();
         for (var sv = 1; sv &lt; stkValues.length; sv++) {
           var sRowName = String(stkValues[sv][1] || "").toLowerCase();
           var sRowId = String(stkValues[sv][0] || "").toLowerCase();
-          if (sRowName === String(p.stockName).toLowerCase() || (p.stockId && sRowId === String(p.stockId).toLowerCase())) {
+          if (sRowName === String(p.stockName).toLowerCase() || (p.stockId &amp;&amp; sRowId === String(p.stockId).toLowerCase())) {
             var curQty = Number(sStock.getRange(sv + 1, 4).getValue() || 0);
             var updatedStockQty = curQty + Number(p.qty || 0);
             sStock.getRange(sv + 1, 4).setValue(updatedStockQty);
-            if (p.unitCost && Number(p.unitCost) &gt; 0) {
+            if (p.unitCost &amp;&amp; Number(p.unitCost) &gt; 0) {
               sStock.getRange(sv + 1, 7).setValue(Number(p.unitCost)); // update cost
             }
             break;
@@ -2129,7 +2201,7 @@ function doPost(e) {
     // =========================================================
     // 5. SINKRONISASI STOK MASSAL DARI POS (BULK STOCK SYNC)
     // =========================================================
-    else if ((payload.type === "bulk_stock" || payload.type === "stock_sync") && (Array.isArray(payload.data) || Array.isArray(payload.stockItems)) && sStock) {
+    else if ((payload.type === "bulk_stock" || payload.type === "stock_sync") &amp;&amp; (Array.isArray(payload.data) || Array.isArray(payload.stockItems)) &amp;&amp; sStock) {
       var stockItems = Array.isArray(payload.data) ? payload.data : (Array.isArray(payload.stockItems) ? payload.stockItems : []);
       var stockData = sStock.getDataRange().getValues();
       var idToRow = {};
@@ -2151,9 +2223,9 @@ function doPost(e) {
         var sName = String(itm.name || "").trim().toLowerCase();
         var targetRow = idToRow[sId] || nameToRow[sName];
 
-        if (!targetRow && sName) {
+        if (!targetRow &amp;&amp; sName) {
           for (var exName in nameToRow) {
-            if (exName && (exName.indexOf(sName) !== -1 || sName.indexOf(exName) !== -1)) {
+            if (exName &amp;&amp; (exName.indexOf(sName) !== -1 || sName.indexOf(exName) !== -1)) {
               targetRow = nameToRow[exName];
               break;
             }
@@ -2167,10 +2239,10 @@ function doPost(e) {
           if (itm.unit) sStock.getRange(targetRow, 3).setValue(String(itm.unit));
           if (itm.cost) sStock.getRange(targetRow, 7).setValue(Number(itm.cost));
           
-          // Perbarui formula status, aset & rekomendasi (pemisah titik koma ';')
+          // Perbarui formula status, aset &amp; rekomendasi (pemisah titik koma ';')
           sStock.getRange(targetRow, 6).setValue('=IF(D' + targetRow + '&lt;=0; "HABIS"; IF(D' + targetRow + '&lt;=E' + targetRow + '; "MENIPIS"; "AMAN"))');
           sStock.getRange(targetRow, 8).setValue('=D' + targetRow + '*G' + targetRow);
-          sStock.getRange(targetRow, 9).setValue('=IF(D' + targetRow + '&lt;=E' + targetRow + '; "ORDER SEKARANG (" & (E' + targetRow + '*3 - D' + targetRow + ') & " " & C' + targetRow + ' & ")"; "STOK CUKUP")');
+          sStock.getRange(targetRow, 9).setValue('=IF(D' + targetRow + '&lt;=E' + targetRow + '; "ORDER SEKARANG (" &amp; (E' + targetRow + '*3 - D' + targetRow + ') &amp; " " &amp; C' + targetRow + ' &amp; ")"; "STOK CUKUP")');
           updatedCount++;
         } else {
           // Tambahkan baris stok baru jika belum terdaftar di spreadsheet
@@ -2188,7 +2260,7 @@ function doPost(e) {
             '=IF(D' + newRow + '&lt;=0; "HABIS"; IF(D' + newRow + '&lt;=E' + newRow + '; "MENIPIS"; "AMAN"))',
             costVal,
             '=D' + newRow + '*G' + newRow,
-            '=IF(D' + newRow + '&lt;=E' + newRow + '; "ORDER SEKARANG (" & (E' + newRow + '*3 - D' + newRow + ') & " " & C' + newRow + ' & ")"; "STOK CUKUP")',
+            '=IF(D' + newRow + '&lt;=E' + newRow + '; "ORDER SEKARANG (" &amp; (E' + newRow + '*3 - D' + newRow + ') &amp; " " &amp; C' + newRow + ' &amp; ")"; "STOK CUKUP")',
             itm.notes || "-"
           ]);
           addedCount++;
@@ -2211,7 +2283,7 @@ function doPost(e) {
     // =========================================================
     // 6. PENYESUAIAN STOK TUNGGAL (INLINE STOCK ADJUSTMENT)
     // =========================================================
-    else if ((payload.type === "stock_update" || payload.type === "stock_adjustment") && payload.data && sStock) {
+    else if ((payload.type === "stock_update" || payload.type === "stock_adjustment") &amp;&amp; payload.data &amp;&amp; sStock) {
       var itm = payload.data;
       var sId = String(itm.id || "").trim().toLowerCase();
       var sName = String(itm.name || "").trim().toLowerCase();
@@ -2221,7 +2293,7 @@ function doPost(e) {
       for (var r = 1; r &lt; stockData.length; r++) {
         var rowId = String(stockData[r][0] || "").trim().toLowerCase();
         var rowName = String(stockData[r][1] || "").trim().toLowerCase();
-        if ((sId && rowId === sId) || (sName && rowName === sName) || (sName && rowName && (rowName.indexOf(sName) !== -1 || sName.indexOf(rowName) !== -1))) {
+        if ((sId &amp;&amp; rowId === sId) || (sName &amp;&amp; rowName === sName) || (sName &amp;&amp; rowName &amp;&amp; (rowName.indexOf(sName) !== -1 || sName.indexOf(rowName) !== -1))) {
           foundRow = r + 1;
           break;
         }
@@ -2232,7 +2304,7 @@ function doPost(e) {
         sStock.getRange(foundRow, 4).setValue(targetQty);
         sStock.getRange(foundRow, 6).setValue('=IF(D' + foundRow + '&lt;=0; "HABIS"; IF(D' + foundRow + '&lt;=E' + foundRow + '; "MENIPIS"; "AMAN"))');
         sStock.getRange(foundRow, 8).setValue('=D' + foundRow + '*G' + foundRow);
-        sStock.getRange(foundRow, 9).setValue('=IF(D' + foundRow + '&lt;=E' + foundRow + '; "ORDER SEKARANG (" & (E' + foundRow + '*3 - D' + foundRow + ') & " " & C' + foundRow + ' & ")"; "STOK CUKUP")');
+        sStock.getRange(foundRow, 9).setValue('=IF(D' + foundRow + '&lt;=E' + foundRow + '; "ORDER SEKARANG (" &amp; (E' + foundRow + '*3 - D' + foundRow + ') &amp; " " &amp; C' + foundRow + ' &amp; ")"; "STOK CUKUP")');
         if (itm.note) {
           sStock.getRange(foundRow, 10).setValue(itm.note);
         }
@@ -2244,9 +2316,9 @@ function doPost(e) {
     }
 
     // =========================================================
-    // 7. SINKRONISASI MASTER MENU & EXTRA TOPPING (DARI OWNER)
+    // 7. SINKRONISASI MASTER MENU &amp; EXTRA TOPPING (DARI OWNER)
     // =========================================================
-    else if ((payload.type === "sync_menu_toppings" || payload.type === "bulk_menu") && sMenu) {
+    else if ((payload.type === "sync_menu_toppings" || payload.type === "bulk_menu") &amp;&amp; sMenu) {
       var allItems = [];
       if (Array.isArray(payload.menuItems)) {
         for (var mi = 0; mi &lt; payload.menuItems.length; mi++) {
@@ -2307,12 +2379,12 @@ function doPost(e) {
       }
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "Master Menu & Topping berhasil disinkronkan ke Spreadsheet",
+        message: "Master Menu &amp; Topping berhasil disinkronkan ke Spreadsheet",
         count: allItems.length
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // Perbarui otomatis Rekap Bulanan & Grafik Tren Penjualan
+    // Perbarui otomatis Rekap Bulanan &amp; Grafik Tren Penjualan
     try {
       updateMonthlyRecap();
     } catch (eRecap) {}
@@ -2715,13 +2787,59 @@ function doPost(e) {
     }
 
     // FAST ASYNC CLOUD SYNC (NON-BLOCKING WITH 5-SECOND TIMEOUT)
+    // ---------- Helper sinkronisasi (anti-campur-hari & rekonstruksi item) ----------
+    function isTodayTime(v) {
+      const s = String(v || '');
+      if (!s) return true;
+      if (/^\d{4}-\d{2}-\d{2}/.test(s) && !s.includes('T')) return s.slice(0, 10) === todayStr();
+      const d = new Date(s);
+      if (isNaN(d.getTime())) return true;
+      const ds = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      return ds === todayStr();
+    }
+    // Cadangan untuk nota lama yang belum punya data item (JSON): rekonstruksi dari teks ringkasan
+    function parseSummaryToItems(sum) {
+      if (!sum) return [];
+      const menus = [...menuList].sort((x, y) => String(y.name || '').length - String(x.name || '').length);
+      return String(sum).split(/;\s*/).map(part => {
+        const m = part.match(/^\s*(\d+)\s*x\s+(.*)$/i);
+        if (!m) return null;
+        const qty = parseInt(m[1], 10) || 1;
+        const rest = m[2].trim();
+        const low = rest.toLowerCase();
+        const def = menus.find(x => x.name && low.startsWith(String(x.name).toLowerCase()));
+        let name, tail;
+        if (def) { name = def.name; tail = rest.slice(def.name.length); }
+        else {
+          const mm = rest.match(/^(.*?)(?=\s\(|\s\[|\s\+\s|$)/);
+          name = (mm ? mm[1] : rest).trim(); tail = rest.slice(name.length);
+        }
+        let toppings = [];
+        const pi = tail.indexOf(' + ');
+        if (pi !== -1) {
+          toppings = tail.slice(pi + 3).split(/,\s*/).map(n => n.trim()).filter(Boolean).map(n => {
+            const td = toppingList.find(x => String(x.name || '').toLowerCase() === n.toLowerCase());
+            return { id: td ? td.id : '', name: td ? td.name : n, price: td ? (Number(td.price) || 0) : 0, qty: 1 };
+          });
+        }
+        return { menuId: def ? def.id : '', name, basePrice: def ? (Number(def.price) || 0) : 0, qty, toppings };
+      }).filter(Boolean);
+    }
+
+    let ownerSyncBusy = false;
     async function syncFromSpreadsheet(manual = false) {
+      if (ownerSyncBusy && !manual) return;
+      ownerSyncBusy = true;
+      try { await _syncFromSpreadsheetInner(manual); } finally { ownerSyncBusy = false; }
+    }
+    async function _syncFromSpreadsheetInner(manual = false) {
       txList = getLS('tx_' + todayStr(), txList);
       stockList = getLS('stock', stockList);
       menuList = getLS('menu', menuList);
       toppingList = getLS('toppings', toppingList);
       closingList = getLS('closings', closingList);
       purchaseList = getLS('purchases', purchaseList);
+      txList = (txList || []).filter(t => isTodayTime(t.time));
       renderAllOwnerViews();
 
       if (!cloudCfg.scriptUrl) {
@@ -2735,7 +2853,7 @@ function doPost(e) {
       if (txt) txt.textContent = 'Menghubungkan...';
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       try {
         const res = await fetch(cloudCfg.scriptUrl + '?action=pull&outletId=seblak&t=' + Date.now(), { signal: controller.signal });
@@ -2775,31 +2893,48 @@ function doPost(e) {
           setLS('menu', menuList);
         }
 
-        if (Array.isArray(json.sales) && json.sales.length > 0) {
-          const existingIds = new Set(txList.map(t => String(t.id).trim()));
-          let hasNewSales = false;
+        if (Array.isArray(json.sales)) {
+          let salesChanged = false;
+          const byId = new Map(txList.map(t => [String(t.id).trim(), t]));
           json.sales.forEach(s => {
             const sid = String(s.id || s.ID_Transaksi || '').trim();
-            if (sid && !existingIds.has(sid)) {
-              existingIds.add(sid);
-              hasNewSales = true;
-              txList.unshift({
-                id: sid,
-                time: s.time || s.Waktu || new Date().toISOString(),
-                cashierName: s.cashierName || s.Kasir || 'Kasir Seblak',
-                customerName: s.customerName || s.Pelanggan || '-',
-                orderTypeName: s.orderTypeName || s.Tipe_Order || 'Dine-In',
-                paymentMethodName: s.paymentMethodName || s.Metode_Bayar || 'Tunai',
-                isCash: !String(s.paymentMethodName || s.Metode_Bayar || '').toLowerCase().includes('qris') && !String(s.paymentMethodName || s.Metode_Bayar || '').toLowerCase().includes('transfer'),
-                total: Number(s.total ?? s.Total_Bayar ?? 0),
-                isVoid: Boolean(s.isVoid || String(s.Status || '').toUpperCase().includes('VOID')),
-                itemsSummary: String(s.itemsSummary || s.Detail_Pesanan || ''),
-                items: Array.isArray(s.items) ? s.items : []
-              });
+            if (!sid) return;
+            const timeVal = s.time || s.Waktu || '';
+            const voidRemote = Boolean(s.isVoid || String(s.Status || '').toUpperCase().includes('VOID'));
+            const summary = String(s.itemsSummary || s.Detail_Pesanan || '');
+            const ex = byId.get(sid);
+            if (ex) {
+              if (voidRemote && !ex.isVoid) { ex.isVoid = true; salesChanged = true; }
+              if (!Array.isArray(ex.items) || ex.items.length === 0) {
+                const its = (Array.isArray(s.items) && s.items.length > 0) ? s.items : parseSummaryToItems(summary);
+                if (its.length > 0) { ex.items = its; salesChanged = true; }
+              }
+              return;
             }
+            if (!isTodayTime(timeVal)) return; // hanya nota hari ini
+            const pm = String(s.paymentMethodName || s.Metode_Bayar || 'Tunai');
+            const pml = pm.toLowerCase();
+            const nt = {
+              id: sid,
+              time: timeVal || new Date().toISOString(),
+              cashierName: s.cashierName || s.Kasir || 'Kasir Seblak',
+              customerName: s.customerName || s.Pelanggan || '-',
+              orderTypeName: s.orderTypeName || s.Tipe_Order || 'Dine-In',
+              paymentMethodName: pm,
+              isCash: !pml.includes('qris') && !pml.includes('transfer'),
+              subtotal: Number(s.subtotal || 0),
+              discount: Number(s.discount || 0),
+              total: Number(s.total ?? s.Total_Bayar ?? 0),
+              isVoid: voidRemote,
+              itemsSummary: summary,
+              items: (Array.isArray(s.items) && s.items.length > 0) ? s.items : parseSummaryToItems(summary)
+            };
+            txList.push(nt);
+            byId.set(sid, nt);
+            salesChanged = true;
           });
-          if (hasNewSales || txList.length === 0) {
-            txList.sort((a, b) => new Date(b.time || 0).getTime() - new Date(a.time || 0).getTime());
+          if (salesChanged) {
+            txList.sort((a, b) => new Date(String(b.time || '').replace(' ', 'T')).getTime() - new Date(String(a.time || '').replace(' ', 'T')).getTime());
             setLS('tx_' + todayStr(), txList);
           }
         }
