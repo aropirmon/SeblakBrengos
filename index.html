@@ -134,7 +134,7 @@
         <p class="text-xs text-[#8A7364]">Semua transaksi otomatis tersimpan di perangkat dan terupdate ke Owner Seblak Brengos.</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <button onclick="flushOfflineQueue()" id="btnRetryQueue" class="hidden px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer animate-pulse">⚠️ Ada Nota Belum Terkirim (Kirim Sekarang)</button>
+        <button onclick="retryAllPending()" id="btnRetryQueue" class="hidden px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer animate-pulse">⚠️ Ada Nota Belum Terkirim (Kirim Sekarang)</button>
         <button onclick="forceSyncAllTodaySalesToCloud()" id="btnForceSyncSales" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs cursor-pointer shadow-xs flex items-center gap-1.5">
           <span>☁️ Kirim Semua Nota ke Owner</span>
         </button>
@@ -615,6 +615,17 @@
     let txList = getLS('tx_' + todayStr(), []);
     let openBills = getLS('open_bills', []);
     let offlineQueue = getLS('offline_queue', []);
+    const lastResendAt = {};
+    const txAge = t => Date.now() - new Date(t.time).getTime();
+    function pendingTx() { return txList.filter(t => !t.synced); }
+    function recentPendingTx() { return pendingTx().filter(t => txAge(t) < 1800000); }
+    function stuckPendingTx() { return pendingTx().filter(t => txAge(t) > 60000); }
+    function syncBadge(tx) {
+      if (tx.synced) return '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">☁️ Terkirim</span>';
+      return txAge(tx) < 1800000
+        ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">⏳ Menunggu</span>'
+        : '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-700">⚠️ Belum terkirim</span>';
+    }
 
     let activeCategory = 'SEMUA';
     let activeOrderType = 'dinein';
@@ -963,6 +974,12 @@
       }
     }
 
+    // ID nota unik: tanggal + jam + 3 digit acak (tidak berulang tiap ~16 menit seperti sebelumnya)
+    function newTxId() {
+      const d = new Date(); const p = n => String(n).padStart(2, '0');
+      return 'SB-' + p(d.getDate()) + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()) + '-' + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+    }
+
     // PROCESS PAYMENT (SYNCHRONOUS ZERO-WAIT WRITE, ANTI-HANG, FAST BROADCAST)
     function processPayment() {
       const gt = getGrandTotal();
@@ -973,7 +990,7 @@
       }
       const oType = ORDER_TYPES.find(o => o.id === activeOrderType) || ORDER_TYPES[0];
       const tx = {
-        id: 'SB-' + Date.now().toString().slice(-6),
+        id: newTxId(),
         time: new Date().toISOString(),
         cashierName: cloudCfg.cashierName || 'Kasir Seblak',
         customerName: document.getElementById('custNameInput').value.trim() || '-',
@@ -1011,6 +1028,7 @@
         data: tx,
         stockItems: stockList
       });
+      setTimeout(() => { if (cloudCfg.scriptUrl) pullFromCloud(false); }, 12000);
 
       cart = [];
       discountAmount = 0;
@@ -1654,7 +1672,7 @@
       }
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
         await fetch(cloudCfg.scriptUrl, {
           method: 'POST',
           mode: 'no-cors',
@@ -1680,14 +1698,41 @@
       Txt.textContent = 'Menghubungkan...';
 
       const controller = new AbortController();
-      const tid = setTimeout(() => controller.abort(), 5000);
+      const tid = setTimeout(() => controller.abort(), 30000);
 
       try {
         const res = await fetch(cloudCfg.scriptUrl + '?action=pull&outletId=seblak&t=' + Date.now(), { signal: controller.signal });
         clearTimeout(tid);
         const data = await res.json();
 
-        if (Array.isArray(data.stock) && data.stock.length > 0) {
+        // Verifikasi: nota dianggap terkirim bila sudah muncul di Spreadsheet
+        const remoteSales = Array.isArray(data.sales) ? data.sales : [];
+        const remoteIds = new Set(remoteSales.map(s => String(s.id || '').trim()));
+        let oldestRemote = 0;
+        if (remoteSales.length >= 300) {
+          oldestRemote = new Date(String(remoteSales[remoteSales.length - 1].time || '').replace(' ', 'T')).getTime() || 0;
+        }
+        let syncChanged = false;
+        txList.forEach(t => {
+          if (t.synced) return;
+          const olderThanWindow = oldestRemote > 0 && new Date(t.time).getTime() < oldestRemote;
+          if (remoteIds.has(String(t.id).trim()) || olderThanWindow) { t.synced = true; syncChanged = true; }
+        });
+        if (syncChanged) setLS('tx_' + todayStr(), txList);
+
+        // Kirim ulang otomatis nota yang belum tercatat (server menolak duplikat)
+        const nowTs = Date.now();
+        pendingTx().forEach(t => {
+          const age = txAge(t);
+          if (age > 40000 && age < 1800000 && (nowTs - (lastResendAt[t.id] || 0)) > 60000) {
+            lastResendAt[t.id] = nowTs;
+            sendToCloud({ type: 'sale', outletId: 'seblak', outletName: 'Seblak Brengos', data: t, stockItems: stockList });
+          }
+        });
+        // Jangan timpa stok lokal dengan angka Spreadsheet selagi masih ada nota yang belum tercatat
+        const holdStock = recentPendingTx().length > 0 || offlineQueue.length > 0;
+
+        if (!holdStock && Array.isArray(data.stock) && data.stock.length > 0) {
           stockList = data.stock.map(s => ({
             id: String(s.id || s.ID_Bahan || ''),
             name: String(s.name || s.Nama_Bahan || ''),
@@ -1737,8 +1782,10 @@
         renderCategories();
         renderMenuGrid();
         renderStockView();
-        Dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-        Txt.textContent = 'Sync Aktif';
+        const pendNow = pendingTx().length;
+        Dot.className = pendNow ? 'w-2 h-2 rounded-full bg-amber-400' : 'w-2 h-2 rounded-full bg-emerald-400';
+        Txt.textContent = pendNow ? ('Menunggu ' + pendNow + ' nota') : 'Sync Aktif';
+        renderTxHistory();
         flushOfflineQueue();
         if (manual) alert('✅ Berhasil menarik data Menu & Stok terbaru dari Spreadsheet Owner!');
       } catch (err) {
@@ -1763,13 +1810,22 @@
       renderTxHistory();
     }
 
+    async function retryAllPending() {
+      await flushOfflineQueue();
+      for (const t of pendingTx()) {
+        await sendToCloud({ type: 'sale', outletId: 'seblak', outletName: 'Seblak Brengos', data: t, stockItems: stockList });
+      }
+      renderTxHistory();
+      setTimeout(() => pullFromCloud(false), 4000);
+    }
+
     function renderTxHistory() {
       const validTx = txList.filter(t => !t.isVoid);
       const omzet = validTx.reduce((s, t) => s + t.total, 0);
       const cashSum = validTx.filter(t => t.isCash).reduce((s, t) => s + t.total, 0);
       const nonCashSum = omzet - cashSum;
 
-      document.getElementById('btnRetryQueue').classList.toggle('hidden', offlineQueue.length === 0);
+      document.getElementById('btnRetryQueue').classList.toggle('hidden', offlineQueue.length === 0 && stuckPendingTx().length === 0);
       document.getElementById('txStatsRow').innerHTML = `
         <div class="bg-white p-3.5 rounded-2xl border border-[#E6D8C8]"><span class="text-[10px] font-extrabold text-[#8A7364] uppercase">Total Omzet Hari Ini</span><div class="text-lg font-black text-[#B3261E] mt-0.5">${rp(omzet)}</div></div>
         <div class="bg-white p-3.5 rounded-2xl border border-[#E6D8C8]"><span class="text-[10px] font-extrabold text-[#8A7364] uppercase">Transaksi Sukses</span><div class="text-lg font-black text-[#2B1B14] mt-0.5">${validTx.length} Nota</div></div>
@@ -1787,6 +1843,7 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="font-black text-xs text-[#2B1B14]">#${tx.id}</span>
+              ${syncBadge(tx)}
               <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-stone-100">${tx.orderTypeName}</span>
               <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900">${tx.paymentMethodName}</span>
               ${tx.isVoid ? '<span class="text-[10px] font-black px-2 py-0.5 rounded bg-red-600 text-white">VOID / BATAL</span>' : ''}
@@ -1839,6 +1896,7 @@
         try { syncChannel.postMessage({ type: 'TRANSACTION_VOIDED', id, reason }); } catch (e) {}
       }
       sendToCloud({ type: 'void_transaction', outletId: 'seblak', transactionId: id, reason });
+      sendToCloud({ type: 'bulk_stock', outletId: 'seblak', stockItems: stockList });
       renderTxHistory();
       renderStockView();
       alert('Nota #' + id + ' berhasil dibatalkan (Void). Stok bahan baku telah dikembalikan otomatis!');
