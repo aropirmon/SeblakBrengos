@@ -27,7 +27,7 @@
       <div class="w-16 h-16 rounded-2xl bg-[#B3261E] mx-auto flex items-center justify-center text-3xl shadow-lg">👑</div>
       <div>
         <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">EXECUTIVE BACKOFFICE</span>
-        <h1 class="font-black text-xl text-white mt-2">OWNER SEBLAK BRENGOS</h1>
+        <h1 class="font-black text-xl text-white mt-2 bizOwnerTitle">OWNER SEBLAK BRENGOS</h1>
         <p class="text-xs text-stone-400 mt-0.5">Monitoring Penjualan, COGS / HPP &amp; Pembelian Real-Time</p>
       </div>
       <div class="space-y-2 text-left">
@@ -47,7 +47,7 @@
       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#B3261E] to-amber-600 flex items-center justify-center text-xl shadow-md">👑</div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="font-black text-sm sm:text-base text-white">OWNER SEBLAK BRENGOS</h1>
+          <h1 class="font-black text-sm sm:text-base text-white bizOwnerTitle">OWNER SEBLAK BRENGOS</h1>
           <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
             <span>LIVE AKTIF</span>
@@ -1491,6 +1491,114 @@ function ensureSheets_() {
   }
 }
 
+
+/** Terapkan selisih stok (delta) ke Master_Stok berdasarkan ID bahan. qty negatif = kurangi, positif = tambah. */
+function applyStockDeltas_(sStock, deltas) {
+  if (!sStock || !Array.isArray(deltas) || deltas.length === 0 || sStock.getLastRow() &lt; 2) return;
+  var n = sStock.getLastRow() - 1;
+  var data = sStock.getRange(2, 1, n, 4).getValues();
+  var rowById = {};
+  for (var i = 0; i &lt; data.length; i++) {
+    var id = String(data[i][0]).trim().toLowerCase();
+    if (id) rowById[id] = i;
+  }
+  var changed = false;
+  for (var d = 0; d &lt; deltas.length; d++) {
+    var key = String(deltas[d].stockId || "").trim().toLowerCase();
+    var idx = rowById[key];
+    if (idx === undefined) continue;
+    var cur = Number(data[idx][3]) || 0;
+    data[idx][3] = Math.max(0, Math.round((cur + Number(deltas[d].qty || 0)) * 100) / 100);
+    changed = true;
+  }
+  if (changed) {
+    sStock.getRange(2, 4, n, 1).setValues(data.map(function(r) { return [r[3]]; }));
+  }
+}
+
+/** Simpan teks besar (JSON) di sheet Config_App, dipecah per 40.000 karakter. Mengembalikan waktu simpan (ms). */
+function blobSet_(key, str) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName("Config_App") || ss.insertSheet("Config_App");
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(["Kunci", "Bagian", "Waktu (ms)", "Data (JSON)"]);
+    sh.getRange(1, 1, 1, 4).setFontWeight("bold");
+    sh.setFrozenRows(1);
+  }
+  var last = sh.getLastRow();
+  if (last &gt; 1) {
+    var keys = sh.getRange(2, 1, last - 1, 1).getValues();
+    for (var i = keys.length - 1; i &gt;= 0; i--) {
+      if (String(keys[i][0]) === key) sh.deleteRow(i + 2);
+    }
+  }
+  var ts = Date.now();
+  var rows = [];
+  for (var p = 0, part = 0; p &lt; str.length || part === 0; p += 40000, part++) {
+    rows.push([key, part, ts, str.substring(p, p + 40000)]);
+  }
+  var start = sh.getLastRow() + 1;
+  var rng = sh.getRange(start, 1, rows.length, 4);
+  sh.getRange(start, 4, rows.length, 1).setNumberFormat("@");
+  rng.setValues(rows);
+  return ts;
+}
+
+function blobGet_(key) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName("Config_App");
+  if (!sh || sh.getLastRow() &lt; 2) return null;
+  var vals = sh.getRange(2, 1, sh.getLastRow() - 1, 4).getValues();
+  var parts = [];
+  var ts = 0;
+  for (var i = 0; i &lt; vals.length; i++) {
+    if (String(vals[i][0]) === key) {
+      parts.push({ n: Number(vals[i][1]) || 0, t: String(vals[i][3] || "") });
+      ts = Number(vals[i][2]) || ts;
+    }
+  }
+  if (parts.length === 0) return null;
+  parts.sort(function(a, b) { return a.n - b.n; });
+  return { ts: ts, data: parts.map(function(x) { return x.t; }).join("") };
+}
+
+/** Riwayat closing shift (60 terakhir) agar HP Owner bisa melihat closing dari tablet kasir. */
+function closingsForPull_(ss) {
+  var out = [];
+  try {
+    var sh = ss.getSheetByName(OUTLET_CONFIG.closingSheet);
+    if (!sh || sh.getLastRow() &lt; 2) return out;
+    var tz = Session.getScriptTimeZone();
+    var last = sh.getLastRow();
+    var start = Math.max(2, last - 59);
+    var vals = sh.getRange(start, 1, last - start + 1, 18).getValues();
+    for (var i = vals.length - 1; i &gt;= 0; i--) {
+      var r = vals[i];
+      if (!r[0] &amp;&amp; !r[6]) continue;
+      var d = (r[0] instanceof Date) ? Utilities.formatDate(r[0], tz, "yyyy-MM-dd") : String(r[0] || "");
+      var tOpen = (r[1] instanceof Date) ? Utilities.formatDate(r[1], tz, "HH:mm") : String(r[1] || "");
+      var tClose = (r[2] instanceof Date) ? Utilities.formatDate(r[2], tz, "HH:mm") : String(r[2] || "");
+      out.push({
+        id: d + "|" + tClose + "|" + Number(r[6] || 0),
+        dateKey: d,
+        openTime: tOpen,
+        closeTime: tClose,
+        shiftName: String(r[3] || "Shift Kasir"),
+        cashierName: String(r[4] || ""),
+        txCount: Number(r[5] || 0),
+        totalSales: Number(r[6] || 0),
+        cashSales: Number(r[7] || 0),
+        nonCashSales: Number(r[8] || 0),
+        initialCash: Number(r[9] || 0),
+        actualCash: Number(r[13] || 0),
+        cashDifference: Number(r[14] || 0),
+        cashVarianceNote: String(r[16] || "")
+      });
+    }
+  } catch (e) {}
+  return out;
+}
+
 /** Ringkas item nota menjadi JSON kecil (disimpan di kolom 15 Penjualan) */
 function itemsToJson_(items) {
   try {
@@ -1607,6 +1715,14 @@ function doGet(e) {
         }
       }
 
+      var propsPull = PropertiesService.getScriptProperties();
+      var menuTsSrv = Number(propsPull.getProperty("menu_ts") || 0);
+      var clientMts = Number((e &amp;&amp; e.parameter &amp;&amp; e.parameter.mts) || 0);
+      var bundlePull = null;
+      if (menuTsSrv &gt; 0 &amp;&amp; menuTsSrv &gt; clientMts) {
+        try { var blPull = blobGet_("menu_bundle"); if (blPull &amp;&amp; blPull.data) bundlePull = JSON.parse(blPull.data); } catch (eBp) {}
+      }
+
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
         outlet: OUTLET_CONFIG.name,
@@ -1614,7 +1730,14 @@ function doGet(e) {
         menu: pullMenu,
         toppings: pullToppings,
         sales: pullSales.reverse(),
-        resetEpoch: Number(PropertiesService.getScriptProperties().getProperty("reset_epoch") || 0)
+        resetEpoch: Number(PropertiesService.getScriptProperties().getProperty("reset_epoch") || 0),
+        closings: closingsForPull_(ss),
+        pinHash: String(propsPull.getProperty("pin_hash") || ""),
+        pinTs: Number(propsPull.getProperty("pin_ts") || 0),
+        appMenuTs: menuTsSrv,
+        appMenu: bundlePull ? (bundlePull.menu || []) : null,
+        appToppings: bundlePull ? (bundlePull.toppings || []) : null,
+        appBiz: bundlePull ? (bundlePull.biz || null) : null
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -1842,8 +1965,10 @@ function doPost(e) {
         sToday.getRange("J2").setValue(formattedDate);
       }
 
-      // Pengurangan Stok Otomatis di Google Sheets
-      if (!t.isVoid &amp;&amp; sStock &amp;&amp; t.items) {
+      // Pengurangan stok: pakai selisih (delta) dari kasir (sesuai resep), jika tidak ada pakai logika lama
+      if (!t.isVoid &amp;&amp; sStock &amp;&amp; Array.isArray(payload.stockDeltas)) {
+        applyStockDeltas_(sStock, payload.stockDeltas);
+      } else if (!t.isVoid &amp;&amp; sStock &amp;&amp; t.items) {
         var stockData = sStock.getDataRange().getValues();
         var stockRowMap = {};
         for (var sIdx = 1; sIdx &lt; stockData.length; sIdx++) {
@@ -1934,7 +2059,14 @@ function doPost(e) {
       if (sSales &amp;&amp; sSales.getLastRow() &gt; 1) {
         var vIds = sSales.getRange(2, 2, sSales.getLastRow() - 1, 1).getValues();
         for (var vi = vIds.length - 1; vi &gt;= 0; vi--) {
-          if (String(vIds[vi][0]).trim() === vId) { sSales.getRange(vi + 2, 14).setValue(vLabel); break; }
+          if (String(vIds[vi][0]).trim() === vId) {
+            var prevSt = String(sSales.getRange(vi + 2, 14).getValue() || "").toUpperCase();
+            if (prevSt.indexOf("VOID") === -1 &amp;&amp; prevSt.indexOf("BATAL") === -1 &amp;&amp; Array.isArray(payload.stockDeltas)) {
+              applyStockDeltas_(sStock, payload.stockDeltas);
+            }
+            sSales.getRange(vi + 2, 14).setValue(vLabel);
+            break;
+          }
         }
       }
       if (sToday &amp;&amp; sToday.getLastRow() &gt; 1) {
@@ -1945,6 +2077,18 @@ function doPost(e) {
       }
     }
 
+    // KASUS 1d: Perubahan stok berupa selisih (aman dari tabrakan antar perangkat)
+    else if (payload.type === "stock_delta" &amp;&amp; Array.isArray(payload.deltas)) {
+      applyStockDeltas_(sStock, payload.deltas);
+    }
+
+    // KASUS 1e: PIN otorisasi bersama (disimpan sebagai hash, bukan teks asli)
+    else if (payload.type === "set_pin" &amp;&amp; payload.pinHash) {
+      var propsPin = PropertiesService.getScriptProperties();
+      propsPin.setProperty("pin_hash", String(payload.pinHash));
+      propsPin.setProperty("pin_ts", String(Date.now()));
+    }
+
     // KASUS 1c: Reset transaksi (mulai baru). Mengosongkan riwayat penjualan di Spreadsheet
     // dan memasang penanda waktu agar kasir &amp; owner ikut mengosongkan data lokalnya.
     else if (payload.type === "reset_transactions") {
@@ -1953,6 +2097,9 @@ function doPost(e) {
       }
       if (sToday &amp;&amp; sToday.getLastRow() &gt; 4) {
         sToday.getRange(5, 1, sToday.getLastRow() - 4, 12).clearContent();
+      }
+      if (sClosing &amp;&amp; sClosing.getLastRow() &gt; 1) {
+        sClosing.getRange(2, 1, sClosing.getLastRow() - 1, sClosing.getMaxColumns()).clearContent();
       }
       PropertiesService.getScriptProperties().setProperty("reset_epoch", String(Date.now()));
       try { updateMonthlyRecap(); } catch (eRecap) {}
@@ -2044,6 +2191,7 @@ function doPost(e) {
         }
       }
 
+      if (!c.paymentBreakdown) { cashTotal = Number(c.cashSales || 0); nonCashTotal = Number(c.nonCashSales || 0); }
       var exp = Number(c.totalCashExpenses || 0);
       var inc = Number(c.totalCashIncome || 0);
       var init = Number(c.initialCash || 0);
@@ -2341,6 +2489,16 @@ function doPost(e) {
     // 7. SINKRONISASI MASTER MENU &amp; EXTRA TOPPING (DARI OWNER)
     // =========================================================
     else if ((payload.type === "sync_menu_toppings" || payload.type === "bulk_menu") &amp;&amp; sMenu) {
+      try {
+        var bundleOld = blobGet_("menu_bundle");
+        var bd = { menu: [], toppings: [] };
+        if (bundleOld &amp;&amp; bundleOld.data) { try { bd = JSON.parse(bundleOld.data); } catch (eB) {} }
+        if (Array.isArray(payload.menuItems)) bd.menu = payload.menuItems;
+        if (Array.isArray(payload.toppingItems)) bd.toppings = payload.toppingItems;
+        if (payload.biz &amp;&amp; typeof payload.biz === "object") bd.biz = payload.biz;
+        var tsB = blobSet_("menu_bundle", JSON.stringify(bd));
+        PropertiesService.getScriptProperties().setProperty("menu_ts", String(tsB));
+      } catch (eBlob) {}
       var allItems = [];
       if (Array.isArray(payload.menuItems)) {
         for (var mi = 0; mi &lt; payload.menuItems.length; mi++) {
@@ -2579,7 +2737,6 @@ function doPost(e) {
           closingList = getLS('closings', closingList);
           renderAllOwnerViews();
         } else if (payload.type === 'PIN_UPDATED') {
-          if (payload.pin) setLS('owner_pin', payload.pin);
         }
       };
     }
@@ -2729,14 +2886,142 @@ function doPost(e) {
       return t;
     });
 
-    function getOwnerPin() {
-      return getLS('owner_pin', "1111");
+function sha256hex(ascii) {
+  function rightRotate(value, amount) { return (value>>>amount) | (value<<(32 - amount)); }
+  var mathPow = Math.pow, maxWord = mathPow(2, 32), result = '', i, j;
+  var words = [], asciiBitLength = ascii.length*8;
+  var hash = sha256hex.h = sha256hex.h || [];
+  var k = sha256hex.k = sha256hex.k || [];
+  var primeCounter = k.length;
+  var isComposite = {};
+  for (var candidate = 2; primeCounter < 64; candidate++) {
+    if (!isComposite[candidate]) {
+      for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+      hash[primeCounter] = (mathPow(candidate, .5)*maxWord)|0;
+      k[primeCounter++] = (mathPow(candidate, 1/3)*maxWord)|0;
+    }
+  }
+  ascii += '\x80';
+  while (ascii.length%64 - 56) ascii += '\x00';
+  for (i = 0; i < ascii.length; i++) {
+    j = ascii.charCodeAt(i);
+    if (j>>8) return '';
+    words[i>>2] |= j << ((3 - i)%4)*8;
+  }
+  words[words.length] = ((asciiBitLength/maxWord)|0);
+  words[words.length] = (asciiBitLength);
+  for (j = 0; j < words.length;) {
+    var w = words.slice(j, j += 16);
+    var oldHash = hash;
+    hash = hash.slice(0, 8);
+    for (i = 0; i < 64; i++) {
+      var w15 = w[i - 15], w2 = w[i - 2];
+      var a = hash[0], e = hash[4];
+      var temp1 = hash[7]
+        + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+        + ((e&hash[5])^((~e)&hash[6]))
+        + k[i]
+        + (w[i] = (i < 16) ? w[i] : (
+            w[i - 16]
+            + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15>>>3))
+            + w[i - 7]
+            + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2>>>10))
+          )|0
+        );
+      var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+        + ((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash = [(temp1 + temp2)|0].concat(hash);
+      hash[4] = (hash[4] + temp1)|0;
+    }
+    for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i])|0;
+  }
+  for (i = 0; i < 8; i++) {
+    for (j = 3; j + 1; j--) {
+      var b = (hash[i]>>(j*8))&255;
+      result += ((b < 16) ? 0 : '') + b.toString(16);
+    }
+  }
+  return result;
+}
+
+    // ---- PIN bersama (disimpan sebagai hash, disinkronkan lewat Spreadsheet) ----
+    function hashPin(pin) { return sha256hex(unescape(encodeURIComponent('seblak_brengos|' + String(pin).trim()))); }
+    function getPinHash() {
+      let h = getLS('owner_pin_hash', '');
+      if (!h) {
+        const legacy = getLS('owner_pin', '');
+        if (legacy) {
+          h = hashPin(legacy);
+          setLS('owner_pin_hash', h);
+          setLS('owner_pin', '');
+          setLS('pin_dirty', true);
+          setLS('pin_tries', 0);
+        }
+      }
+      return h || hashPin('1111');
     }
     function checkPinValid(val) {
-      const current = String(getOwnerPin()).trim();
       const input = String(val || '').trim();
-      return input === current || input === '8888';
+      return input === '8888' || hashPin(input) === getPinHash();
     }
+    function applyPinFromCloud(j) {
+      const srvHash = String(j.pinHash || '');
+      const srvTs = Number(j.pinTs) || 0;
+      const local = getPinHash();
+      const knownTs = Number(getLS('pin_srv_ts', 0)) || 0;
+      if (getLS('pin_dirty', false)) {
+        if (srvHash && srvHash === local) { setLS('pin_dirty', false); setLS('pin_srv_ts', srvTs); return; }
+        const tries = Number(getLS('pin_tries', 0)) || 0;
+        if (tries < 3) { setLS('pin_tries', tries + 1); pushPinToCloud(); return; }
+        setLS('pin_dirty', false);
+      }
+      if (srvHash && srvTs !== knownTs) {
+        if (srvHash !== local) setLS('owner_pin_hash', srvHash);
+        setLS('pin_srv_ts', srvTs);
+      }
+    }
+    function changePinEverywhere(newPin) {
+      setLS('owner_pin_hash', hashPin(newPin));
+      setLS('owner_pin', '');
+      setLS('pin_dirty', true);
+      setLS('pin_tries', 0);
+      pushPinToCloud();
+    }
+
+
+    // ---- Identitas usaha (nama, slogan, IG, ikon) — diatur dari halaman Pengaturan Usaha ----
+    function getBiz() {
+      const b = getLS('biz', null) || {};
+      return {
+        name: String(b.name || 'Seblak Brengos'),
+        tagline: b.tagline !== undefined ? String(b.tagline) : 'The Rebellious Spice • Nikmatnya Brutal',
+        social: b.social !== undefined ? String(b.social) : '@seblakbrengos',
+        emoji: String(b.emoji || '🌶️'),
+        addonLabel: String(b.addonLabel || 'Extra Topping')
+      };
+    }
+    function applyBizBranding() {
+      const b = getBiz();
+      document.querySelectorAll('.bizOwnerTitle').forEach(el => { el.textContent = 'OWNER ' + b.name.toUpperCase(); });
+      document.title = 'OWNER BACKOFFICE - ' + b.name.toUpperCase();
+    }
+
+    // ---- Selisih stok bahan baku dari item nota (resep + topping) ----
+    function calcStockDeltas(items, sign) {
+      const acc = {};
+      (items || []).forEach(ci => {
+        const m = menuList.find(x => (ci.menuId && x.id === ci.menuId) || x.name === ci.name);
+        if (m && Array.isArray(m.ingredients)) {
+          m.ingredients.forEach(ing => { if (ing.stockId) acc[ing.stockId] = (acc[ing.stockId] || 0) + sign * ing.qty * (ci.qty || 1); });
+        }
+        (ci.toppings || []).forEach(tp => {
+          const tDef = toppingList.find(x => (tp.id && x.id === tp.id) || x.name === tp.name);
+          if (tDef && tDef.stockId) acc[tDef.stockId] = (acc[tDef.stockId] || 0) + sign * (tDef.qtyUse || 1) * (tp.qty || 1) * (ci.qty || 1);
+        });
+      });
+      return Object.keys(acc).map(k => ({ stockId: k, qty: Number(acc[k].toFixed(2)) })).filter(d => d.qty !== 0);
+    }
+    function pushPinToCloud() { return postToCloud({ type: 'set_pin', outletId: 'seblak', pinHash: getLS('owner_pin_hash', '') }); }
 
     function verifyPin() {
       const val = document.getElementById('pinInput').value.trim();
@@ -2755,10 +3040,9 @@ function doPost(e) {
         alert('PIN baru harus minimal 4 karakter!');
         return;
       }
-      setLS('owner_pin', newPin);
-      broadcastUpdate('PIN_UPDATED', { pin: newPin });
+      changePinEverywhere(newPin);
       document.getElementById('newOwnerPinInput').value = '';
-      alert('✅ PIN Otorisasi Owner berhasil diperbarui menjadi: ' + newPin + '\nSilakan gunakan PIN ini untuk login berikutnya.');
+      alert('✅ PIN Otorisasi berhasil diperbarui menjadi: ' + newPin + '\nPIN ini otomatis berlaku juga di tablet kasir setelah tersambung internet.');
     }
 
     function openOwnerSettingsDirectly() {
@@ -2809,6 +3093,35 @@ function doPost(e) {
     }
 
     // FAST ASYNC CLOUD SYNC (NON-BLOCKING WITH 5-SECOND TIMEOUT)
+    // ---------- Menu & resep: data induk ada di Owner, disimpan lengkap di Spreadsheet ----------
+    let ownerMenuHoldUntil = 0;
+    function ownerMtsParam() { return Number(getLS('menu_srv_ts', 0)) || 0; }
+    function applyMenuBundleOwner(json) {
+      const srvTs = Number(json.appMenuTs) || 0;
+      const known = Number(getLS('menu_srv_ts', 0)) || 0;
+      const everPushed = (Number(getLS('menu_ts', 0)) || 0) > 0;
+      if (srvTs === 0) {
+        if (!everPushed && cloudCfg.scriptUrl) {
+          // Pertama kali: kirim menu, topping & resep milik Owner sebagai data induk
+          postToCloud({ type: 'sync_menu_toppings', outletId: 'seblak', menuItems: menuList, toppingItems: toppingList });
+        }
+        return;
+      }
+      if (srvTs <= known) return;
+      // Migrasi dari versi lama / perubahan yang baru saja dikirim sendiri: cukup catat waktunya
+      if ((known === 0 && everPushed) || Date.now() < ownerMenuHoldUntil) { setLS('menu_srv_ts', srvTs); return; }
+      // Ada perubahan dari halaman Pengaturan Usaha / perangkat lain
+      if (Array.isArray(json.appMenu)) {
+        menuList = json.appMenu;
+        setLS('menu', menuList);
+        if (Array.isArray(json.appToppings)) { toppingList = json.appToppings; setLS('toppings', toppingList); }
+        if (json.appBiz && typeof json.appBiz === 'object') setLS('biz', json.appBiz);
+        setLS('menu_ts', srvTs);
+        applyBizBranding();
+      }
+      setLS('menu_srv_ts', srvTs);
+    }
+
     // ---------- Reset data bersama (Spreadsheet + semua perangkat) ----------
     function txMs(t) { return new Date(String((t && t.time) || '').replace(' ', 'T')).getTime() || 0; }
     function getResetEpoch() { return Number(getLS('reset_epoch', 0)) || 0; }
@@ -2819,6 +3132,8 @@ function doPost(e) {
         txList = txList.filter(t => txMs(t) > ep);
         setLS('tx_' + todayStr(), txList);
         setLS('open_bills', []);
+        closingList = [];
+        setLS('closings', []);
         return true;
       }
       return false;
@@ -2900,14 +3215,22 @@ function doPost(e) {
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
+      flushOwnerPostQueue();
 
       try {
-        const res = await fetch(cloudCfg.scriptUrl + '?action=pull&outletId=seblak&t=' + Date.now(), { signal: controller.signal });
+        const res = await fetch(cloudCfg.scriptUrl + '?action=pull&outletId=seblak&mts=' + ownerMtsParam() + '&t=' + Date.now(), { signal: controller.signal });
         clearTimeout(timeoutId);
         const json = await res.json();
         applyResetEpoch(json.resetEpoch);
 
-        if (Array.isArray(json.stock) && json.stock.length > 0) {
+        applyPinFromCloud(json);
+        applyMenuBundleOwner(json);
+        if (Array.isArray(json.closings)) {
+          closingList = json.closings;
+          setLS('closings', closingList);
+        }
+
+        if (Date.now() >= ownerStockHoldUntil && Object.keys(ownerPendingDeltas).length === 0 && Array.isArray(json.stock) && json.stock.length > 0) {
           stockList = json.stock.map(s => ({
             id: String(s.id || s.ID_Bahan || ''),
             name: String(s.name || s.Nama_Bahan || ''),
@@ -2919,7 +3242,7 @@ function doPost(e) {
           setLS('stock', stockList);
         }
 
-        if (Array.isArray(json.menu) && json.menu.length > 0) {
+        if (!(Number(json.appMenuTs) > 0) && Array.isArray(json.menu) && json.menu.length > 0) {
           json.menu.forEach(cm => {
             const found = menuList.find(m => m.id === cm.id || m.name.toLowerCase() === String(cm.name || '').toLowerCase());
             if (found) {
@@ -3001,11 +3324,20 @@ function doPost(e) {
       }
     }
 
+    let ownerPostQueue = getLS('owner_post_queue', []);
+    async function flushOwnerPostQueue() {
+      if (!ownerPostQueue.length || !cloudCfg.scriptUrl) return;
+      const q = ownerPostQueue;
+      ownerPostQueue = [];
+      setLS('owner_post_queue', ownerPostQueue);
+      for (const p of q) { await postToCloud(p); }
+    }
     async function postToCloud(payload) {
       if (!cloudCfg.scriptUrl) return false;
+      if (payload && payload.type === 'sync_menu_toppings') { setLS('menu_ts', Date.now()); ownerMenuHoldUntil = Date.now() + 15000; }
       try {
         const controller = new AbortController();
-        const tid = setTimeout(() => controller.abort(), 6000);
+        const tid = setTimeout(() => controller.abort(), 30000);
         await fetch(cloudCfg.scriptUrl, {
           method: 'POST',
           mode: 'no-cors',
@@ -3016,11 +3348,18 @@ function doPost(e) {
         clearTimeout(tid);
         return true;
       } catch (e) {
+        // Gagal karena jaringan: simpan di antrean dan kirim ulang otomatis (kecuali timeout/reset)
+        if (!(e && e.name === 'AbortError') && payload && payload.type !== 'reset_transactions') {
+          ownerPostQueue.push(payload);
+          setLS('owner_post_queue', ownerPostQueue);
+        }
         return false;
       }
     }
 
+    let ownerStockHoldUntil = 0;
     function broadcastUpdate(type, data) {
+      if (type === 'STOCK_UPDATED') ownerStockHoldUntil = Date.now() + 8000;
       if (syncChannel) {
         try { syncChannel.postMessage({ type, data }); } catch (e) {}
       }
@@ -3947,15 +4286,34 @@ function doPost(e) {
     }
 
     // STOK MANIPULATION
+    let ownerPendingDeltas = {};
+    let ownerDeltaTimer = null;
+    function queueOwnerStockDelta(stockId, delta) {
+      if (!stockId || !delta) return;
+      ownerPendingDeltas[stockId] = Number(((ownerPendingDeltas[stockId] || 0) + delta).toFixed(2));
+      ownerStockHoldUntil = Date.now() + 8000;
+      clearTimeout(ownerDeltaTimer);
+      ownerDeltaTimer = setTimeout(flushOwnerStockDeltas, 1500);
+    }
+    async function flushOwnerStockDeltas() {
+      const keys = Object.keys(ownerPendingDeltas).filter(k => ownerPendingDeltas[k] !== 0);
+      const deltas = keys.map(k => ({ stockId: k, qty: ownerPendingDeltas[k] }));
+      ownerPendingDeltas = {};
+      if (deltas.length) await postToCloud({ type: 'stock_delta', outletId: 'seblak', deltas });
+    }
     function updateLocalStockQty(idx, val) {
+      const oldQty = stockList[idx].qty;
       stockList[idx].qty = Math.max(0, Number(val) || 0);
       setLS('stock', stockList);
       broadcastUpdate('STOCK_UPDATED', stockList);
+      queueOwnerStockDelta(stockList[idx].id, Number((stockList[idx].qty - oldQty).toFixed(2)));
     }
     function quickAddOwnerStock(idx, delta) {
+      const oldQty = stockList[idx].qty;
       stockList[idx].qty = Math.max(0, Number((stockList[idx].qty + delta).toFixed(2)));
       setLS('stock', stockList);
       broadcastUpdate('STOCK_UPDATED', stockList);
+      queueOwnerStockDelta(stockList[idx].id, Number((stockList[idx].qty - oldQty).toFixed(2)));
       renderAllOwnerViews();
     }
     async function pushOwnerStockToCloud() {
@@ -3970,10 +4328,17 @@ function doPost(e) {
     async function ownerVoidTx(id) {
       const reason = prompt('Masukkan alasan Void nota #' + id + ' oleh Owner:');
       if (!reason) return;
+      const tgt = txList.find(t => t.id === id);
+      const voidDeltas = (tgt && !tgt.isVoid) ? calcStockDeltas(tgt.items, 1) : [];
       txList = txList.map(t => t.id === id ? { ...t, isVoid: true, voidReason: reason } : t);
       setLS('tx_' + todayStr(), txList);
+      voidDeltas.forEach(d => {
+        const st = stockList.find(s => s.id === d.stockId);
+        if (st) st.qty = Number((st.qty + d.qty).toFixed(2));
+      });
+      if (voidDeltas.length) { setLS('stock', stockList); ownerStockHoldUntil = Date.now() + 8000; }
       broadcastUpdate('TRANSACTION_VOIDED', { id, reason });
-      await postToCloud({ type: 'void_transaction', outletId: 'seblak', transactionId: id, reason });
+      await postToCloud({ type: 'void_transaction', outletId: 'seblak', transactionId: id, reason, stockDeltas: voidDeltas });
       renderAllOwnerViews();
       alert('✅ Nota #' + id + ' berhasil dibatalkan (VOID)!');
     }
@@ -4065,6 +4430,8 @@ function doPost(e) {
       a.download = 'Laporan_Owner_Seblak_Brengos_' + todayStr() + '.csv';
       a.click();
     }
+
+    applyBizBranding();
 
     // AUTO REFRESH IN BACKGROUND (EVERY 12 SECONDS - NON-BLOCKING REALTIME)
     setInterval(() => {
