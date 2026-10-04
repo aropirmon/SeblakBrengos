@@ -23,13 +23,13 @@
   <!-- TOP NAVBAR (CLEAN & PROFESSIONAL - NO CLOUD BUTTON VISIBLE) -->
   <header class="bg-[#2B1B14] text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-md sticky top-0 z-30 border-b-2 border-[#B3261E]">
     <div class="flex items-center gap-2.5">
-      <div class="w-9 h-9 rounded-xl bg-[#B3261E] flex items-center justify-center text-lg font-black shadow-inner">🌶️</div>
+      <div class="w-9 h-9 rounded-xl bg-[#B3261E] flex items-center justify-center text-lg font-black shadow-inner" id="bizEmoji">🌶️</div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="font-black text-sm sm:text-base tracking-tight">SEBLAK BRENGOS</h1>
+          <h1 id="bizNameHeader" class="font-black text-sm sm:text-base tracking-tight">SEBLAK BRENGOS</h1>
           <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#B3261E] text-amber-200 uppercase">POS KASIR</span>
         </div>
-        <p class="text-[10px] text-amber-200/80 font-semibold">THE REBELLIOUS SPICE • NIKMATNYA BRUTAL</p>
+        <p id="bizTaglineHeader" class="text-[10px] text-amber-200/80 font-semibold">THE REBELLIOUS SPICE • NIKMATNYA BRUTAL</p>
       </div>
     </div>
 
@@ -259,14 +259,14 @@
 
         <!-- Level Pedas -->
         <div>
-          <label class="block text-xs font-extrabold uppercase text-[#7A6354] mb-2">🌶️ Pilih Level Pedas</label>
+          <label id="modalSpiceLabel" class="block text-xs font-extrabold uppercase text-[#7A6354] mb-2">🌶️ Pilih Level Pedas</label>
           <div id="modalSpiceGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
         </div>
 
         <!-- 16 Extra Toppings -->
         <div>
           <div class="flex items-center justify-between mb-2">
-            <label class="text-xs font-extrabold uppercase text-[#7A6354]">🍢 Extra Topping Resmi (Bisa Dobel)</label>
+            <label id="modalToppingLabel" class="text-xs font-extrabold uppercase text-[#7A6354]">🍢 Extra Topping Resmi (Bisa Dobel)</label>
             <button onclick="resetModalToppings()" class="text-[11px] font-bold text-[#B3261E] underline cursor-pointer">Reset Topping</button>
           </div>
           <div id="modalToppingGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
@@ -327,7 +327,7 @@
   <div id="receiptModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-stone-200 flex flex-col max-h-[90vh]">
       <div class="px-4 py-3 bg-stone-900 text-white flex items-center justify-between">
-        <span class="font-black text-xs uppercase tracking-wider">🧾 Struk Transaksi Seblak Brengos</span>
+        <span class="font-black text-xs uppercase tracking-wider">🧾 Struk Transaksi</span>
         <button onclick="closeReceiptModal()" class="w-7 h-7 rounded-full bg-stone-700 text-xs font-black cursor-pointer">✕</button>
       </div>
       <div class="p-4 overflow-y-auto flex-1 bg-stone-50 flex justify-center">
@@ -446,32 +446,159 @@
           txList = getLS('tx_' + todayStr(), txList);
           renderTxHistory();
         } else if (payload.type === 'PIN_UPDATED') {
-          if (payload.pin) setLS('owner_pin', payload.pin);
         }
       };
     }
 
     // PIN SECURITY HELPERS
-    function getOwnerPin() {
-      return getLS('owner_pin', "1111");
+function sha256hex(ascii) {
+  function rightRotate(value, amount) { return (value>>>amount) | (value<<(32 - amount)); }
+  var mathPow = Math.pow, maxWord = mathPow(2, 32), result = '', i, j;
+  var words = [], asciiBitLength = ascii.length*8;
+  var hash = sha256hex.h = sha256hex.h || [];
+  var k = sha256hex.k = sha256hex.k || [];
+  var primeCounter = k.length;
+  var isComposite = {};
+  for (var candidate = 2; primeCounter < 64; candidate++) {
+    if (!isComposite[candidate]) {
+      for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+      hash[primeCounter] = (mathPow(candidate, .5)*maxWord)|0;
+      k[primeCounter++] = (mathPow(candidate, 1/3)*maxWord)|0;
+    }
+  }
+  ascii += '\x80';
+  while (ascii.length%64 - 56) ascii += '\x00';
+  for (i = 0; i < ascii.length; i++) {
+    j = ascii.charCodeAt(i);
+    if (j>>8) return '';
+    words[i>>2] |= j << ((3 - i)%4)*8;
+  }
+  words[words.length] = ((asciiBitLength/maxWord)|0);
+  words[words.length] = (asciiBitLength);
+  for (j = 0; j < words.length;) {
+    var w = words.slice(j, j += 16);
+    var oldHash = hash;
+    hash = hash.slice(0, 8);
+    for (i = 0; i < 64; i++) {
+      var w15 = w[i - 15], w2 = w[i - 2];
+      var a = hash[0], e = hash[4];
+      var temp1 = hash[7]
+        + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+        + ((e&hash[5])^((~e)&hash[6]))
+        + k[i]
+        + (w[i] = (i < 16) ? w[i] : (
+            w[i - 16]
+            + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15>>>3))
+            + w[i - 7]
+            + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2>>>10))
+          )|0
+        );
+      var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+        + ((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash = [(temp1 + temp2)|0].concat(hash);
+      hash[4] = (hash[4] + temp1)|0;
+    }
+    for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i])|0;
+  }
+  for (i = 0; i < 8; i++) {
+    for (j = 3; j + 1; j--) {
+      var b = (hash[i]>>(j*8))&255;
+      result += ((b < 16) ? 0 : '') + b.toString(16);
+    }
+  }
+  return result;
+}
+
+    // ---- PIN bersama (disimpan sebagai hash, disinkronkan lewat Spreadsheet) ----
+    function hashPin(pin) { return sha256hex(unescape(encodeURIComponent('seblak_brengos|' + String(pin).trim()))); }
+    function getPinHash() {
+      let h = getLS('owner_pin_hash', '');
+      if (!h) {
+        const legacy = getLS('owner_pin', '');
+        if (legacy) {
+          h = hashPin(legacy);
+          setLS('owner_pin_hash', h);
+          setLS('owner_pin', '');
+          setLS('pin_dirty', true);
+          setLS('pin_tries', 0);
+        }
+      }
+      return h || hashPin('1111');
     }
     function checkPinValid(val) {
-      const current = String(getOwnerPin()).trim();
       const input = String(val || '').trim();
-      return input === current || input === '8888';
+      return input === '8888' || hashPin(input) === getPinHash();
     }
+    function applyPinFromCloud(j) {
+      const srvHash = String(j.pinHash || '');
+      const srvTs = Number(j.pinTs) || 0;
+      const local = getPinHash();
+      const knownTs = Number(getLS('pin_srv_ts', 0)) || 0;
+      if (getLS('pin_dirty', false)) {
+        if (srvHash && srvHash === local) { setLS('pin_dirty', false); setLS('pin_srv_ts', srvTs); return; }
+        const tries = Number(getLS('pin_tries', 0)) || 0;
+        if (tries < 3) { setLS('pin_tries', tries + 1); pushPinToCloud(); return; }
+        setLS('pin_dirty', false);
+      }
+      if (srvHash && srvTs !== knownTs) {
+        if (srvHash !== local) setLS('owner_pin_hash', srvHash);
+        setLS('pin_srv_ts', srvTs);
+      }
+    }
+    function changePinEverywhere(newPin) {
+      setLS('owner_pin_hash', hashPin(newPin));
+      setLS('owner_pin', '');
+      setLS('pin_dirty', true);
+      setLS('pin_tries', 0);
+      pushPinToCloud();
+    }
+
+
+    // ---- Identitas usaha (nama, slogan, IG, ikon) — diatur dari halaman Pengaturan Usaha ----
+    function getBiz() {
+      const b = getLS('biz', null) || {};
+      return {
+        name: String(b.name || 'Seblak Brengos'),
+        tagline: b.tagline !== undefined ? String(b.tagline) : 'The Rebellious Spice • Nikmatnya Brutal',
+        social: b.social !== undefined ? String(b.social) : '@seblakbrengos',
+        emoji: String(b.emoji || '🌶️'),
+        addonLabel: String(b.addonLabel || 'Extra Topping')
+      };
+    }
+    function applyBizBranding() {
+      const b = getBiz();
+      const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+      set('bizNameHeader', b.name.toUpperCase());
+      set('bizTaglineHeader', b.tagline.toUpperCase());
+      set('bizEmoji', b.emoji);
+      document.title = 'POS KASIR - ' + b.name.toUpperCase();
+    }
+
+    // ---- Selisih stok bahan baku dari item nota (resep + topping) ----
+    function calcStockDeltas(items, sign) {
+      const acc = {};
+      (items || []).forEach(ci => {
+        const m = menuList.find(x => (ci.menuId && x.id === ci.menuId) || x.name === ci.name);
+        if (m && Array.isArray(m.ingredients)) {
+          m.ingredients.forEach(ing => { if (ing.stockId) acc[ing.stockId] = (acc[ing.stockId] || 0) + sign * ing.qty * (ci.qty || 1); });
+        }
+        (ci.toppings || []).forEach(tp => {
+          const tDef = toppingList.find(x => (tp.id && x.id === tp.id) || x.name === tp.name);
+          if (tDef && tDef.stockId) acc[tDef.stockId] = (acc[tDef.stockId] || 0) + sign * (tDef.qtyUse || 1) * (tp.qty || 1) * (ci.qty || 1);
+        });
+      });
+      return Object.keys(acc).map(k => ({ stockId: k, qty: Number(acc[k].toFixed(2)) })).filter(d => d.qty !== 0);
+    }
+    function pushPinToCloud() { return sendToCloud({ type: 'set_pin', outletId: 'seblak', pinHash: getLS('owner_pin_hash', '') }); }
     function saveNewPinFromKasirModal() {
       const newPin = (document.getElementById('cfgNewPinInput')?.value || '').trim();
       if (!newPin || newPin.length < 4) {
         alert('PIN baru harus minimal 4 karakter!');
         return;
       }
-      setLS('owner_pin', newPin);
-      if (syncChannel) {
-        try { syncChannel.postMessage({ type: 'PIN_UPDATED', pin: newPin }); } catch (e) {}
-      }
+      changePinEverywhere(newPin);
       document.getElementById('cfgNewPinInput').value = '';
-      alert('✅ PIN Otorisasi berhasil diperbarui menjadi: ' + newPin);
+      alert('✅ PIN Otorisasi berhasil diperbarui menjadi: ' + newPin + '\nPIN ini otomatis berlaku juga di HP Owner setelah tersambung internet.');
     }
 
     // CROSS-TAB STORAGE LISTENER
@@ -635,6 +762,37 @@
         return Number(j.resetEpoch) || 0;
       } catch (e) { return -1; }
     }
+    // Menu, topping & resep: ikuti data induk dari Owner (termasuk hapus, ganti nama, resep)
+    function applyMenuBundleKasir(data) {
+      const srvTs = Number(data.appMenuTs) || 0;
+      const localTs = Number(getLS('menu_ts', 0)) || 0;
+      if (srvTs > localTs && Array.isArray(data.appMenu)) {
+        menuList = data.appMenu;
+        setLS('menu', menuList);
+        if (Array.isArray(data.appToppings)) { toppingList = data.appToppings; setLS('toppings', toppingList); }
+        if (data.appBiz && typeof data.appBiz === 'object') setLS('biz', data.appBiz);
+        setLS('menu_ts', srvTs);
+        activeCategory = 'SEMUA';
+        applyBizBranding();
+      }
+    }
+    // Perubahan stok manual di kasir dikirim sebagai selisih
+    let kasirPendingDeltas = {};
+    let kasirDeltaTimer = null;
+    let kasirStockHoldUntil = 0;
+    function queueKasirStockDelta(stockId, delta) {
+      if (!stockId || !delta) return;
+      kasirPendingDeltas[stockId] = Number(((kasirPendingDeltas[stockId] || 0) + delta).toFixed(2));
+      kasirStockHoldUntil = Date.now() + 8000;
+      clearTimeout(kasirDeltaTimer);
+      kasirDeltaTimer = setTimeout(flushKasirStockDeltas, 1500);
+    }
+    function flushKasirStockDeltas() {
+      const keys = Object.keys(kasirPendingDeltas).filter(x => kasirPendingDeltas[x] !== 0);
+      const deltas = keys.map(x => ({ stockId: x, qty: kasirPendingDeltas[x] }));
+      kasirPendingDeltas = {};
+      if (deltas.length) sendToCloud({ type: 'stock_delta', outletId: 'seblak', deltas });
+    }
     // Kembalikan stok bahan baku dari nota (dipakai saat nota di-void oleh Owner)
     function restoreStockForTx(tx) {
       (tx.items || []).forEach(ci => {
@@ -747,12 +905,39 @@
     }
 
     // ITEM CUSTOMIZER MODAL
+    // Pilihan (level/ukuran/varian) per menu: undefined = level pedas bawaan, [] = tidak ada, [...] = daftar sendiri
+    let modalLevels = SPICE_LEVELS;
+    function menuLevels(item) {
+      if (Array.isArray(item.spiceLevels)) {
+        return item.spiceLevels.map((n, i) => ({ id: 'spc_' + i, name: String(n).trim() })).filter(x => x.name);
+      }
+      return SPICE_LEVELS;
+    }
+    function menuAllowsToppings(item) { return item.allowToppings !== false && toppingList.length > 0; }
+    function addDirectToCart(item) {
+      const ex = cart.find(c => c.menuId === item.id && !c.spiceId && (!c.toppings || c.toppings.length === 0) && !c.note);
+      if (ex) { ex.qty += 1; }
+      else {
+        cart.push({
+          uid: 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          menuId: item.id, name: item.name, basePrice: item.price, qty: 1,
+          spiceId: null, spiceName: null, toppings: [], note: ''
+        });
+      }
+      renderCart();
+    }
     function openItemCustomizer(menuId) {
       const item = menuList.find(m => m.id === menuId);
       if (!item) return;
+      const levels = menuLevels(item);
+      const withToppings = menuAllowsToppings(item);
+      // Tidak ada pilihan sama sekali -> langsung masuk keranjang, tanpa popup
+      if (levels.length === 0 && !withToppings && !item.askNote) { addDirectToCart(item); return; }
+
       activeCustomizingItem = item;
       modalQty = 1;
-      modalSpice = SPICE_LEVELS[1];
+      modalLevels = levels;
+      modalSpice = levels.length === 0 ? null : (Array.isArray(item.spiceLevels) ? levels[0] : (SPICE_LEVELS[1] || levels[0]));
       modalToppings = {};
 
       document.getElementById('modalItemName').textContent = item.name;
@@ -768,6 +953,14 @@
         descBox.classList.add('hidden');
       }
 
+      const spiceBlock = document.getElementById('modalSpiceGrid').parentElement;
+      const topBlock = document.getElementById('modalToppingGrid').parentElement;
+      spiceBlock.classList.toggle('hidden', levels.length === 0);
+      topBlock.classList.toggle('hidden', !withToppings);
+      document.getElementById('modalSpiceLabel').textContent = Array.isArray(item.spiceLevels)
+        ? ('▪️ ' + (item.levelLabel || 'Pilih Varian')) : '🌶️ Pilih Level Pedas';
+      document.getElementById('modalToppingLabel').textContent = '➕ ' + getBiz().addonLabel + ' (Bisa Dobel)';
+
       renderModalSpices();
       renderModalToppings();
       document.getElementById('itemModal').classList.remove('hidden');
@@ -778,14 +971,14 @@
       document.getElementById('modalQtyVal').textContent = String(modalQty);
     }
     function renderModalSpices() {
-      document.getElementById('modalSpiceGrid').innerHTML = SPICE_LEVELS.map(sp => `
+      document.getElementById('modalSpiceGrid').innerHTML = modalLevels.map(sp => `
         <button type="button" onclick="selectModalSpice('${sp.id}')" class="p-2 rounded-xl text-left border text-xs font-bold cursor-pointer transition-all ${modalSpice && modalSpice.id === sp.id ? 'bg-[#B3261E] text-white border-[#B3261E] shadow-xs' : 'bg-white text-[#5A4333] border-[#E6D8C8]'}">
           ${sp.name}
         </button>
       `).join('');
     }
     function selectModalSpice(id) {
-      modalSpice = SPICE_LEVELS.find(s => s.id === id) || SPICE_LEVELS[0];
+      modalSpice = modalLevels.find(s => s.id === id) || modalLevels[0];
       renderModalSpices();
     }
     function renderModalToppings() {
@@ -831,6 +1024,7 @@
         qty: modalQty,
         spiceId: modalSpice ? modalSpice.id : null,
         spiceName: modalSpice ? modalSpice.name : null,
+        optIcon: Array.isArray(activeCustomizingItem.spiceLevels) ? '▪️' : '🌶️',
         toppings: chosenToppings,
         note: document.getElementById('modalNoteInput').value.trim()
       });
@@ -860,7 +1054,7 @@
               <div>
                 <div class="font-extrabold text-xs text-[#2B1B14]">${it.name}</div>
                 <div class="flex flex-wrap gap-1 mt-1">
-                  ${it.spiceName ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-800">🌶️ ${it.spiceName}</span>` : ''}
+                  ${it.spiceName ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-800">${it.optIcon || '🌶️'} ${it.spiceName}</span>` : ''}
                   ${(it.toppings || []).map(t => `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">+${t.qty > 1 ? t.qty + 'x ' : ''}${t.name}</span>`).join('')}
                 </div>
                 ${it.note ? `<div class="text-[10px] italic text-[#7A6354] mt-0.5">"${it.note}"</div>` : ''}
@@ -1062,9 +1256,10 @@
       sendToCloud({
         type: 'sale',
         outletId: 'seblak',
-        outletName: 'Seblak Brengos',
+        outletName: getBiz().name,
         data: tx,
-        stockItems: stockList
+        stockItems: stockList,
+        stockDeltas: calcStockDeltas(tx.items, -1)
       });
       setTimeout(() => { if (cloudCfg.scriptUrl) pullFromCloud(false); }, 12000);
 
@@ -1093,8 +1288,8 @@
 
       const receiptHtml = `
         <div class="text-center pb-2 border-b border-stone-300 space-y-0.5">
-          <div class="font-black text-sm">SEBLAK BRENGOS</div>
-          <div class="text-[10px] text-stone-600">The Rebellious Spice • Nikmatnya Brutal</div>
+          <div class="font-black text-sm">${getBiz().name.toUpperCase()}</div>
+          <div class="text-[10px] text-stone-600">${getBiz().tagline}</div>
           <div class="text-[9px] text-stone-500">Struk Resmi • #${tx.id}</div>
         </div>
         <div class="py-1.5 text-[10px] border-b border-dashed border-stone-300 space-y-0.5">
@@ -1115,7 +1310,7 @@
           `}
         </div>
         <div class="text-center pt-3 text-[9.5px] text-stone-500">
-          Terima kasih atas kunjungan Anda!<br/>Follow IG/TikTok: @seblakbrengos
+          Terima kasih atas kunjungan Anda!<br/>${getBiz().social ? 'Follow IG/TikTok: ' + getBiz().social : ''}
         </div>
       `;
 
@@ -1229,10 +1424,10 @@
       add(0x1B, 0x61, 0x01);
       // Double height & double width
       add(0x1B, 0x21, 0x30);
-      addStr('SEBLAK BRENGOS\n');
+      addStr(getBiz().name.toUpperCase() + '\n');
       // Normal font
       add(0x1B, 0x21, 0x00);
-      addStr('The Rebellious Spice\n');
+      addStr(getBiz().tagline + '\n');
       addStr('Nikmatnya Brutal!\n');
       addStr('--------------------------------\n');
 
@@ -1281,7 +1476,7 @@
       add(0x1B, 0x61, 0x01);
       addStr('STATUS: LUNAS\n');
       addStr('Terima kasih atas kunjungan Anda!\n');
-      addStr('IG/TikTok: @seblakbrengos\n');
+      addStr(getBiz().social ? 'IG/TikTok: ' + getBiz().social + '\n' : '');
       addStr('\n\n\n\n'); // Line feed past paper cutter
       add(0x1D, 0x56, 0x00); // Cut paper
 
@@ -1393,12 +1588,12 @@
       ctx.fillStyle = '#B3261E';
       ctx.font = '900 20px "Plus Jakarta Sans", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('🌶️ SEBLAK BRENGOS', width / 2, y);
+      ctx.fillText(getBiz().emoji + ' ' + getBiz().name.toUpperCase(), width / 2, y);
 
       y += 18;
       ctx.fillStyle = '#4A1C17';
       ctx.font = '800 10.5px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText('THE REBELLIOUS SPICE • NIKMATNYA BRUTAL', width / 2, y);
+      ctx.fillText(getBiz().tagline.toUpperCase(), width / 2, y);
 
       y += 15;
       ctx.fillStyle = '#64748B';
@@ -1446,7 +1641,7 @@
           ctx.textAlign = 'left';
           ctx.fillStyle = '#DC2626';
           ctx.font = '600 10px "Plus Jakarta Sans", sans-serif';
-          ctx.fillText('  🌶️ ' + it.spiceName, 16, y);
+          ctx.fillText('  ' + (it.optIcon || '🌶️') + ' ' + it.spiceName, 16, y);
         }
 
         (it.toppings || []).forEach(tp => {
@@ -1536,9 +1731,9 @@
       y += 15;
       ctx.fillStyle = '#64748B';
       ctx.font = '600 10px sans-serif';
-      ctx.fillText('Terima kasih telah menikmati Seblak Brengos!', width / 2, y);
+      ctx.fillText('Terima kasih telah menikmati ' + getBiz().name + '!', width / 2, y);
       y += 13;
-      ctx.fillText('Follow Instagram & TikTok: @seblakbrengos', width / 2, y);
+      ctx.fillText(getBiz().social ? 'Follow Instagram & TikTok: ' + getBiz().social : '', width / 2, y);
 
       return canvas;
     }
@@ -1551,7 +1746,7 @@
           alert('Gagal menghasilkan gambar struk.');
           return;
         }
-        const file = new File([blob], 'Struk-Seblak-Brengos-' + lastReceiptTx.id + '.png', { type: 'image/png' });
+        const file = new File([blob], 'Struk-' + getBiz().name.replace(/\s+/g, '-') + '-' + lastReceiptTx.id + '.png', { type: 'image/png' });
 
         // Method 1: Web Share API (Natively supported on Android Tablet/Chrome/iPad)
         // Directly opens WhatsApp share drawer!
@@ -1559,8 +1754,8 @@
           try {
             await navigator.share({
               files: [file],
-              title: 'Struk Seblak Brengos #' + lastReceiptTx.id,
-              text: 'Struk Pembelian Seblak Brengos #' + lastReceiptTx.id
+              title: 'Struk ' + getBiz().name + ' #' + lastReceiptTx.id,
+              text: 'Struk Pembelian ' + getBiz().name + ' #' + lastReceiptTx.id
             });
             return;
           } catch (err) {
@@ -1572,7 +1767,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'Struk-Seblak-Brengos-' + lastReceiptTx.id + '.png';
+        a.download = 'Struk-' + getBiz().name.replace(/\s+/g, '-') + '-' + lastReceiptTx.id + '.png';
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 5000);
 
@@ -1594,7 +1789,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'Struk-Seblak-Brengos-' + lastReceiptTx.id + '.png';
+        a.download = 'Struk-' + getBiz().name.replace(/\s+/g, '-') + '-' + lastReceiptTx.id + '.png';
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 5000);
         alert('✅ Gambar struk berhasil disimpan ke galeri perangkat!');
@@ -1619,7 +1814,7 @@
         return `• ${i.qty}x ${i.name} ${i.spiceName ? '(' + i.spiceName + ')' : ''} ${tops ? '[' + tops + ']' : ''} = ${rp(itemUnitTotal(i))}`;
       }).join('%0A');
 
-      const msg = `*STRUK PEMBELIAN SEBLAK BRENGOS*%0ANo. Nota: #${lastReceiptTx.id}%0AWaktu: ${new Date(lastReceiptTx.time).toLocaleString('id-ID')}%0A----------------------------%0A${itemsList}%0A----------------------------%0A*Total Bayar: ${rp(lastReceiptTx.total)}*%0AMetode: ${lastReceiptTx.paymentMethodName}%0AStatus: *LUNAS*%0A%0ATerima kasih telah menikmati Seblak Brengos!`;
+      const msg = `*STRUK PEMBELIAN ${getBiz().name.toUpperCase()}*%0ANo. Nota: #${lastReceiptTx.id}%0AWaktu: ${new Date(lastReceiptTx.time).toLocaleString('id-ID')}%0A----------------------------%0A${itemsList}%0A----------------------------%0A*Total Bayar: ${rp(lastReceiptTx.total)}*%0AMetode: ${lastReceiptTx.paymentMethodName}%0AStatus: *LUNAS*%0A%0ATerima kasih telah menikmati Seblak Brengos!`;
 
       const waUrl = 'https://api.whatsapp.com/send?phone=' + formattedPhone + '&text=' + msg;
 
@@ -1641,7 +1836,7 @@
         return `${i.qty}x ${i.name} ${i.spiceName ? '(' + i.spiceName + ')' : ''} ${tops ? '[' + tops + ']' : ''} = ${rp(itemUnitTotal(i))}`;
       }).join('\n');
 
-      const text = `============================\n       SEBLAK BRENGOS       \n The Rebellious Spice • Nikmatnya Brutal\n============================\nNo. Nota: #${tx.id}\nWaktu: ${new Date(tx.time).toLocaleString('id-ID')}\nKasir: ${tx.cashierName || 'Kasir'}\nPelanggan: ${tx.customerName || '-'}\n----------------------------\n${itemsList}\n----------------------------\nSubtotal: ${rp(tx.subtotal || tx.total)}\n${tx.discount > 0 ? `Diskon: -${rp(tx.discount)}\n` : ''}TOTAL: ${rp(tx.total)}\nMetode: ${tx.paymentMethodName} (LUNAS)\n============================\nTerima kasih atas kunjungan Anda!\n============================`;
+      const text = `============================\n       ${getBiz().name.toUpperCase()}       \n ${getBiz().tagline}\n============================\nNo. Nota: #${tx.id}\nWaktu: ${new Date(tx.time).toLocaleString('id-ID')}\nKasir: ${tx.cashierName || 'Kasir'}\nPelanggan: ${tx.customerName || '-'}\n----------------------------\n${itemsList}\n----------------------------\nSubtotal: ${rp(tx.subtotal || tx.total)}\n${tx.discount > 0 ? `Diskon: -${rp(tx.discount)}\n` : ''}TOTAL: ${rp(tx.total)}\nMetode: ${tx.paymentMethodName} (LUNAS)\n============================\nTerima kasih atas kunjungan Anda!\n============================`;
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {
@@ -1689,7 +1884,7 @@
             body: JSON.stringify({
               type: 'sale',
               outletId: 'seblak',
-              outletName: 'Seblak Brengos',
+              outletName: getBiz().name,
               data: t,
               stockItems: stockList
             })
@@ -1720,6 +1915,7 @@
         });
         clearTimeout(timeoutId);
       } catch (err) {
+        if (err && err.name === 'AbortError' && payload && payload.type === 'stock_delta') return;
         offlineQueue.push(payload);
         setLS('offline_queue', offlineQueue);
       }
@@ -1739,7 +1935,7 @@
       const tid = setTimeout(() => controller.abort(), 30000);
 
       try {
-        const res = await fetch(cloudCfg.scriptUrl + '?action=pull&outletId=seblak&t=' + Date.now(), { signal: controller.signal });
+        const res = await fetch(cloudCfg.scriptUrl + '?action=pull&outletId=seblak&mts=' + (Number(getLS('menu_ts', 0)) || 0) + '&t=' + Date.now(), { signal: controller.signal });
         clearTimeout(tid);
         const data = await res.json();
 
@@ -1752,7 +1948,11 @@
           offlineQueue = offlineQueue.filter(p => !(p && p.type === 'sale' && p.data && txMs(p.data) <= srvEpoch));
           setLS('offline_queue', offlineQueue);
           setLS('open_bills', []);
+          setLS('closings', []);
         }
+
+        applyPinFromCloud(data);
+        applyMenuBundleKasir(data);
 
         // Verifikasi: nota dianggap terkirim bila sudah muncul di Spreadsheet
         const remoteSales = Array.isArray(data.sales) ? data.sales : [];
@@ -1775,29 +1975,23 @@
           const age = txAge(t);
           if (age > 40000 && age < 1800000 && (nowTs - (lastResendAt[t.id] || 0)) > 60000) {
             lastResendAt[t.id] = nowTs;
-            sendToCloud({ type: 'sale', outletId: 'seblak', outletName: 'Seblak Brengos', data: t, stockItems: stockList });
+            sendToCloud({ type: 'sale', outletId: 'seblak', outletName: getBiz().name, data: t, stockItems: stockList, stockDeltas: calcStockDeltas(t.items, -1) });
           }
         });
-        // Jangan timpa stok lokal dengan angka Spreadsheet selagi masih ada nota yang belum tercatat
-        // Terapkan void yang dilakukan Owner dari HP (stok ikut dikembalikan)
+        // Terapkan void yang dilakukan Owner dari HP (stok sudah dikembalikan di Spreadsheet)
         let voidApplied = false;
         remoteSales.forEach(s => {
           if (!s.isVoid) return;
           const lt = txList.find(t => String(t.id).trim() === String(s.id || '').trim());
           if (lt && !lt.isVoid) {
-            restoreStockForTx(lt);
             lt.isVoid = true;
             lt.voidReason = 'Dibatalkan oleh Owner';
             voidApplied = true;
           }
         });
-        if (voidApplied) {
-          setLS('stock', stockList);
-          setLS('tx_' + todayStr(), txList);
-          sendToCloud({ type: 'bulk_stock', outletId: 'seblak', stockItems: stockList });
-          if (syncChannel) { try { syncChannel.postMessage({ type: 'STOCK_UPDATED', data: stockList }); } catch (e) {} }
-        }
-        const holdStock = voidApplied || recentPendingTx().length > 0 || offlineQueue.length > 0;
+        if (voidApplied) setLS('tx_' + todayStr(), txList);
+        // Jangan timpa stok lokal dengan angka Spreadsheet selagi masih ada nota/perubahan stok yang belum tercatat
+        const holdStock = recentPendingTx().length > 0 || offlineQueue.length > 0 || Date.now() < kasirStockHoldUntil || Object.keys(kasirPendingDeltas).length > 0;
 
         if (!holdStock && Array.isArray(data.stock) && data.stock.length > 0) {
           stockList = data.stock.map(s => ({
@@ -1810,7 +2004,7 @@
           setLS('stock', stockList);
         }
 
-        if (Array.isArray(data.menu) && data.menu.length > 0) {
+        if (!(Number(data.appMenuTs) > 0) && Array.isArray(data.menu) && data.menu.length > 0) {
           data.menu.forEach(cm => {
             const found = menuList.find(m => m.id === cm.id || m.name.toLowerCase() === String(cm.name || '').toLowerCase());
             if (found) {
@@ -1829,7 +2023,7 @@
           setLS('menu', menuList);
         }
 
-        if (Array.isArray(data.toppings) && data.toppings.length > 0) {
+        if (!(Number(data.appMenuTs) > 0) && Array.isArray(data.toppings) && data.toppings.length > 0) {
           data.toppings.forEach(ct => {
             const found = toppingList.find(t => t.id === ct.id || t.name.toLowerCase() === String(ct.name || '').toLowerCase());
             if (found) {
@@ -1880,7 +2074,7 @@
     async function retryAllPending() {
       await flushOfflineQueue();
       for (const t of pendingTx()) {
-        await sendToCloud({ type: 'sale', outletId: 'seblak', outletName: 'Seblak Brengos', data: t, stockItems: stockList });
+        await sendToCloud({ type: 'sale', outletId: 'seblak', outletName: getBiz().name, data: t, stockItems: stockList, stockDeltas: calcStockDeltas(t.items, -1) });
       }
       renderTxHistory();
       setTimeout(() => pullFromCloud(false), 4000);
@@ -1933,6 +2127,7 @@
       const reason = prompt('Alasan Void / Pembatalan:') || 'Dibatalkan atas izin Owner';
 
       const targetTx = txList.find(t => t.id === id);
+      const voidDeltas = (targetTx && !targetTx.isVoid && targetTx.items) ? calcStockDeltas(targetTx.items, 1) : [];
       if (targetTx && !targetTx.isVoid && targetTx.items) {
         // Otomatis kembalikan stok bahan baku yang sempat terpotong
         targetTx.items.forEach(ci => {
@@ -1962,8 +2157,7 @@
       if (syncChannel) {
         try { syncChannel.postMessage({ type: 'TRANSACTION_VOIDED', id, reason }); } catch (e) {}
       }
-      sendToCloud({ type: 'void_transaction', outletId: 'seblak', transactionId: id, reason });
-      sendToCloud({ type: 'bulk_stock', outletId: 'seblak', stockItems: stockList });
+      sendToCloud({ type: 'void_transaction', outletId: 'seblak', transactionId: id, reason, stockDeltas: voidDeltas });
       renderTxHistory();
       renderStockView();
       alert('Nota #' + id + ' berhasil dibatalkan (Void). Stok bahan baku telah dikembalikan otomatis!');
@@ -1987,7 +2181,10 @@
       }).join('');
     }
     function adjustStock(id, d) {
+      const before = (stockList.find(s => s.id === id) || {}).qty;
       stockList = stockList.map(s => s.id === id ? { ...s, qty: Math.max(0, Number((s.qty + d).toFixed(2))) } : s);
+      const after = (stockList.find(s => s.id === id) || {}).qty;
+      if (before !== undefined && after !== undefined) queueKasirStockDelta(id, Number((after - before).toFixed(2)));
       setLS('stock', stockList);
       if (syncChannel) {
         try { syncChannel.postMessage({ type: 'STOCK_UPDATED', data: stockList }); } catch (e) {}
@@ -2044,11 +2241,11 @@
         try { syncChannel.postMessage({ type: 'CLOSING_SUBMITTED', data: closingData }); } catch (e) {}
       }
 
-      sendToCloud({ type: 'closing', outletId: 'seblak', outletName: 'Seblak Brengos', data: closingData, stockItems: stockList });
+      sendToCloud({ type: 'closing', outletId: 'seblak', outletName: getBiz().name, data: closingData, stockItems: stockList });
       closeClosingModal();
 
       const wa = (cloudCfg.ownerWa || '087898185988').replace(/^0/, '62');
-      const waMsg = `*LAPORAN CLOSING SEBLAK BRENGOS*%0ATanggal: ${todayStr()}%0AKasir: ${cloudCfg.cashierName}%0A----------------%0ATotal Nota: ${validTx.length}%0A*Total Omzet: ${rp(omzet)}*%0ATunai: ${rp(cashSales)}%0ANon-Tunai: ${rp(omzet - cashSales)}%0AKas Aktual Laci: ${rp(actualCash)}%0ASelisih: ${rp(diff)}%0ACatatan: ${note || '-'}`;
+      const waMsg = `*LAPORAN CLOSING ${getBiz().name.toUpperCase()}*%0ATanggal: ${todayStr()}%0AKasir: ${cloudCfg.cashierName}%0A----------------%0ATotal Nota: ${validTx.length}%0A*Total Omzet: ${rp(omzet)}*%0ATunai: ${rp(cashSales)}%0ANon-Tunai: ${rp(omzet - cashSales)}%0AKas Aktual Laci: ${rp(actualCash)}%0ASelisih: ${rp(diff)}%0ACatatan: ${note || '-'}`;
       if (confirm('✅ Laporan Closing berhasil disimpan dan dikirim ke Owner! Kirim juga ringkasan ke WhatsApp Owner?')) {
         window.open('https://wa.me/' + wa + '?text=' + waMsg, '_blank');
       }
@@ -2153,6 +2350,7 @@
     function openShiftModal() { switchTab('tx'); }
 
     // INIT
+    applyBizBranding();
     renderOrderTypes();
     renderCategories();
     renderMenuGrid();
