@@ -3,14 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>OWNER BACKOFFICE - SEBLAK BRENGOS (REALTIME CLOUD ERP)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>AROP Owner</title>
+  <link rel="icon" type="image/png" href="data:image/png;base64,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">
+  <style id="tw-css">*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.visible{visibility:visible}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0}.top-0{top:0}.z-30{z-index:30}.z-50{z-index:50}.order-2{order:2}.order-3{order:3}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-auto{margin-top:auto}.line-clamp-2{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}.block{display:block}.inline{display:inline}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-12{height:3rem}.h-2{height:.5rem}.h-3\.5{height:.875rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-7{height:1.75rem}.h-8{height:2rem}.h-9{height:2.25rem}.max-h-\[460px\]{max-height:460px}.max-h-\[90vh\]{max-height:90vh}.w-16{width:4rem}.w-2{width:.5rem}.w-20{width:5rem}.w-3\.5{width:.875rem}.w-6{width:1.5rem}.w-7{width:1.75rem}.w-8{width:2rem}.w-9{width:2.25rem}.w-auto{width:auto}.w-fit{width:-moz-fit-content;width:fit-content}.w-full{width:100%}.w-max{width:-moz-max-content;width:max-content}.w-px{width:1px}.min-w-0{min-width:0}.max-w-6xl{max-width:72rem}.max-w-lg{max-width:32rem}.max-w-md{max-width:28rem}.max-w-sm{max-width:24rem}.max-w-xl{max-width:36rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.basis-full{flex-basis:100%}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes ping{75%,to{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0,0,.2,1) infinite}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;-moz-user-select:none;user-select:none}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.flex-nowrap{flex-wrap:nowrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-0\.5{gap:.125rem}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-2\.5{gap:.625rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-x-3{-moz-column-gap:.75rem;column-gap:.75rem}.gap-y-1\.5{row-gap:.375rem}.space-y-1\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.375rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.375rem*var(--tw-space-y-reverse))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-2\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.625rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.625rem*var(--tw-space-y-reverse))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.75rem*var(--tw-space-y-reverse))}.space-y-3\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.875rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.875rem*var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem*var(--tw-space-y-reverse))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem*var(--tw-space-y-reverse))}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis}.truncate,.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-md{border-radius:.375rem}.rounded-xl{border-radius:.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-amber-200{--tw-border-opacity:1;border-color:rgb(253 230 138/var(--tw-border-opacity,1))}.border-amber-300{--tw-border-opacity:1;border-color:rgb(252 211 77/var(--tw-border-opacity,1))}.border-emerald-100{--tw-border-opacity:1;border-color:rgb(209 250 229/var(--tw-border-opacity,1))}.border-emerald-200{--tw-border-opacity:1;border-color:rgb(167 243 208/var(--tw-border-opacity,1))}.border-red-200{--tw-border-opacity:1;border-color:rgb(254 202 202/var(--tw-border-opacity,1))}.border-red-300{--tw-border-opacity:1;border-color:rgb(252 165 165/var(--tw-border-opacity,1))}.border-sky-200{--tw-border-opacity:1;border-color:rgb(186 230 253/var(--tw-border-opacity,1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240/var(--tw-border-opacity,1))}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225/var(--tw-border-opacity,1))}.border-stone-800{--tw-border-opacity:1;border-color:rgb(41 37 36/var(--tw-border-opacity,1))}.bg-\[\#160F0C\]{--tw-bg-opacity:1;background-color:rgb(22 15 12/var(--tw-bg-opacity,1))}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235/var(--tw-bg-opacity,1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.bg-black\/80{background-color:rgba(0,0,0,.8)}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229/var(--tw-bg-opacity,1))}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153/var(--tw-bg-opacity,1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245/var(--tw-bg-opacity,1))}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105/var(--tw-bg-opacity,1))}.bg-emerald-700{--tw-bg-opacity:1;background-color:rgb(4 120 87/var(--tw-bg-opacity,1))}.bg-red-50{--tw-bg-opacity:1;background-color:rgb(254 242 242/var(--tw-bg-opacity,1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38/var(--tw-bg-opacity,1))}.bg-sky-50{--tw-bg-opacity:1;background-color:rgb(240 249 255/var(--tw-bg-opacity,1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249/var(--tw-bg-opacity,1))}.bg-slate-200{--tw-bg-opacity:1;background-color:rgb(226 232 240/var(--tw-bg-opacity,1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252/var(--tw-bg-opacity,1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.p-0\.5{padding:.125rem}.p-1{padding:.25rem}.p-1\.5{padding:.375rem}.p-2{padding:.5rem}.p-2\.5{padding:.625rem}.p-3{padding:.75rem}.p-3\.5{padding:.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-0\.5{padding-left:.125rem;padding-right:.125rem}.px-1\.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-2\.5{padding-left:.625rem;padding-right:.625rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-3\.5{padding-left:.875rem;padding-right:.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2\.5{padding-top:.625rem;padding-bottom:.625rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-3\.5{padding-top:.875rem;padding-bottom:.875rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-3{padding-bottom:.75rem}.pr-1{padding-right:.25rem}.pt-2{padding-top:.5rem}.pt-3{padding-top:.75rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}.text-\[10\.5px\]{font-size:10.5px}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[9\.5px\]{font-size:9.5px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-tight{line-height:1.25}.tracking-wider{letter-spacing:.05em}.tracking-widest{letter-spacing:.1em}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6/var(--tw-text-opacity,1))}.text-amber-700{--tw-text-opacity:1;color:rgb(180 83 9/var(--tw-text-opacity,1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183/var(--tw-text-opacity,1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105/var(--tw-text-opacity,1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87/var(--tw-text-opacity,1))}.text-emerald-800{--tw-text-opacity:1;color:rgb(6 95 70/var(--tw-text-opacity,1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38/var(--tw-text-opacity,1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28/var(--tw-text-opacity,1))}.text-sky-600{--tw-text-opacity:1;color:rgb(2 132 199/var(--tw-text-opacity,1))}.text-sky-700{--tw-text-opacity:1;color:rgb(3 105 161/var(--tw-text-opacity,1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184/var(--tw-text-opacity,1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139/var(--tw-text-opacity,1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105/var(--tw-text-opacity,1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85/var(--tw-text-opacity,1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.underline{text-decoration-line:underline}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-60{opacity:.6}.opacity-70{opacity:.7}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-2xl,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-md{--tw-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color),0 2px 4px -2px var(--tw-shadow-color)}.shadow-md,.shadow-sm{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgba(0,0,0,.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.grayscale{--tw-grayscale:grayscale(100%)}.filter,.grayscale{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.hover\:border-amber-400:hover{--tw-border-opacity:1;border-color:rgb(251 191 36/var(--tw-border-opacity,1))}.hover\:bg-amber-100:hover{--tw-bg-opacity:1;background-color:rgb(254 243 199/var(--tw-bg-opacity,1))}.hover\:bg-amber-400:hover{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.hover\:bg-emerald-200:hover{--tw-bg-opacity:1;background-color:rgb(167 243 208/var(--tw-bg-opacity,1))}.hover\:bg-emerald-500:hover{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.hover\:bg-emerald-600:hover{--tw-bg-opacity:1;background-color:rgb(5 150 105/var(--tw-bg-opacity,1))}.hover\:bg-emerald-700:hover{--tw-bg-opacity:1;background-color:rgb(4 120 87/var(--tw-bg-opacity,1))}.hover\:bg-red-100:hover{--tw-bg-opacity:1;background-color:rgb(254 226 226/var(--tw-bg-opacity,1))}.hover\:bg-slate-100:hover{--tw-bg-opacity:1;background-color:rgb(241 245 249/var(--tw-bg-opacity,1))}.hover\:bg-slate-200:hover{--tw-bg-opacity:1;background-color:rgb(226 232 240/var(--tw-bg-opacity,1))}.hover\:bg-slate-50:hover{--tw-bg-opacity:1;background-color:rgb(248 250 252/var(--tw-bg-opacity,1))}.hover\:text-red-700:hover{--tw-text-opacity:1;color:rgb(185 28 28/var(--tw-text-opacity,1))}.hover\:text-slate-600:hover{--tw-text-opacity:1;color:rgb(71 85 105/var(--tw-text-opacity,1))}.hover\:text-slate-900:hover{--tw-text-opacity:1;color:rgb(15 23 42/var(--tw-text-opacity,1))}.focus\:border-emerald-600:focus{--tw-border-opacity:1;border-color:rgb(5 150 105/var(--tw-border-opacity,1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}@media (min-width:640px){.sm\:col-span-2{grid-column:span 2/span 2}.sm\:block{display:block}.sm\:max-w-\[200px\]{max-width:200px}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:gap-4{gap:1rem}.sm\:p-5{padding:1.25rem}.sm\:p-6{padding:1.5rem}.sm\:px-4{padding-left:1rem;padding-right:1rem}.sm\:text-2xl{font-size:1.5rem;line-height:2rem}.sm\:text-base{font-size:1rem;line-height:1.5rem}}@media (min-width:1024px){.lg\:order-2{order:2}.lg\:order-3{order:3}.lg\:col-span-2{grid-column:span 2/span 2}.lg\:col-span-3{grid-column:span 3/span 3}.lg\:w-auto{width:auto}.lg\:max-w-\[260px\]{max-width:260px}.lg\:shrink-0{flex-shrink:0}.lg\:basis-auto{flex-basis:auto}.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.lg\:flex-nowrap{flex-wrap:nowrap}}</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; }
-    body { background: #160F0C; color: #FAF6F0; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+    :root { --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body, button, input, select, textarea { font-family: var(--font-sans); }
+    body { background: #F8FAFC; color: #0F172A; margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+           font-size: 14px; line-height: 1.5; font-weight: 500; letter-spacing: -0.003em;
+           -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+           font-variant-numeric: tabular-nums; font-feature-settings: 'kern' 1, 'liga' 1; }
+    h1, h2, h3 { letter-spacing: -0.015em; line-height: 1.25; }
+    .uppercase { letter-spacing: 0.03em; }
+    .font-black { font-weight: 800 !important; }
+    .font-mono, code, pre, #appsScriptBox { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace !important; font-variant-numeric: normal; letter-spacing: 0; }
+    input::placeholder, textarea::placeholder { font-weight: 500; opacity: .7; }
+    .text-\[9px\] { font-size: 10px !important; }
+    .text-\[9\.5px\] { font-size: 10.5px !important; }
+    .text-\[10px\] { font-size: 11px !important; }
+    .text-\[10\.5px\] { font-size: 11px !important; }
+    .text-\[11px\] { font-size: 12px !important; }
+    #syncDot, #btStatusDot, #ownerSyncDot { position: absolute; top: 3px; right: 3px; width: 10px; height: 10px; border: 2px solid #fff; border-radius: 9999px; }
+    .tabbtn { display: inline-flex; align-items: center; gap: 6px; }
+    .tabbtn .lbl { display: none; }
+    .tabbtn.active .lbl { display: inline; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: #3E291F; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
     .pulse-dot { animation: pulseAnim 1.8s infinite; }
     @keyframes pulseAnim {
       0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
@@ -22,62 +47,52 @@
 <body class="flex flex-col flex-1">
 
   <!-- LOGIN GATE OWNER -->
-  <div id="loginGate" class="fixed inset-0 z-50 bg-[#160F0C] flex items-center justify-center p-4">
-    <div class="bg-[#221712] border-2 border-[#B3261E] w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl space-y-4">
-      <div class="w-16 h-16 rounded-2xl bg-[#B3261E] mx-auto flex items-center justify-center text-3xl shadow-lg">👑</div>
+  <div id="loginGate" class="fixed inset-0 z-50 bg-slate-50 flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 w-full max-w-sm rounded-3xl p-6 text-center shadow-xl space-y-4">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAB1CAYAAABj2nskAAAmOklEQVR42u2daZBc13Xff6+7Z8UMMFgG22DlBgpcJIqUqD3WYlmKLDmxVXZcjivlJC47VSnb3+JKqlT5En9JJamyLSeWHUt2ElnxFtuRzMglurRYIkVrISkuAAiCIAGC2DEDzIJZul8+nHPr3Wn3dL/tvve6556qV7P1dL937zn/+z/nnnNusG3PcbrIMHAY2AoEQA1oAU39Po0EG/w+xI0EXf4Wtr0maPtbDVgFzgKzju6zARwDxnVsAwdjE+h7rOrcAazp15b+bUV/twzc1Ne1erxvrcM9uprHfpIgxu/DFGNVA+rACDBpzU/Q9hlLwKK+f8ua4073UuR8NYD7FFdaAzCfxn5qeq3pa68C5605DrMMWDd5O/DzwDv0Rlat/2vl+LBhSYMbdnmdUexLwB8DnwcWLLDLS6aBf6+K2+xxv6Qw6JYFyMv6tQXMqxG3FJxv6LWif7uq13XgFnBN/3dN9WDFAvluILTZwLebQXb6/ZAFvObrqLVgTymgTamu7FHCVO9AMOyfzTzOK7k4p3O4oD8vdVjAXcubgM/os6z2+ZwHqv8Nnbdlaz6fBn4H+Jb+PvX49gLoSeAu4J5NzIZuAt+LMVZpJQTuVeUtWhYtFrxsKdmKfr+qXxeBy2rgl4HXgVeAUwreq9Zrl9sWiJD+BeqgzbsKuxCT0HrmEYtV1fVqZ8DbFISnFbC2AxMKvjuAvcA+6/0aavzDFqiHGywOgS72TYtYzQNXdM6+D3xN53Oxbc5cjWOoz/z2TYAZd+s8zQIvKpA309hBL9AxRhe2ud/BJhjk0GLS2x0CNNbkhQ7HtpNyjFvfj/b4/xULgBcVmBfU6F/VMNAzqpDX9Zlul+hO58GYOi0uI/p3Ezaoq26MKWhuVZa7W8HXAPEksAuYAbboaxtqyCNtIDyir6k7eLZHgR8BfkZB+q+A59TWW44X1KBLGK9fMSJo+96EPD6hP/8W8LirEEdDlcQwiRqbSwIFrl1qSK7cwaCAxS9JaCns8P2wXpMdXn9bwfqCgvQrwEvq6p0jit8X6U5nZXt1BdYpBd1RBds9+nVE/74V2GnpSENfa9jwdos1jyWY35BovyBIELbrNo+B3tNW9YzfArwLeAz4ks6Z6zmqDRg+tH9vQk8N4ONqG8ZzWU46rg289FrtR4A7LYBmQBUsCZiHbe71qF47gfuBOWST5CLwrIaIvqdMe7EPWNFh4APAIxpmGLWY7YSy2yEF3F0J7agZ09DJgUFvNI9m7rYDHwYe1mf9UwXqlT5YSKtuV6HqyI+r3vw68PWk49qIoayhH2y2AQcUYMJNPA4bGb6dwVFT1jmlYP1Dyh6eUwX9GnCCaIOxSkDQAN4L/BP9ek8CkIz7DPUKzGN7yGkn8JPAUST2/SXgNY+zuYD0qIJ0oAz626zfvM8M0F7EqPb6MekJ3sEGOnZcwe4hZaZfAf4GOGm53mWP6xDwUeBf6D1OJADmgP6Mq9pAPQS8DQlh7QT+txXy8JINpAMlKivAbwNPauijp977EEd8ZrVXV8PbfjhSj+Hder0LeEBd6idxk76YRGrA+4GfQzbQRoi/YRsMCJCYOXpAAXoV+AKyh+A96ewgvUO9lADZk3meqKZkY2Y4OjHd7e93Au9DYnIhmyN7o9MAryAbX88j8dU8ZQL4WWTzqQyDNxk6YYorDXMMlaU9pGA9BpxRkK6VNL+HFJx/DIkvb2ZdD5FNxDcj+wUnrAU06wJwWMe5TL0tw8ZsT+UAkt1zHXiDzkVEsRm03ygQGdbFaswhSJZplPUSQKChLvW4ju8XkLhnkcZjYoHvA96N7DW02HzZSp3mZxr4pIY5/pJ8Ng7DiuhtWQuwScP8cfXGV4FvdBtXH+KIp6zjwEHixyX7QULL3XoB2bSr0TuzwxRATCrznM4wrkPIRuIv6/t9Tj2VsKC5bSlj/odInDzc5ODcPj/3A/8UqaZ9QgGlbNJmFtDzSO59nc4FRJ30uI5k3dxV4v3XFJw/hlRzriAbh6kYtJdoYvc7ZNBlSFPn/7vAv0LKvOtsvLsctP3vjBrvzxJtoKYF6f3Av9RF4r8pIBQBQFuQgoL7kLizl/UyBHwQSZc8a3k4ZQG0IRUrwGeBT7O+QKTXfA8DPwz8ioZwylz8RtVD2QL8GvAdD9DZZAuSOjZoMo+UbifNT76mRtJQRTuYQVlbCvKfVCD4PG57NZjP3QX8lLJnLxt7GP8IqYZ7jWqEPOvIXlCahfyL+v8/h4S1ygbp9wK/hORJP0dbdod35+LLMBLgrw/Yc5nKt8AKccS9XgR+E2kmddZiOUmV1ejhMeAn1LV2DTxmX+HuAZzTPMcKJG76CeAOyg8DmSrPoYS6avTsKvBnwO8jla6ZO87lQBI+BnwK2ZMZs+7XA3RCV/wgUlk2SJIliwMkA+MzwB8StVhsZRjjtyCbdq5Bc1IXgpmUC8tmAuga8B6kdHmE8vtp2PqXRF+NXt4A/gL4T0iIj5JBegfwESQH/x2W7gceoOMrxJC64eMD+GxZleykMpL/geTNxq6U6iD7kLjn4TaQyBt0xnQxGPPqHUv3DwMf0jGrlbig2cUfZNCRywrSv420IQgoJ75uL4I/puGOh4yn4gE62SDuRGJyLoCjLKllfBbj8p4Efk/dx0spjNhOvzuKtGAdcTDWxrh3s77HSuDVvOu8hEjPjndVwNsIciAZAdKR8c/UA3wK2Xws0w6nkEKpf41sYjY9QCeTGaTBjJf1YlKfTiPtFT+r4Y4gpeFtUxYxRf65syZt8s3InoIPb8QDD3RRe5vl3fS7Z1BDCkb+D/BfkY3vXhkhrhfCYWRT9lPAWzxAJwOOQ6qkXrqD9O8ivRzOpXyv/cBbyb+DoJnHKaR7m5/LZFJHSsE/MGA6ewXpD/NSyd6U2cic1HBHXwN0mPB1eWwCTNO5H7KXSOED4GUkn/l/IuWsaYBgn0NDGUUyEkb9lCVe3I4iG4aD5kneIuqLUXZlb1NtYKQ2AAoT93V5dBwLlH1t8W5x1wUxUCb9e8AfWCCdZMwmHTLoCaT3SZ3N23cj7dxuQY5nu7tktuni2SYqAND2mE42+tDwX0TKgYeIHytaQeJmdxPl/KaVPchmYdkd2PrBuzmNdKy7D2nlmWSRnHLAcM1p9MeQ1KZBO4KpKOCYAd6JVL+FA6KrdST9DqqTfrzYLw37zT1cUlb2R5ZhhTH+t4XkF/4qEnvMYpAzaty+oXk8g15ASoXnkc2/XozV/H0HEiNu0KMlY4J7CZG0usMM5gk5RckuJN1uXOe133XU6FzVCpaavQC6VqFBbCG5i5dTguMPkBNRHlRmlta1nVYFxTPoWAvrGlEntCQsrabM+wfIJk5eY20AeqhEFz2MOQZVlTGkaGtKATpL3nvVmHSVpO/yoNeQHg3mMNs60fH2G13mNQsaHsnacH8rvrghjeInBZ2GhiImcwIt8/+jyEZXmXPYqyS5H2QHknKXhex4iWEE/bSqzAM3SXY8vGFes0gaTdYmPLtyBI3NBNJpANoFkA7p+45TTu/nBaTNpGGda9b4GEIxRvUrVo8jFZ/fVK/W20IJAG2/JqiAkc/qlQYcbiNd217VMEXa5zmA5EOPIx3gfJgjPmNMOmeHLIAOctAfkE3eiRLmbQnZNH0COen8supk++k0kxqCOY7slxy2xqAqTDVEqjwf1bG87O2gHIBuISfRNhOyDdNxKm9lWkW6UZl7CRMARAupbnsJqVJLuyFQQ3JAJ0neotOHOpLJPiTOGeT0+XUkdlpk/vMqElp7HPgqcjjCJSTvtttz70Yay78P6YFxjOpsYpmFYq8SltcVJ7wUDNDXgb+zVvq6umT1DdxX8/0QcAQpBshTqcwJBGllTlnMSkbXeSeSkXDJM4fYC2Ra/bwbOVh2Poex3qMAXYRXGCo4P4k0kfoKUUvWXvKGXs8g3daeBX4G6R1cr4BHa8fzj+n9LXtbKB6gTwL/S0MCJoe02Qa6djMVE1c7CPy0gnQtR4Wa68E8unkCIPG/0xssLkmUc0ZB2kv88EaYUj+PqMeSRzrXuLJT1/n/Rq/+DvjvSJP42TYiExcEz6oNXlH9/dEKze0YEs/3FZklAfQ80uW/wfrd+HZga//bBxTAhjoAehZDX1IlTeMyBxqSMIUux1MuGjV9tu3Wzy2vSrmGNsy81NWFnrTGOktO9Ki65a4BOkD6kHwOacRzi+Td/ULrmW8DX9aftyKx6XHKi0mbzxxWMjbWZv9ecpJajImoaVjDHBa6Zn1d2+Bvd6rrE+cz4ipqqG7USgalDJGOVd9OycjMvdzB4PWFrqKMKIPenQHsbZlUBu0KRMz7XkWO7fqiBc5pF3FTkLWMxLF/Qz3b25R/PmBDF1DfsrUkgA7pXQrb3jh7J7L7PkX+ZbRXLUaeVjEXkJjZXEZD3+LVx6kY3TmCxI7zKMseV0AZc8Q+jU6eQrr5XSKf9pUmfLiAxLK/TFSWXPYBrge9LZQH0HHc1LDt+4MK0C4UYikHhbqMxAaXMt7Pfsvl9szBnRs9iuyB5BHnHCO/rJCNQPSygugPyLdVglmcZpGTQF4rGaDtRe9NyqK9LZQE0EkMar+GAPJ2eZbJXgVoFPpVDXW0MozbQQUOL27FpMZN5PBepgLVFaMMkU29ryLhPlfyHLJx+Io+T6vk+dmL3yisPECb9zuSM4M2IP8G2fOODdu4geRDz6W8FxPKmWH9BqqX/KWhAJ1H9eYEblrFGvY8p97ZKYeLABrqeAz4hi4EZbRssDdyd3qArj5Ah0hmwxHWNxPKS+ZJn8HRLu1x6DDFs04hO+pNr0ZOZUi9sjwqCnfgJv5sGOx54K+BCw703wbGUAnLU8gmZJqT1POcnwMWQPsQRwUB2rzPHmSXfMTBvZoMjjzdxLQbLS019j1EsUGvmG6AaEgZ9I6Mi/MYbjazbLA/h5wQHeIuw8JuXfC3GlIpQ//M540j5ei7ciJPXhyGOI4QxZ/zlkWictI8lOAUUimZxkCGkAq3fXhgdikGjCaICoPSzv023KVG1lQ/nyddIVUaaSIl1l9XolGGHraQENSMBdBeKgjQRjkOKki7kGtIJ7u85ByyWbhC8iICY/B7PGsoRNZy8J6GcNNi1D5M4umcvbxeYmLRL5Y8P6OW1+xtoWIAbQ45NEUF+xwZwRxRDDovBnJKgT+N642yhiGvRk71c00X0tcy6mxggUiQs26C5Oi/QJS94RKojGexhBRdvV7yPAX4HumVBmiAe5DqQVeu1orFTvJQ/hbSl+NyhvecwF1erQ9viCzrPN3MOPdDjkIcZu5fA84gDZJqBY1PDcmLfoF8UlCzyATVaU3sAbrDav4Q0h7RlSyRb0vDUA3q9QyGvxMpa/epdu4AegU4kQGgDViMOWB5oWVD53ImEEnkBb3Kkjqyieu9yYoBtJ0LeQeym+tKOW+R/wGV5/RaJVn5uHndjF51r0rOmOk1JBSVde6HcJOrGyKH4p4rAZjN553VewhLmqMhfLivsgBtTlc4jOQFu3JvTAw6j/Qlc4/z6ppeT8h8zP9PEvWJ8K5dvsBj9jZOAi8TFWRkCXHkfZK3SW97GSl8KgugX0VysMtqnlRHUhhrXnWrA9A2OB9Dyj1dKYfZEMmrwMDcpwGAKykBeguSzeHFjSwB30eKMrKGDmoOPZ3LSF592oygrHIVCdXNlQTSNSS+7wG6YgzatBy8H6n2csUgL5C9uVEnWVPmczUFAITKoKfxzNmVLCtAX8thjGu46wN9xQoxlMFgm8h+yrmS5qmuAO1DfRUDaANU9+iFIwW9Qb4pdrYHcBZpOpNkPIz7PYTE3ke8KuU+NyDZG2aPICszHcZdocpNopO6y5KXiY7UKiMWPeYZdPVCHKjS34tswOTd/9l2dVcdjcGaso9Zkh9EC5JedKQkwxhkaSItO2/mNLZ1RwvpKlGqZq1EHbhKFKorA0e2eAZdLYA2J2sfQpqluASoedzlebaUQZ8hXYx7FJ8L7UJWkc5wV3LSrbojALlGtsMf8ryP62Q7cSgLWRv1AF29EEcDOTTS9UbZrRyZVLtirSAluhdIt8GyDYlDe/cuX1nQeZnNad6HcZNmN0f+6Z9p5DpSbp5XplNc+wkVmCfJ94BoL2QrmzUAfS9RpzFXILXiIMRh2LKpKDzfpnRxx25KPQgP0N3HOul8n9BFM6+wWQM3ebrzRBvYZYa4zGlBCwXfiwHoLR6YqwPQZvL3AfcpSLmURdycUGHCNCsa5phLEeaYQIpVPEDnywa/Sr5hrbojAFkm+0ESeQHlHPk2FHO5CHtxHOIwB3reg/vzyGYtV9fFGIRIq8hTxG98bjI5trYxaM8ishv5NaSN5u0cjd+cPO8CoKvAoEFCgXMl3UvLg3S1ALqBFKjsLACYFnGTB40FyC8gWQNJT6Yw/YqnPZPITUxnuHkH85y3rOIuwyjNuF0r6bMDr/vVAGg7/vwm5Jgr1wB9G3dHS5mQxutILLqeYiwmcdNmdbNJoKD8EtGeQF5i94PO+zDjpYqM33mkYKYMojCErweoFIOeRDq5TRSgDLNEJ1W4OvBzBUn0v57ic7YRpRr2IyhWKbxxFcneyFvGcVOocpvyW32aObzu0E7ieNTbvRdZPkCbwb8L2E3UBS5waLQL5NtqtJuL+GwC4LJ7cuzuUx1Ys8Y5yOFqf59azBCD+ftFpK+FC113sZG7UpBuJpnPMiRJN0gvMRfeLL0JighvBKr8rpXOgMPrRGXfSWSC6Pirflykw5ggmnRh7fW7di/GNOc/72iOXQBI3gdJZBlvk8lhz2tQwn14ydEtSSNTwFs0zOFysgMNbywUNB5vEPUziLuAhMhGab+FOGoWwGxF4qgjGYDMjMUqEo80P0+qno3GAOhryObgxT7zQNYqdD83dE6HPWBuXoDeiqTXTThm0CgjcJ1nah8fdBYp+74j4Tju1oVrtl/cJ/36XuCzCqwNor7Lad/PfN/U95pEwmGjXRidAZIrSPvXpT6yoWbFAHpOPcED+Ab6mw6gjXHtRXKgxwpwo24VZACmVeQVpILtjoTPNqkLVr8B9DTwwYI/cyO5imRwtPrIhlYp9iTvXjKPbBbOeHjrf0nKlEIkY+E4UfWg6xjXLdxswtibWHWiTaQLRCdIJ5FJ4KC+hy9WSaZTdfWSXkROB6GPxnClQgAd6DjOex3cfABtJnwK2SCcKMBwUUZ6IyflNWDcsD6jRVRl1lL38ExKgL4Tyejwsb/k83wFiT+v9eH9V4nxL7E+JOh1cZOEOAKLQT+Iu+bnnRQuqdG2nxEY8vdPu2ggm2JT6ubvVrfwAPBIAhZnp9odITr3zldWxRPTD+Ui8Iw11y7y3V0y16rIMpKX7XVvAGyjkUABzfFWB5ES7yIZSpDACGwgtpV0j4LxjH49hFT/TevX3QqwUykNbhiJzXvXMtncGi/uJJL/vNpni1uV7tO0z533AD0QstZIqIjbkfaiewtmWEnOejNAuV3Z/pT+fIeC8VH9+TDrT3kOyNZwfIeCvO9ql0xqCson1TUvOnd30GSZ4tJSvbgjLQvA7aQMeocC9HABN2qM9ADwIQXWYIPwgYkDjigIH1SGvFfZ/j4LDIIuIBpmcFnreq+TREcgeek9x2vIySkn/HDkMp63qUb7Uy/Z5BawlASgUUZ6jGKOtjGf+UN6uXRNgwzA3M6idyKbjD4GHX+enwO+QZSD3fLDklp8iGMwWPQssFhL8A81JI57aICAIUlsO45sU7Y+hrsDdAdJCUGyZ15DsjjKPHR1UMb0Nv2XCeMlmj/T3uI0MBcHoA2jmUTyn3d1YKBeRKZ0fHwFV3wP6RxSnIIH6Mzj2VLXOPTjmMmjLltWkZqAK0k2tHYgeb5+E6y7kexHUu7wDDqWUZwi6n/iQxvZ9a9pgbSX+FIlUtVCTnh6vRZz0g1A32U9iAefzpN8F+6LeAYJoF8g6iDoQSUf417ZBPYZ5vw+Lco9GceEN1aVsLxAzBi0eYD9RBuEnul0lhp/P33PS3cwuUK+R1t5GXwv10UIZ0VJaNme3G3gKSUtQa+JNHGtBpLmNunZc8+FbAdRlosfp976NeYXtNwZ5SBvUJuEhQb5ZF+Z/52wGHStxPm7jmQ0zQJhI8bNh0j2xn0Uk17X7zKtC1nRBpK0oCfoYNi1ghW0hrSt3QPcxKcm5rHghUgMujXgz9hq0+P203xsJtyuU6atwx5kX21GidU9JS86y8D3iVoe9DxRxcRF7gcexjcBjyMNpGrxaaKuYkWMWS1nhQkKMrZ3q26d8h5HLjrQIp/mYlVm0N16irfb2mEks2oPUZrwfv3dtP58sM1+ghKeCeAS8OfAy+YeGjFWKvOQ9+rrW/hMjm4ypBM+QXGx1RDZWHhG52akh5trNiOWiTJOzCbJ21SBXYO0ef9DwLuAr6h751l0tRbrqjLopsWQjc5vUSa8DTkg4piy4sPI5v0RpJCsky6WhWuhtbB+EfgbpMy7DjTjhDim1IhcHFk/qAx6F9ER9K4BxyjWXwCfUtBtqALXYii6AcomclLOrwI/j9vjzNo//6PAd4HP6324ZiqbAaAH0U4DS98fBf4Z0f7FlDLkIwrIB5COmwbjRvX/1tpCIS4K1pLKTeBx4NNImwhjj10ZtEH2o8qea/pPPg7dXeqqLEXlVRrQWUNij5C+gfxVZeEXdM6LYBU1JA74MPAneu++3NsvRN1AGuBHkZOATFaZfehGvYP9GTLQqNjzNJU1/xckc2O5ne31kiNqrJ49x1OcIfU4JgoeM5sFpGXtAZJ/OVuQoQcW038n8Hbg6/hS5Tz1cVCfa8TyUjfyLIOKjofxWheArwKfA57sREpqMd7IuAweoOOFG+rA3UQd9FoFTnqWy9zry8ipMqv6LK5B2rjj9yJNsYa9rmVa7ED2QAY9nNNLl2sVCV+0369NoL4O/AfgL9XemkkBekTdzwllNd5o4skIshlRp//6Gy8jZaazBQJLiGzwPKqhDlfsfTNU121D0sYGHaCDLlcVFxJzb2tI75lfQ/aMnug2V71CHG9CdvQ9o0kuZid5oY+M2wD0d5AmRtMFLTDmM94MfBhJUbzlaCEYZHCuqfd20Ntr5UIyy8A14FvAH2too2ff+F5pdgeJjm/3qXXxJ6Oh4NZPAG2HaZ5H0vbeWtC8my52O5E0v7uQhH1XLuagSkvHsCyA3swYYedhtyydXtHwxbeAx5DDKZ5GzlrtuRneK4vjgAXQXpKFOA4jaT7XCmJvQQ6fY/7/qjLoRX2Golh0Qxngo0i7xds5vv8K6bNbqs7MA2uO9iNhyWGKDa/ViPL+N0sue9hme+Z7+5zNrwDfBH6A7O3Msj73OTWD3qbGshd/TlxSGSJq3N+vindGlakogDaM4xDwfuCvkEb+eYl9FNSg6rMp/JkpSWcabcC1WTzmpl7zwBvqfT6r1/cVqNuJVKzkgUaX1fgevXwT9eRMpqGuZr+1ZrXj0KcUoPcXPP8N4AHgEaTT3VJO77vK4B6mauZniuhk+TWKzfk1Z4JuFmkqEM/q15eUUFzSn40HaBi1AeUwqTFsBDT3E6XXeUlmLDWihizP019FFzUNBTynLPo4xcUWzUK2D/hpdQ2XcnKZl4A5R/dcldjrHgXoskjBIBC5G7qQh0iFX0s9rzkF41v69xsasriIFHadV3DOdUwaXQb6KNnzn40reQ34sj6wq5BCS1c1s1LtQDac7ihporcQNWHpJ4A2CjWvLODDFBvPDJUJfhz4HaTKqpWD8S/ipolQlTYfywpvVG2hiitzwB8psJrQw5LqSlOBeAnpEXNDcWxW/2+liBvcKMQxqixmIgflDZASxn+jq0xRchD4t8AvUmzMMbCY6B5dPJbpv42TVSSGdgEpVqLg8WsAP6Es/nQOC90tNTSXwFTm/AbKnneXxKCb5BeOKkpOI4Uir1b1Bhsd3NuWurV5GqXprlZ3BFSd3vMGko2wRjn9Q+pI06SpDVyfqksTiaudUl0IShi/R5QVnsnBI1h05MENW/pVprcUAtuRhldFArSpYJy3xrefyMgIUR+PVpfwRFhGKKfWAeQaSIHKXgesqOnoWuvwu3llf1dKUpgaUVNw+khhjbexogB9tsQwy2HgQzqGWRs3XUbihXnPxVEkX9y04i1rQ3injtfWAu/D6MqakpBmH+p6N1xqWVd7KXnhAG1uuIb0Rdid4+e0Spi0QFf02ZIm33QC3NGH7Nk+fucZYlQ8OfKIdiL9Oe5lfa5vGlnSBXst5wX7A0gY7QEknFVWCt9RJKxXL8HWWkh8drmPdb2S0omRDCGNrnfR3xIiwfybJYHLmBrNVJ+On9GN00Snbpchd2moYzIHY7pGdChAXjIOfBL4z0ipeln9V/Yh1auU8NlrSEbDMl6cAXSo8ZijSAXhIOQ/37QAuoxn2Ub/5oaaeNxZJAZcli5s0zDHTA7gcwOp6Mpz07aFxKHfDvwK0qN4qITx2qd2WyRAh5Z3coL+2yTsG4C2e6w+pEZRxkqct9wi/6Y7SaSurCbOyTVVdf3OKoMu+h4DC/weBv6Bfp8lvnoeqexaztmGQmXS/xj458B7OtiWa7kbSSktg71fVIBe7YewQT9JO3AMAw+S7wZh2Qx6tkSAq6nRzFDhVJ4e97+i7usC0fmFRYI0SNrne5BGM9/NAACvIgcS2EAS5HSfBqQ/ob9b1MXARUVfyPp+DiMUH5I0n7+g83IeL84YtPk6CdyHpOsMglwiak5SNLCYz5yxPJJ+E/MMLwFPlXgPw8APq3c3nGFOAuB7uuA0c2aa9t7DR4B/h2R3mMN487xM1pJp8n6kBB2zC5q+iTTXGgSvu3IM2riSQ0gXLFN5Nwind5vmJcvKwsooWNlG9wNY+8EdfBkpWX93BoDMAnp1JKvoQSTO+kqKcTN6fl4Z3yFkAzdPnTD3uw05My9EjjKapXODnLhx8KCD3daIDgg+psSqKIAMrXt/RsezH4ux+ibEYVb+Y33M9jZS7ItqIGWFbabp30wOY2znkI3CBYpvY2mf/v1B4NukK1wx4HgT+Gtk43HKwbPYIPVx4GMOxsoOcTTbbLlI8vEK8AXVD3M/HqBzDnHYcb57Kf6wU9cAc4uoB0NYghLvo3d8sOpKvapGeK1EPQUpoHq/st+077OqIG/iwy5AxT5+yT5tOq+rbrHoIb2KttfryFl6X9JFL3YLTS/JFR8F5nuQjaBB6pe7gMQc1woO2RiF3YdUwgUx3deqymWifOiyFpQAKQh5OOXYmfu+osBypgBdDwu6ivSoAL4G/C5REZNnzo4A2j6JemYAV8I51pd7l8Gip4h6JPQrQL/C+sbjZYAz6uW9AwnFJZ1L44YvIiddPKkhgtDxfRdxFQHOpqz7m8AfIi1pfdy5AAZtwhtb+ww04hjHgrrmZW54bmXjjcJ+GetzSPvR5QqM5cN61VLciwGaS+qiv+5BpqeY3PNVpP3rbwKPe+ZcHECPKIMeNIAO1QAvE22mlCE7iXpy9OvYBgrSp9VQyzTMtwLvtLy9IKFOmL6/TwH/F9mn8Olh3cdrHngC+BxyHNl1PzTFAXQdaTE6QbkduVyAyhxSDbda4nPt16sbO8kjBuk6lnpBWXSrZNa5XRn0UaK0vyTPbu7/ogLOY+oZeDa4fr5Da2H+c+A/Av+PaFNwEPChLwD6TiQNrT6ASmrc2aUSXbJpNs7kqFuLh8mqSXKZXPZmAeP4BtLLolnynLYUoD+hzx+mBKBVpHDlD5CsDs+i1893oF7GbyCN7R9DMqJ8SKggMak6byYq4x00JQ2VHV1QD6HoQguQ0NHUBq9ZRjaszpB8c9a0cZ1ATj9xvbl7ESm1vkVxp31vNK4HkYq9x5BKx7UM+vEE8GkkX/5RBqeSNkkIw5YlZEP4G0jO+JPI4Rd4cC4eoEeR/NJByn9ulxUkk+OuLkrpUraq0Xf6zGvA7yP7AGmyElYVLF91bEAm3ntaAXErUtxUBkibbIzjSHXja2Tr83wdyUq4BPwC8FG1i2BA7cGeMztr67YShW/rwvcksofDgIJz5Z+lgST930fxjXCKlFkF6LJc80kkBr2b6IDK0FKSF/tI6WY1zHG/ArQLgwl7/N4AzDTwXiQuupABQEyI6HGixv4fQuoC7AWh3wA73OBr3fq5paD8rM7rCeBpOqdUeuZcAkBPIjHoEQarQMVe8a9SfibHDgWUSz3CIWnZUFiQsc8ifTmSdITrBrhBBhAMkEKgBzT8spZxDFvA3yKbYieQGPeD+hlGWtbrgxK8zrDH7+yxrW8wnisKyi+p5/UsEro6qQudS7a8ilQ+eokJ0Kg713SgbK22r2UxiFVkc2OlzcCKlAmi2GbQBbSq6qoZAF1GDpJdINr47HWgZi3mYrSm77+oX5v6dUk/b1lfs4psWM4q272Yw0IVWvf6KvAZpBHQR4C3ITHv/XTeSzBMNChAl+sJF/cbRH3Rb+q4nUAaYJ1Aik1uts2Vq4Kuls7ZzorgX+UL8ho64eO4OfnaGOY45RQ32Dmcr6mXUFaRhW3c/ZwLDRKXPIl0lmvEAItlJL7Z0q+LCriLCr5LCrxXFFAMqCwjaZKzSKz+gvU+TYtULOZstDW9n6eUXU4judePIN0eD6tHtE3DPFso7uT4Nb3HFb3MQram4zCvYzev4/mGem2XFZTPWEQFHc9a20LjSoaIjuWqgoz3A0DfRPoSbLVcj1YCY+3EmmoWU60hG0uLJYLKGvAdpChhu+X+uVDGWgeWXlPDuFog43XJOK4jmQ93qsHdtsB2WQFgTX9eVIA1Hsyc/v8V/f2i/v8lBZX2k5Tt75sFPqepnFsl6ufyZdWfY/rsB3XRnVCwHrLmP+siHLZ5W+ZelnQcFvW62WGczdmLV4l6RxtQDzvYh2smaT7zEvAnRFW1RTJYoz8NawF+2cKlStpksG3P8boySztWFeYAiuY9tliGWeYg1Ih25ssCtxXKzyHOY14ngPcBH1ZguqyAcEnneUHB9qoCW8j6o+vbj7EPE3x+EDOskvczt/+uTtSprv3eXAFMexhno7HsNqa1Aseu02cPF+ht2GIyjm5bY9hSQlHZUMf/B/E33Y5gDR0tAAAAAElFTkSuQmCC" alt="AROP" class="h-12 w-auto mx-auto select-none" draggable="false" />
       <div>
-        <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">EXECUTIVE BACKOFFICE</span>
-        <h1 class="font-black text-xl text-white mt-2 bizOwnerTitle">OWNER SEBLAK BRENGOS</h1>
-        <p class="text-xs text-stone-400 mt-0.5">Monitoring Penjualan, COGS / HPP &amp; Pembelian Real-Time</p>
+        <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Owner Backoffice</span>
+        <h1 class="font-black text-xl text-slate-900 mt-2 bizOwnerTitle">OWNER SEBLAK BRENGOS</h1>
+        <p class="text-xs text-slate-500 mt-0.5">Monitoring Penjualan, COGS / HPP &amp; Pembelian</p>
       </div>
       <div class="space-y-2 text-left">
-        <label class="block text-[11px] font-extrabold uppercase text-amber-300">PIN Otorisasi Owner:</label>
-        <input id="pinInput" type="password" inputmode="numeric" placeholder="Masukkan PIN Akses Owner" onkeydown="if(event.key==='Enter')verifyPin()" class="w-full p-3.5 rounded-xl bg-[#160F0C] border border-stone-700 text-center font-black text-lg tracking-widest text-white focus:outline-none focus:border-[#B3261E]" />
-        <p id="pinErr" class="hidden text-xs font-bold text-red-400 text-center">PIN Owner salah! Silakan coba lagi.</p>
+        <label class="block text-[11px] font-extrabold uppercase text-slate-500">PIN Otorisasi Owner</label>
+        <input id="pinInput" type="password" inputmode="numeric" placeholder="Masukkan PIN Akses Owner" onkeydown="if(event.key==='Enter')verifyPin()" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-300 text-center font-black text-lg tracking-widest text-slate-900 focus:outline-none focus:border-emerald-600" />
+        <p id="pinErr" class="hidden text-xs font-bold text-red-600 text-center">PIN Owner salah! Silakan coba lagi.</p>
       </div>
-      <button onclick="verifyPin()" class="w-full py-3.5 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-sm shadow-lg cursor-pointer">
+      <button onclick="verifyPin()" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md cursor-pointer">
         🔓 Masuk Dashboard Owner
       </button>
     </div>
   </div>
 
   <!-- TOP HEADER (CLEAN & COMPLETE - NO EXTERNAL SPREADSHEET MANUAL EDITING REQUIRED) -->
-  <header class="bg-[#221712] border-b border-stone-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30 shadow-md">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#B3261E] to-amber-600 flex items-center justify-center text-xl shadow-md">👑</div>
-      <div>
-        <div class="flex items-center gap-2">
-          <h1 class="font-black text-sm sm:text-base text-white bizOwnerTitle">OWNER SEBLAK BRENGOS</h1>
-          <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
-            <span>LIVE AKTIF</span>
-          </span>
-        </div>
-        <p class="text-[11px] text-stone-400">Pusat Kendali Bisnis: Penjualan ⇄ HPP / COGS ⇄ Pembelian Bahan</p>
+  <header class="bg-white border-b border-slate-200 px-3 sm:px-4 py-1.5 flex flex-wrap lg:flex-nowrap items-center justify-between gap-x-3 gap-y-1.5 sticky top-0 z-30">
+    <div class="flex items-center gap-2.5 min-w-0 flex-1">
+      <img src="data:image/png;base64,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" alt="AROP" class="h-6 w-auto shrink-0 select-none" draggable="false" />
+      <span class="hidden sm:block w-px h-5 bg-slate-200 shrink-0"></span>
+      <div class="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-sm shrink-0 bizEmojiOwner">🌶️</div>
+      <h1 class="font-black text-sm text-slate-900 bizNameOwner truncate min-w-0 sm:max-w-[200px] lg:max-w-[260px]">SEBLAK BRENGOS</h1>
+    </div>
+    <div class="order-3 lg:order-2 basis-full lg:basis-auto lg:shrink-0 w-full lg:w-auto overflow-x-auto no-scrollbar">
+      <div class="flex flex-nowrap w-max bg-slate-100 p-0.5 rounded-xl gap-0.5">
+        <button onclick="switchOwnerTab('dash')" id="otab_dash" class="px-3 py-1 rounded-lg whitespace-nowrap shrink-0 text-xs font-extrabold bg-white text-emerald-700 shadow-sm cursor-pointer">Dashboard</button>
+        <button onclick="switchOwnerTab('cogs')" id="otab_cogs" class="px-3 py-1 rounded-lg whitespace-nowrap shrink-0 text-xs font-extrabold text-slate-500 hover:text-slate-900 cursor-pointer">COGS / HPP</button>
+        <button onclick="switchOwnerTab('purchase')" id="otab_purchase" class="px-3 py-1 rounded-lg whitespace-nowrap shrink-0 text-xs font-extrabold text-slate-500 hover:text-slate-900 cursor-pointer">Pembelian</button>
+        <button onclick="switchOwnerTab('stock')" id="otab_stock" class="px-3 py-1 rounded-lg whitespace-nowrap shrink-0 text-xs font-extrabold text-slate-500 hover:text-slate-900 cursor-pointer">Stok Gudang</button>
+        <button onclick="switchOwnerTab('menu')" id="otab_menu" class="px-3 py-1 rounded-lg whitespace-nowrap shrink-0 text-xs font-extrabold text-slate-500 hover:text-slate-900 cursor-pointer">Harga Jual</button>
+        <button onclick="switchOwnerTab('audit')" id="otab_audit" class="px-3 py-1 rounded-lg whitespace-nowrap shrink-0 text-xs font-extrabold text-slate-500 hover:text-slate-900 cursor-pointer">Audit Nota</button>
       </div>
     </div>
-
-    <div class="flex items-center flex-wrap gap-2">
-      <!-- Sync Status & Quick Refresh -->
-      <button onclick="syncFromSpreadsheet(true)" class="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm cursor-pointer transition-all">
+    <div class="order-2 lg:order-3 flex items-center gap-1.5 shrink-0">
+      <button onclick="syncFromSpreadsheet(true)" id="btnOwnerSync" title="Sinkronisasi" aria-label="Sinkronisasi" class="relative w-9 h-9 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center cursor-pointer transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
         <span id="ownerSyncDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-        <span id="ownerSyncText">🔄 Segarkan Live</span>
+        <span id="ownerSyncText" class="sr-only">Segarkan</span>
       </button>
-
-      <!-- Settings & PIN Change Button -->
-      <button onclick="openOwnerSettingsDirectly()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-extrabold flex items-center gap-1.5 shadow-sm cursor-pointer transition-all">
-        <span>⚙️ Ganti PIN / Cloud</span>
+      <button onclick="openOwnerSettingsDirectly()" id="btnOwnerSettings" title="PIN &amp; Cloud" aria-label="PIN dan Cloud" class="relative w-9 h-9 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center cursor-pointer transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
-
-      <!-- Navigation Tabs: ALL OPERATIONAL TOOLS 100% INCLUDED -->
-      <div class="flex flex-wrap bg-[#160F0C] p-1 rounded-xl border border-stone-800 gap-0.5">
-        <button onclick="switchOwnerTab('dash')" id="otab_dash" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold bg-[#B3261E] text-white cursor-pointer">Dashboard</button>
-        <button onclick="switchOwnerTab('cogs')" id="otab_cogs" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">COGS / HPP</button>
-        <button onclick="switchOwnerTab('purchase')" id="otab_purchase" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">Pembelian</button>
-        <button onclick="switchOwnerTab('stock')" id="otab_stock" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">Stok Gudang</button>
-        <button onclick="switchOwnerTab('menu')" id="otab_menu" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">Harga Jual</button>
-        <button onclick="switchOwnerTab('audit')" id="otab_audit" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer">Audit Nota</button>
-      </div>
     </div>
   </header>
 
@@ -87,21 +102,21 @@
     <div id="kpiGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
 
     <!-- 🔴 LIVE ONGOING DAILY SALES (PENJUALAN HARIAN YANG SEDANG BERLANGSUNG) -->
-    <div class="bg-[#221712] border-2 border-amber-500/40 rounded-3xl p-4 sm:p-5 space-y-3.5 shadow-xl">
-      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-3">
+    <div class="bg-white border-2 border-amber-300 rounded-3xl p-4 sm:p-5 space-y-3.5 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
         <div class="flex items-center gap-2.5">
           <span class="w-3.5 h-3.5 rounded-full bg-emerald-400 pulse-dot"></span>
           <div>
-            <h2 class="font-black text-sm sm:text-base text-white flex items-center gap-2">
+            <h2 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
               <span>🔴 Penjualan Hari Ini yang Sedang Berlangsung</span>
-              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 uppercase tracking-wider">LIVE STREAM</span>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">LIVE STREAM</span>
             </h2>
-            <p class="text-xs text-stone-400 mt-0.5">Transaksi masuk dari Kasir Seblak Brengos seketika (sub-detik tanpa jeda)</p>
+            <p class="text-xs text-slate-500 mt-0.5">Transaksi dari Kasir masuk otomatis (sekitar 10–20 detik)</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <span id="liveCounterBadge" class="text-xs font-black px-3 py-1.5 rounded-xl bg-[#160F0C] border border-amber-500/30 text-amber-300">0 Transaksi Hari Ini</span>
-          <button onclick="syncFromSpreadsheet(true)" class="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">Segarkan</button>
+          <span id="liveCounterBadge" class="text-xs font-black px-3 py-1.5 rounded-xl bg-slate-50 border border-amber-200 text-amber-700">0 Transaksi Hari Ini</span>
+          <button onclick="syncFromSpreadsheet(true)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 cursor-pointer">Segarkan</button>
         </div>
       </div>
 
@@ -112,32 +127,32 @@
     <!-- 2 Column Widgets: Top Products & Stock Warning -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <!-- Top Selling Menu & Toppings -->
-      <div class="lg:col-span-2 bg-[#221712] border border-stone-800 rounded-2xl p-4 space-y-3">
+      <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
         <div class="flex items-center justify-between">
-          <h3 class="font-black text-sm text-amber-300 uppercase tracking-wider">🔥 Menu &amp; Varian Terlaris Hari Ini</h3>
-          <span id="lastSyncTimestamp" class="text-[11px] text-stone-400">Siap</span>
+          <h3 class="font-black text-sm text-amber-700 uppercase tracking-wider">🔥 Menu &amp; Varian Terlaris Hari Ini</h3>
+          <span id="lastSyncTimestamp" class="text-[11px] text-slate-500">Siap</span>
         </div>
         <div id="topMenuRanking" class="space-y-2"></div>
       </div>
 
       <!-- Critical Stock Alert -->
-      <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 space-y-3">
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
         <div class="flex items-center justify-between">
-          <h3 class="font-black text-sm text-red-400 uppercase tracking-wider">⚠️ Peringatan Bahan Menipis</h3>
-          <button onclick="switchOwnerTab('stock')" class="text-[11px] font-bold text-amber-400 underline cursor-pointer">Kelola Stok</button>
+          <h3 class="font-black text-sm text-red-600 uppercase tracking-wider">⚠️ Peringatan Bahan Menipis</h3>
+          <button onclick="switchOwnerTab('stock')" class="text-[11px] font-bold text-amber-600 underline cursor-pointer">Kelola Stok</button>
         </div>
         <div id="lowStockAlerts" class="space-y-2"></div>
       </div>
     </div>
 
     <!-- Riwayat Closing Shift Kasir -->
-    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 space-y-3">
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="font-black text-sm text-white uppercase tracking-wider">🔒 Rekap Closing Shift Kasir</h3>
-          <p class="text-xs text-stone-400">Rekonsiliasi uang fisik laci vs catatan sistem kasir</p>
+          <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider">🔒 Rekap Closing Shift Kasir</h3>
+          <p class="text-xs text-slate-500">Rekonsiliasi uang fisik laci vs catatan sistem kasir</p>
         </div>
-        <button onclick="exportOwnerReportCsv()" class="px-3.5 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-extrabold text-amber-300 border border-stone-700 cursor-pointer">📥 Export Laporan CSV</button>
+        <button onclick="exportOwnerReportCsv()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-extrabold text-amber-700 border border-slate-300 cursor-pointer">📥 Export Laporan CSV</button>
       </div>
       <div id="closingHistoryTable" class="space-y-2"></div>
     </div>
@@ -145,13 +160,13 @@
 
   <!-- TAB 2: ATUR COGS (HPP - HARGA POKOK PENJUALAN) & ANALISIS LABA MARGIN -->
   <section id="oview_cogs" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-5">
-    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h2 class="font-black text-base text-white">Pengaturan COGS (HPP) &amp; Analisis Margin Keuntungan</h2>
-        <p class="text-xs text-stone-400">Atur modal HPP per porsi untuk mengetahui estimasi laba kotor &amp; margin bersih secara otomatis tanpa membuka spreadsheet.</p>
+        <h2 class="font-black text-base text-slate-900">Pengaturan COGS (HPP) &amp; Analisis Margin Keuntungan</h2>
+        <p class="text-xs text-slate-500">Atur modal HPP per porsi untuk mengetahui estimasi laba kotor &amp; margin bersih secara otomatis tanpa membuka spreadsheet.</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <button onclick="recalculateAllMenuCogsFromLatestPrices()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs shadow-md cursor-pointer flex items-center gap-1.5" title="Hitung ulang modal HPP seluruh menu dengan harga beli terbaru bahan baku">⚡ Hitung Ulang HPP dari Harga Beli Terbaru</button>
+        <button onclick="recalculateAllMenuCogsFromLatestPrices()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black text-xs shadow-md cursor-pointer flex items-center gap-1.5" title="Hitung ulang modal HPP seluruh menu dengan harga beli terbaru bahan baku">⚡ Hitung Ulang HPP dari Harga Beli Terbaru</button>
         <button onclick="saveAllCogsToCloud()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md cursor-pointer">💾 Simpan Perubahan HPP</button>
       </div>
     </div>
@@ -160,9 +175,9 @@
     <div id="cogsKpiRow" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
 
     <!-- Sub-tab Selector COGS -->
-    <div class="flex bg-[#160F0C] p-1 rounded-2xl border border-stone-800 w-fit">
-      <button onclick="switchCogsSubTab('menu')" id="cogstab_menu" class="px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer">🍜 COGS Menu Utama &amp; Minuman</button>
-      <button onclick="switchCogsSubTab('addon')" id="cogstab_addon" class="px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer">🍢 COGS Extra Topping / Add-on</button>
+    <div class="flex bg-slate-50 p-1 rounded-2xl border border-slate-200 w-fit">
+      <button onclick="switchCogsSubTab('menu')" id="cogstab_menu" class="px-4 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white cursor-pointer">🍜 COGS Menu Utama &amp; Minuman</button>
+      <button onclick="switchCogsSubTab('addon')" id="cogstab_addon" class="px-4 py-2 rounded-xl text-xs font-black text-slate-500 hover:text-slate-900 cursor-pointer">🍢 COGS Extra Topping / Add-on</button>
     </div>
 
     <!-- Grid List COGS Menu -->
@@ -174,63 +189,63 @@
 
   <!-- TAB 3: PEMBELIAN BAHAN BAKU / KULAKAN (PURCHASES & PROCUREMENT) -->
   <section id="oview_purchase" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-5">
-    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h2 class="font-black text-base text-white">Pembelian Bahan Baku / Kulakan Stok</h2>
-        <p class="text-xs text-stone-400">Catat pembelanjaan modal bahan. Stok di Gudang &amp; Kasir akan bertambah secara otomatis seketika.</p>
+        <h2 class="font-black text-base text-slate-900">Pembelian Bahan Baku / Kulakan Stok</h2>
+        <p class="text-xs text-slate-500">Catat pembelanjaan modal bahan. Stok di Gudang &amp; Kasir akan bertambah secara otomatis seketika.</p>
       </div>
-      <button onclick="exportPurchasesCsv()" class="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-extrabold text-amber-300 border border-stone-700 cursor-pointer">📥 Export Riwayat Pembelian CSV</button>
+      <button onclick="exportPurchasesCsv()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-extrabold text-amber-700 border border-slate-300 cursor-pointer">📥 Export Riwayat Pembelian CSV</button>
     </div>
 
     <!-- FORM INPUT PEMBELIAN / RESTOCK CEPAT -->
-    <div class="bg-[#221712] border-2 border-emerald-500/40 rounded-3xl p-5 space-y-4 shadow-xl">
-      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
-        <h3 class="font-black text-sm text-emerald-300 flex items-center gap-2">
+    <div class="bg-white border-2 border-emerald-200 rounded-3xl p-5 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 class="font-black text-sm text-emerald-700 flex items-center gap-2">
           <span>🛒 Formulir Catat Pembelian / Kulakan Baru</span>
         </h3>
-        <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700">OTOMATIS TAMBAH STOK</span>
+        <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">OTOMATIS TAMBAH STOK</span>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
         <div>
-          <label class="block font-bold text-stone-300 uppercase mb-1">Pilih Bahan Baku:</label>
-          <select id="poStockSelect" onchange="onSelectPoStockItem()" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-emerald-400">
+          <label class="block font-bold text-slate-700 uppercase mb-1">Pilih Bahan Baku:</label>
+          <select id="poStockSelect" onchange="onSelectPoStockItem()" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-bold focus:outline-none focus:border-emerald-600">
             <!-- Populated via JS -->
           </select>
         </div>
 
         <div>
-          <label class="block font-bold text-stone-300 uppercase mb-1">Jumlah Masuk / Dibeli (Qty):</label>
-          <input id="poQtyInput" type="number" step="any" placeholder="Contoh: 20" oninput="calcPoUnitCost()" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-amber-300 font-black text-sm focus:outline-none focus:border-emerald-400" />
+          <label class="block font-bold text-slate-700 uppercase mb-1">Jumlah Masuk / Dibeli (Qty):</label>
+          <input id="poQtyInput" type="number" step="any" placeholder="Contoh: 20" oninput="calcPoUnitCost()" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-amber-700 font-black text-sm focus:outline-none focus:border-emerald-600" />
         </div>
 
         <div>
-          <label class="block font-bold text-stone-300 uppercase mb-1">Satuan Bahan:</label>
-          <input id="poUnitInput" type="text" placeholder="biji / kg / porsi / butir" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold" />
+          <label class="block font-bold text-slate-700 uppercase mb-1">Satuan Bahan:</label>
+          <input id="poUnitInput" type="text" placeholder="biji / kg / porsi / butir" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-bold" />
         </div>
 
         <div>
-          <label class="block font-bold text-stone-300 uppercase mb-1">Total Biaya Pembelian (Rp):</label>
-          <input id="poTotalCostInput" type="number" placeholder="Contoh: 100000" oninput="calcPoUnitCost()" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-emerald-300 font-black text-sm focus:outline-none focus:border-emerald-400" />
+          <label class="block font-bold text-slate-700 uppercase mb-1">Total Biaya Pembelian (Rp):</label>
+          <input id="poTotalCostInput" type="number" placeholder="Contoh: 100000" oninput="calcPoUnitCost()" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-emerald-700 font-black text-sm focus:outline-none focus:border-emerald-600" />
         </div>
 
         <div>
-          <label class="block font-bold text-stone-300 uppercase mb-1">Harga Beli Satuan (Terhitung):</label>
-          <div id="poUnitCostPreview" class="p-2.5 rounded-xl bg-[#160F0C] border border-stone-800 text-stone-300 font-black text-sm">Rp 0 / unit</div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Harga Beli Satuan (Terhitung):</label>
+          <div id="poUnitCostPreview" class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-black text-sm">Rp 0 / unit</div>
         </div>
 
         <div>
-          <label class="block font-bold text-stone-300 uppercase mb-1">Supplier / Toko / Pasar:</label>
-          <input id="poSupplierInput" type="text" placeholder="Contoh: Pasar Induk / Agen Sosis" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-emerald-400" />
+          <label class="block font-bold text-slate-700 uppercase mb-1">Supplier / Toko / Pasar:</label>
+          <input id="poSupplierInput" type="text" placeholder="Contoh: Pasar Induk / Agen Sosis" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-bold focus:outline-none focus:border-emerald-600" />
         </div>
 
         <div class="sm:col-span-2 lg:col-span-3">
-          <label class="block font-bold text-stone-300 uppercase mb-1">Catatan Tambahan / Nomor Faktur (Opsional):</label>
-          <input id="poNoteInput" type="text" placeholder="Contoh: Kualitas segar nomor 1, nota fisik disimpan" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white focus:outline-none focus:border-emerald-400" />
+          <label class="block font-bold text-slate-700 uppercase mb-1">Catatan Tambahan / Nomor Faktur (Opsional):</label>
+          <input id="poNoteInput" type="text" placeholder="Contoh: Kualitas segar nomor 1, nota fisik disimpan" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-emerald-600" />
         </div>
       </div>
 
-      <div class="pt-2 border-t border-stone-800 flex justify-end">
+      <div class="pt-2 border-t border-slate-200 flex justify-end">
         <button onclick="submitNewPurchase()" class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-2 cursor-pointer shadow-lg">
           <span>📥 Simpan Pembelian &amp; Tambah Stok Otomatis</span>
         </button>
@@ -240,8 +255,8 @@
     <!-- RIWAYAT PEMBELIAN / KULAKAN -->
     <div class="space-y-3">
       <div class="flex items-center justify-between">
-        <h3 class="font-black text-sm text-white uppercase tracking-wider">📜 Riwayat Pembelian &amp; Belanja Modal Bahan</h3>
-        <span id="purchaseCountBadge" class="text-xs font-bold text-stone-400">0 Pembelian Tercatat</span>
+        <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider">📜 Riwayat Pembelian &amp; Belanja Modal Bahan</h3>
+        <span id="purchaseCountBadge" class="text-xs font-bold text-slate-500">0 Pembelian Tercatat</span>
       </div>
       <div id="purchaseHistoryList" class="space-y-2.5"></div>
     </div>
@@ -249,10 +264,10 @@
 
   <!-- TAB 4: MANAJEMEN STOK GUDANG 2-ARAH -->
   <section id="oview_stock" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-4">
-    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h2 class="font-black text-base text-white">Manajemen Stok Bahan Baku (2-Arah)</h2>
-        <p class="text-xs text-stone-400">Stok tersimpan otomatis di perangkat dan terupdate secara instan ke Kasir serta Google Spreadsheet.</p>
+        <h2 class="font-black text-base text-slate-900">Manajemen Stok Bahan Baku (2-Arah)</h2>
+        <p class="text-xs text-slate-500">Stok tersimpan otomatis di perangkat dan terupdate secara instan ke Kasir serta Google Spreadsheet.</p>
       </div>
       <div class="flex gap-2">
         <button onclick="pushOwnerStockToCloud()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md cursor-pointer">☁️ Kirim Stok ke Cloud &amp; Kasir</button>
@@ -263,22 +278,22 @@
 
   <!-- TAB 5: MASTER HARGA JUAL MENU & ADD-ON (TOPPING) -->
   <section id="oview_menu" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-5">
-    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h2 class="font-black text-base text-white">Master Harga Jual Menu &amp; Extra Topping / Add-on</h2>
-        <p class="text-xs text-stone-400">Atur harga jual ke pelanggan, tambah menu baru, atau tambah topping/add-on baru secara bebas.</p>
+        <h2 class="font-black text-base text-slate-900">Master Harga Jual Menu &amp; Extra Topping / Add-on</h2>
+        <p class="text-xs text-slate-500">Atur harga jual ke pelanggan, tambah menu baru, atau tambah topping/add-on baru secara bebas.</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <button onclick="openAddMenuModal()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer shadow-sm">+ Tambah Menu Baru</button>
+        <button onclick="openAddMenuModal()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black text-xs cursor-pointer shadow-sm">+ Tambah Menu Baru</button>
         <button onclick="openAddToppingModal()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs cursor-pointer shadow-sm">+ Tambah Add-on Baru</button>
-        <button onclick="pushOwnerMenuToCloud()" class="px-4 py-2 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-xs cursor-pointer shadow-md">💾 Simpan Semua ke Cloud &amp; Kasir</button>
+        <button onclick="pushOwnerMenuToCloud()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs cursor-pointer shadow-md">💾 Simpan Semua ke Cloud &amp; Kasir</button>
       </div>
     </div>
 
     <!-- Sub-tab Selector -->
-    <div class="flex bg-[#160F0C] p-1 rounded-2xl border border-stone-800 w-fit">
-      <button onclick="switchMenuSubTab('main')" id="subtab_main" class="px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer">🍜 Menu Utama &amp; Minuman (<span id="menuCountBadge">0</span>)</button>
-      <button onclick="switchMenuSubTab('addon')" id="subtab_addon" class="px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer">🍢 Extra Topping &amp; Add-on (<span id="toppingCountBadge">0</span>)</button>
+    <div class="flex bg-slate-50 p-1 rounded-2xl border border-slate-200 w-fit">
+      <button onclick="switchMenuSubTab('main')" id="subtab_main" class="px-4 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white cursor-pointer">🍜 Menu Utama &amp; Minuman (<span id="menuCountBadge">0</span>)</button>
+      <button onclick="switchMenuSubTab('addon')" id="subtab_addon" class="px-4 py-2 rounded-xl text-xs font-black text-slate-500 hover:text-slate-900 cursor-pointer">🍢 Extra Topping &amp; Add-on (<span id="toppingCountBadge">0</span>)</button>
     </div>
 
     <!-- Section 1: Menu Grid -->
@@ -290,83 +305,83 @@
 
   <!-- TAB 6: AUDIT NOTA TRANSAKSI KASIR -->
   <section id="oview_audit" class="hidden flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-4">
-    <div class="bg-[#221712] border border-stone-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h2 class="font-black text-base text-white">Audit Nota Kasir &amp; Remote Void</h2>
-        <p class="text-xs text-stone-400">Pantau seluruh nota kasir hari ini dan batalkan (Void) dari jarak jauh bila terdapat kekeliruan.</p>
+        <h2 class="font-black text-base text-slate-900">Audit Nota Kasir &amp; Remote Void</h2>
+        <p class="text-xs text-slate-500">Pantau seluruh nota kasir hari ini dan batalkan (Void) dari jarak jauh bila terdapat kekeliruan.</p>
       </div>
-      <button onclick="syncFromSpreadsheet(true)" class="px-4 py-2 rounded-xl bg-[#B3261E] text-white font-black text-xs cursor-pointer">🔄 Tarik Nota Terbaru</button>
+      <button onclick="syncFromSpreadsheet(true)" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-black text-xs cursor-pointer">🔄 Tarik Nota Terbaru</button>
     </div>
     <div id="auditTxList" class="space-y-2.5"></div>
   </section>
 
   <!-- DISCREET FOOTER (ONLY HYPHEN '-' IS CLICKABLE TRIGGER FOR SECRET MODAL) -->
-  <footer class="mt-auto py-5 text-center text-xs text-stone-500 border-t border-stone-800/40 select-none">
+  <footer class="mt-auto py-5 text-center text-xs text-slate-500 border-t border-slate-200 select-none">
     <div class="max-w-md mx-auto flex flex-col items-center gap-1">
-      <p class="text-[11px] text-stone-500">
-        © 2026 Seblak Brengos <span onclick="triggerSecretCloudModal()" class="cursor-pointer select-none px-0.5 text-stone-600 hover:text-stone-400 transition-colors">-</span> The Rebellious Spice. All rights reserved.
+      <p class="text-[11px] text-slate-500">
+        © 2026 AROP <span onclick="triggerSecretCloudModal()" class="cursor-pointer select-none px-0.5 text-slate-400 hover:text-slate-600 transition-colors">-</span> All rights reserved.
       </p>
-      <span class="text-[10px] text-stone-600">POS &amp; Executive Backoffice ERP System</span>
+      <span class="text-[10px] text-slate-400">POS &amp; Executive Backoffice ERP System</span>
     </div>
   </footer>
 
   <!-- SECRET MODAL: CLOUD & SPREADSHEET CONFIG (HIDDEN FROM CASUAL VIEW) -->
   <div id="secretCloudModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-[#221712] border-2 border-stone-700 w-full max-w-xl rounded-3xl p-5 sm:p-6 text-white shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+    <div class="bg-white border-2 border-slate-300 w-full max-w-xl rounded-3xl p-5 sm:p-6 text-slate-900 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
         <div class="flex items-center gap-2">
           <span class="text-xl">⚙️</span>
           <div>
-            <h3 class="font-black text-base text-amber-300">Pengaturan Cloud &amp; Google Spreadsheet</h3>
-            <p class="text-xs text-stone-400">Area Terbatas Owner (Jembatan Data Kasir &amp; Owner)</p>
+            <h3 class="font-black text-base text-amber-700">Pengaturan Cloud &amp; Google Spreadsheet</h3>
+            <p class="text-xs text-slate-500">Area Terbatas Owner (Jembatan Data Kasir &amp; Owner)</p>
           </div>
         </div>
-        <button onclick="closeSecretCloudModal()" class="w-8 h-8 rounded-full bg-stone-800 text-stone-300 font-black cursor-pointer">✕</button>
+        <button onclick="closeSecretCloudModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-black cursor-pointer">✕</button>
       </div>
 
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-extrabold uppercase text-stone-300 mb-1">URL Web App Google Apps Script (Exec):</label>
-          <input id="ownerScriptUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full p-3 rounded-xl bg-[#160F0C] border border-stone-700 text-xs font-mono font-bold text-emerald-300" />
+          <label class="block font-extrabold uppercase text-slate-700 mb-1">URL Web App Google Apps Script (Exec):</label>
+          <input id="ownerScriptUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs font-mono font-bold text-emerald-700" />
         </div>
         <div>
-          <label class="block font-extrabold uppercase text-stone-300 mb-1">URL Google Spreadsheet (Buka Tabel):</label>
-          <input id="ownerSheetUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/..." class="w-full p-3 rounded-xl bg-[#160F0C] border border-stone-700 text-xs font-mono text-white" />
+          <label class="block font-extrabold uppercase text-slate-700 mb-1">URL Google Spreadsheet (Buka Tabel):</label>
+          <input id="ownerSheetUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/..." class="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs font-mono text-slate-900" />
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-extrabold uppercase text-stone-300 mb-1">Nomor WhatsApp Owner (Laporan):</label>
-            <input id="ownerWaInput" type="text" placeholder="087898185988" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-xs font-bold text-white" />
+            <label class="block font-extrabold uppercase text-slate-700 mb-1">Nomor WhatsApp Owner (Laporan):</label>
+            <input id="ownerWaInput" type="text" placeholder="08xxxxxxxxxx" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs font-bold text-slate-900" />
           </div>
           <div>
-            <label class="block font-extrabold uppercase text-stone-300 mb-1">Nama Usaha:</label>
-            <input id="ownerStoreName" type="text" value="Seblak Brengos" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-xs font-bold text-white" />
+            <label class="block font-extrabold uppercase text-slate-700 mb-1">Nama Usaha:</label>
+            <input id="ownerStoreName" type="text" value="" readonly title="Diatur dari halaman Admin" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs font-bold text-slate-900" />
           </div>
         </div>
 
         <!-- Bagian Ganti PIN Otorisasi Owner -->
-        <div class="pt-3 border-t border-stone-800 space-y-1.5">
-          <label class="block font-extrabold uppercase text-amber-300 text-xs">🔐 Ganti PIN Otorisasi Owner:</label>
+        <div class="pt-3 border-t border-slate-200 space-y-1.5">
+          <label class="block font-extrabold uppercase text-amber-700 text-xs">🔐 Ganti PIN Otorisasi Owner:</label>
           <div class="flex gap-2">
-            <input id="newOwnerPinInput" type="password" maxlength="12" placeholder="Ketik PIN baru (min. 4 karakter)" class="flex-1 p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white text-xs font-bold tracking-wider focus:outline-none focus:border-amber-400" />
-            <button type="button" onclick="saveNewOwnerPin()" class="px-3.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer shadow-md">Simpan PIN Baru</button>
+            <input id="newOwnerPinInput" type="password" maxlength="12" placeholder="Ketik PIN baru (min. 4 karakter)" class="flex-1 p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs font-bold tracking-wider focus:outline-none focus:border-emerald-600" />
+            <button type="button" onclick="saveNewOwnerPin()" class="px-3.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black text-xs cursor-pointer shadow-md">Simpan PIN Baru</button>
           </div>
-          <p class="text-[10.5px] text-stone-400">PIN ini dipakai untuk login dashboard owner, pembersihan data, dan otorisasi sistem.</p>
+          <p class="text-[10.5px] text-slate-500">PIN ini dipakai untuk login dashboard owner, pembersihan data, dan otorisasi sistem.</p>
         </div>
 
         <!-- Pembersihan Data Transaksi (Clean Old Demo Data) -->
-        <div class="pt-2 border-t border-stone-800 space-y-2">
+        <div class="pt-2 border-t border-slate-200 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="font-extrabold uppercase text-red-400">🧹 Pembersihan Data (Reset Bersih):</span>
-            <button onclick="cleanOldDemoData()" class="px-3 py-1 rounded-lg bg-red-950 hover:bg-red-900 border border-red-800 text-red-300 font-black text-xs cursor-pointer">Bersihkan Data Transaksi</button>
+            <span class="font-extrabold uppercase text-red-600">🧹 Pembersihan Data (Reset Bersih):</span>
+            <button onclick="cleanOldDemoData()" class="px-3 py-1 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-black text-xs cursor-pointer">Bersihkan Data Transaksi</button>
           </div>
-          <p class="text-[10.5px] text-stone-400">Menghapus riwayat transaksi di Spreadsheet, tablet kasir, dan HP ini lalu memulai dengan omzet nol, tanpa mengubah daftar menu, topping, dan stok.</p>
+          <p class="text-[10.5px] text-slate-500">Menghapus riwayat transaksi di Spreadsheet, tablet kasir, dan HP ini lalu memulai dengan omzet nol, tanpa mengubah daftar menu, topping, dan stok.</p>
         </div>
 
-        <div class="pt-2 border-t border-stone-800 space-y-2">
+        <div class="pt-2 border-t border-slate-200 space-y-2">
           <div class="flex items-center justify-between">
-            <label class="font-extrabold uppercase text-amber-300">📜 Kode Google Apps Script Resmi (Code.gs):</label>
-            <button onclick="copyAppsScript()" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer">📋 Copy Script</button>
+            <label class="font-extrabold uppercase text-amber-700">📜 Kode Google Apps Script Resmi (Code.gs):</label>
+            <button onclick="copyAppsScript()" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-900 font-black text-xs cursor-pointer">📋 Copy Script</button>
           </div>
           <textarea id="appsScriptBox" readonly rows="5" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-800 font-mono text-[10.5px] text-emerald-300 leading-tight">/**
  * =========================================================================
@@ -1627,8 +1642,28 @@ function parseItemsJson_(v) {
  * ENDPOINT GET: Mengambil data Master Stok dan Master Menu dari Google Sheets ke POS
  * URL panggilan: [WEBHOOK_URL]?action=stock atau ?action=menu
  */
+/** Penanda versi data: berubah setiap ada tulis dari Kasir/Owner. Dibaca super ringan (cache) oleh ping. */
+function currentVer_() {
+  var cache = CacheService.getScriptCache();
+  var v = cache.get("ver");
+  if (v === null || v === undefined) {
+    v = String(PropertiesService.getScriptProperties().getProperty("ver") || "0");
+    try { cache.put("ver", v, 21600); } catch (e) {}
+  }
+  return v;
+}
+function bumpVer_() {
+  var v = String(Date.now());
+  try { PropertiesService.getScriptProperties().setProperty("ver", v); } catch (e) {}
+  try { CacheService.getScriptCache().put("ver", v, 21600); } catch (e) {}
+}
+
 function doGet(e) {
   try {
+    // Ping: hanya mengembalikan versi data (tanpa membuka Spreadsheet) agar bisa dipanggil tiap beberapa detik
+    if (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action === "ping") {
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", ver: currentVer_() })).setMimeType(ContentService.MimeType.JSON);
+    }
     ensureSheets_();
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var action = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action) ? e.parameter.action : "stock";
@@ -1642,6 +1677,7 @@ function doGet(e) {
     }
 
     if (action === "pull") {
+      var verPull = currentVer_();
       var sMenuPull = ss.getSheetByName(OUTLET_CONFIG.menuSheet);
       var mDataPull = sMenuPull ? sMenuPull.getDataRange().getValues() : [];
       var pullMenu = [];
@@ -1731,6 +1767,7 @@ function doGet(e) {
         toppings: pullToppings,
         sales: pullSales.reverse(),
         resetEpoch: Number(PropertiesService.getScriptProperties().getProperty("reset_epoch") || 0),
+        ver: verPull,
         closings: closingsForPull_(ss),
         pinHash: String(propsPull.getProperty("pin_hash") || ""),
         pinTs: Number(propsPull.getProperty("pin_ts") || 0),
@@ -2581,6 +2618,7 @@ function doPost(e) {
       error: error.toString()
     })).setMimeType(ContentService.MimeType.JSON);
   } finally {
+    bumpVer_();
     try {
       lock.releaseLock();
     } catch (eLock) {}
@@ -2590,84 +2628,84 @@ function doPost(e) {
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-2 pt-2 border-t border-stone-800">
-        <button onclick="saveOwnerCloudConfig()" class="flex-1 py-3 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-xs cursor-pointer">💾 Simpan Konfigurasi</button>
+      <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-200">
+        <button onclick="saveOwnerCloudConfig()" class="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs cursor-pointer">💾 Simpan Konfigurasi</button>
         <button onclick="openSpreadsheetTab()" class="px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs cursor-pointer">📊 Buka Spreadsheet</button>
-        <button onclick="closeSecretCloudModal()" class="px-4 py-3 rounded-xl bg-stone-800 text-stone-300 font-bold text-xs cursor-pointer">Tutup</button>
+        <button onclick="closeSecretCloudModal()" class="px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer">Tutup</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: TAMBAH MENU BARU -->
   <div id="addMenuModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-[#221712] border-2 border-amber-500/40 w-full max-w-md rounded-3xl p-5 text-white shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
-        <h3 class="font-black text-base text-amber-300">+ Tambah Menu Seblak / Minuman Baru</h3>
-        <button onclick="closeAddMenuModal()" class="w-7 h-7 rounded-full bg-stone-800 text-xs font-black cursor-pointer">✕</button>
+    <div class="bg-white border-2 border-amber-300 w-full max-w-md rounded-3xl p-5 text-slate-900 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 class="font-black text-base text-amber-700">+ Tambah Menu / Produk Baru</h3>
+        <button onclick="closeAddMenuModal()" class="w-7 h-7 rounded-full bg-slate-100 text-xs font-black cursor-pointer">✕</button>
       </div>
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold uppercase text-stone-300 mb-1">Nama Menu:</label>
-          <input id="newMenuName" type="text" placeholder="Contoh: Seblak Seafood Spesial" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-amber-400" />
+          <label class="block font-bold uppercase text-slate-700 mb-1">Nama Menu:</label>
+          <input id="newMenuName" type="text" placeholder="Contoh: Nama menu baru" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-bold focus:outline-none focus:border-emerald-600" />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold uppercase text-stone-300 mb-1">Kategori:</label>
-            <input id="newMenuCat" type="text" placeholder="Menu Utama / Menu Baru / Minuman" value="Menu Utama" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-amber-400" />
+            <label class="block font-bold uppercase text-slate-700 mb-1">Kategori:</label>
+            <input id="newMenuCat" type="text" placeholder="Menu Utama / Menu Baru / Minuman" value="Menu Utama" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-bold focus:outline-none focus:border-emerald-600" />
           </div>
           <div>
-            <label class="block font-bold uppercase text-stone-300 mb-1">Harga Jual (Rp):</label>
-            <input id="newMenuPrice" type="number" placeholder="Contoh: 18000" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-emerald-300 font-black text-sm focus:outline-none focus:border-amber-400" />
+            <label class="block font-bold uppercase text-slate-700 mb-1">Harga Jual (Rp):</label>
+            <input id="newMenuPrice" type="number" placeholder="Contoh: 18000" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-emerald-700 font-black text-sm focus:outline-none focus:border-emerald-600" />
           </div>
         </div>
         <div>
-          <label class="block font-bold uppercase text-stone-300 mb-1">Estimasi HPP / COGS Modal (Rp):</label>
-          <input id="newMenuCogs" type="number" placeholder="Contoh: 8500" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-amber-300 font-black text-sm focus:outline-none focus:border-amber-400" />
+          <label class="block font-bold uppercase text-slate-700 mb-1">Estimasi HPP / COGS Modal (Rp):</label>
+          <input id="newMenuCogs" type="number" placeholder="Contoh: 8500" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-amber-700 font-black text-sm focus:outline-none focus:border-emerald-600" />
         </div>
         <div>
-          <label class="block font-bold uppercase text-stone-300 mb-1">Deskripsi / Isian Menu:</label>
-          <input id="newMenuDesc" type="text" placeholder="Contoh: Isian / pelengkap + udang, cumi, sosis..." class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white focus:outline-none focus:border-amber-400" />
+          <label class="block font-bold uppercase text-slate-700 mb-1">Deskripsi / Isian Menu:</label>
+          <input id="newMenuDesc" type="text" placeholder="Contoh: Isian / pelengkap + udang, cumi, sosis..." class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-emerald-600" />
         </div>
       </div>
-      <div class="flex gap-2 pt-2 border-t border-stone-800">
-        <button onclick="closeAddMenuModal()" class="px-4 py-2.5 rounded-xl bg-stone-800 text-stone-300 font-bold text-xs cursor-pointer">Batal</button>
-        <button onclick="submitNewMenu()" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer shadow-md">+ Simpan Menu Baru</button>
+      <div class="flex gap-2 pt-2 border-t border-slate-200">
+        <button onclick="closeAddMenuModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
+        <button onclick="submitNewMenu()" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black text-xs cursor-pointer shadow-md">+ Simpan Menu Baru</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: TAMBAH ADD-ON / TOPPING BARU -->
   <div id="addToppingModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-[#221712] border-2 border-emerald-500/40 w-full max-w-md rounded-3xl p-5 text-white shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
-        <h3 class="font-black text-base text-emerald-300">+ Tambah Extra Topping / Add-on Baru</h3>
-        <button onclick="closeAddToppingModal()" class="w-7 h-7 rounded-full bg-stone-800 text-xs font-black cursor-pointer">✕</button>
+    <div class="bg-white border-2 border-emerald-200 w-full max-w-md rounded-3xl p-5 text-slate-900 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 class="font-black text-base text-emerald-700">+ Tambah Extra Topping / Add-on Baru</h3>
+        <button onclick="closeAddToppingModal()" class="w-7 h-7 rounded-full bg-slate-100 text-xs font-black cursor-pointer">✕</button>
       </div>
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold uppercase text-stone-300 mb-1">Nama Add-on / Topping:</label>
-          <input id="newToppingName" type="text" placeholder="Contoh: Keju Mozzarella Melt" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-white font-bold focus:outline-none focus:border-emerald-400" />
+          <label class="block font-bold uppercase text-slate-700 mb-1">Nama Add-on / Topping:</label>
+          <input id="newToppingName" type="text" placeholder="Contoh: Keju Mozzarella Melt" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-bold focus:outline-none focus:border-emerald-600" />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold uppercase text-stone-300 mb-1">Harga Jual (Rp):</label>
-            <input id="newToppingPrice" type="number" placeholder="Contoh: 5000" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-emerald-300 font-black text-sm focus:outline-none focus:border-emerald-400" />
+            <label class="block font-bold uppercase text-slate-700 mb-1">Harga Jual (Rp):</label>
+            <input id="newToppingPrice" type="number" placeholder="Contoh: 5000" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-emerald-700 font-black text-sm focus:outline-none focus:border-emerald-600" />
           </div>
           <div>
-            <label class="block font-bold uppercase text-stone-300 mb-1">HPP / Modal (Rp):</label>
-            <input id="newToppingCogs" type="number" placeholder="Contoh: 2500" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-amber-300 font-black text-sm focus:outline-none focus:border-emerald-400" />
+            <label class="block font-bold uppercase text-slate-700 mb-1">HPP / Modal (Rp):</label>
+            <input id="newToppingCogs" type="number" placeholder="Contoh: 2500" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-amber-700 font-black text-sm focus:outline-none focus:border-emerald-600" />
           </div>
         </div>
         <div>
-          <label class="block font-bold uppercase text-stone-300 mb-1">Hubungkan ke Stok Bahan Baku (Opsional):</label>
-          <select id="newToppingStockSelect" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-stone-300 font-bold text-xs focus:outline-none focus:border-emerald-400">
+          <label class="block font-bold uppercase text-slate-700 mb-1">Hubungkan ke Stok Bahan Baku (Opsional):</label>
+          <select id="newToppingStockSelect" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-700 font-bold text-xs focus:outline-none focus:border-emerald-600">
             <option value="">-- Tidak Terhubung ke Stok (Hanya Add-on) --</option>
           </select>
-          <p class="text-[10px] text-stone-400 mt-1">Jika dipilih, stok gudang otomatis terpotong saat Kasir mencatat pesanan add-on ini.</p>
+          <p class="text-[10px] text-slate-500 mt-1">Jika dipilih, stok gudang otomatis terpotong saat Kasir mencatat pesanan add-on ini.</p>
         </div>
       </div>
-      <div class="flex gap-2 pt-2 border-t border-stone-800">
-        <button onclick="closeAddToppingModal()" class="px-4 py-2.5 rounded-xl bg-stone-800 text-stone-300 font-bold text-xs cursor-pointer">Batal</button>
+      <div class="flex gap-2 pt-2 border-t border-slate-200">
+        <button onclick="closeAddToppingModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
         <button onclick="submitNewTopping()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs cursor-pointer shadow-md">+ Simpan Add-on Baru</button>
       </div>
     </div>
@@ -2675,37 +2713,37 @@ function doPost(e) {
 
   <!-- MODAL: ATUR RESEP BAHAN BAKU (BOM) PER MENU -->
   <div id="recipeModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-[#221712] border-2 border-amber-500/50 w-full max-w-lg rounded-3xl p-5 text-white shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
-      <div class="flex items-center justify-between border-b border-stone-800 pb-3 shrink-0">
+    <div class="bg-white border-2 border-amber-300 w-full max-w-lg rounded-3xl p-5 text-slate-900 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3 shrink-0">
         <div>
-          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">FORMULA RESEP &amp; BOM</span>
-          <h3 id="recipeModalTitle" class="font-black text-base text-white mt-0.5">Atur Resep Menu</h3>
+          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">FORMULA RESEP &amp; BOM</span>
+          <h3 id="recipeModalTitle" class="font-black text-base text-slate-900 mt-0.5">Atur Resep Menu</h3>
         </div>
-        <button onclick="closeRecipeModal()" class="w-8 h-8 rounded-full bg-stone-800 text-stone-300 text-xs font-black cursor-pointer">✕</button>
+        <button onclick="closeRecipeModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 text-xs font-black cursor-pointer">✕</button>
       </div>
 
       <div class="overflow-y-auto flex-1 space-y-3.5 pr-1">
-        <p class="text-xs text-stone-400">Tentukan bahan baku yang otomatis berkurang dari stok gudang saat menu ini terjual di Kasir:</p>
+        <p class="text-xs text-slate-500">Tentukan bahan baku yang otomatis berkurang dari stok gudang saat menu ini terjual di Kasir:</p>
         
         <!-- List Bahan Saat Ini -->
         <div id="recipeIngredientsList" class="space-y-2"></div>
 
         <!-- Tambah Bahan Baru ke Resep -->
-        <div class="p-3 rounded-2xl bg-[#160F0C] border border-stone-800 space-y-2">
-          <label class="block text-[11px] font-extrabold uppercase text-amber-300">+ Tambah Bahan Baku ke Resep Ini:</label>
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+          <label class="block text-[11px] font-extrabold uppercase text-amber-700">+ Tambah Bahan Baku ke Resep Ini:</label>
           <div class="flex gap-2">
-            <select id="recipeAddStockSelect" class="flex-1 p-2 rounded-xl bg-[#221712] border border-stone-700 text-xs text-white font-bold focus:outline-none focus:border-amber-400">
+            <select id="recipeAddStockSelect" class="flex-1 p-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 font-bold focus:outline-none focus:border-emerald-600">
             </select>
-            <input id="recipeAddQtyInput" type="number" step="any" placeholder="Takaran" value="1" class="w-20 p-2 rounded-xl bg-[#221712] border border-stone-700 text-xs font-black text-amber-300 text-center focus:outline-none focus:border-amber-400" />
-            <button onclick="addIngredientToRecipe()" class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs cursor-pointer">+ Tambah</button>
+            <input id="recipeAddQtyInput" type="number" step="any" placeholder="Takaran" value="1" class="w-20 p-2 rounded-xl bg-white border border-slate-300 text-xs font-black text-amber-700 text-center focus:outline-none focus:border-emerald-600" />
+            <button onclick="addIngredientToRecipe()" class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black text-xs cursor-pointer">+ Tambah</button>
           </div>
         </div>
 
         <!-- Ringkasan Kalkulasi HPP -->
-        <div class="p-3 rounded-2xl bg-emerald-950/30 border border-emerald-800/60 flex items-center justify-between">
+        <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
           <div>
-            <span class="text-[10px] text-emerald-400 font-extrabold uppercase">Total Modal HPP Resep:</span>
-            <div id="recipeTotalCogsPreview" class="text-base font-black text-emerald-300">Rp 0</div>
+            <span class="text-[10px] text-emerald-600 font-extrabold uppercase">Total Modal HPP Resep:</span>
+            <div id="recipeTotalCogsPreview" class="text-base font-black text-emerald-700">Rp 0</div>
           </div>
           <button onclick="applyRecipeCogsToMenu()" class="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs cursor-pointer shadow-xs">
             ⚡ Terapkan Jadi HPP
@@ -2713,9 +2751,9 @@ function doPost(e) {
         </div>
       </div>
 
-      <div class="flex gap-2 pt-2 border-t border-stone-800 shrink-0">
-        <button onclick="closeRecipeModal()" class="px-4 py-2.5 rounded-xl bg-stone-800 text-stone-300 font-bold text-xs cursor-pointer">Batal</button>
-        <button onclick="saveRecipeModal()" class="flex-1 py-2.5 rounded-xl bg-[#B3261E] hover:bg-[#921E17] text-white font-black text-xs cursor-pointer shadow-md">💾 Simpan Resep Menu</button>
+      <div class="flex gap-2 pt-2 border-t border-slate-200 shrink-0">
+        <button onclick="closeRecipeModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
+        <button onclick="saveRecipeModal()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs cursor-pointer shadow-md">💾 Simpan Resep Menu</button>
       </div>
     </div>
   </div>
@@ -2842,8 +2880,8 @@ function doPost(e) {
       cloudCfg = {
         scriptUrl: BAKED_WEBHOOK,
         sheetUrl: BAKED_SHEET,
-        cashierName: 'Kasir Seblak Brengos',
-        ownerWa: '087898185988'
+        cashierName: 'Kasir',
+        ownerWa: ''
       };
       setLS('cloud_cfg', cloudCfg);
     } else if (BAKED_WEBHOOK && cloudCfg.scriptUrl !== BAKED_WEBHOOK) {
@@ -2997,13 +3035,19 @@ function sha256hex(ascii) {
         tagline: b.tagline !== undefined ? String(b.tagline) : 'The Rebellious Spice • Nikmatnya Brutal',
         social: b.social !== undefined ? String(b.social) : '@seblakbrengos',
         emoji: String(b.emoji || '🌶️'),
-        addonLabel: String(b.addonLabel || 'Extra Topping')
+        addonLabel: String(b.addonLabel || 'Extra Topping'),
+        cashierName: String(b.cashierName || ''),
+        ownerWa: String(b.ownerWa || ''),
+        orderTypes: Array.isArray(b.orderTypes) ? b.orderTypes : []
       };
     }
     function applyBizBranding() {
       const b = getBiz();
+      const stn = document.getElementById('ownerStoreName'); if (stn) stn.value = b.name;
       document.querySelectorAll('.bizOwnerTitle').forEach(el => { el.textContent = 'OWNER ' + b.name.toUpperCase(); });
-      document.title = 'OWNER BACKOFFICE - ' + b.name.toUpperCase();
+      document.querySelectorAll('.bizNameOwner').forEach(el => { el.textContent = b.name.toUpperCase(); });
+      document.querySelectorAll('.bizEmojiOwner').forEach(el => { el.textContent = b.emoji; });
+      document.title = 'AROP Owner - ' + b.name;
     }
 
     // ---- Selisih stok bahan baku dari item nota (resep + topping) ----
@@ -3048,7 +3092,7 @@ function sha256hex(ascii) {
     function openOwnerSettingsDirectly() {
       document.getElementById('ownerScriptUrl').value = cloudCfg.scriptUrl || '';
       document.getElementById('ownerSheetUrl').value = cloudCfg.sheetUrl || '';
-      document.getElementById('ownerWaInput').value = cloudCfg.ownerWa || '087898185988';
+      document.getElementById('ownerWaInput').value = (cloudCfg.ownerWa || getBiz().ownerWa || '');
       document.getElementById('secretCloudModal').classList.remove('hidden');
     }
 
@@ -3059,8 +3103,8 @@ function sha256hex(ascii) {
         const btn = document.getElementById('otab_' + t);
         if (btn) {
           btn.className = t === tab
-            ? 'px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold bg-[#B3261E] text-white cursor-pointer shadow-xs'
-            : 'px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold text-stone-400 hover:text-white cursor-pointer';
+            ? 'px-3 py-1 rounded-lg whitespace-nowrap shrink-0 text-xs font-extrabold bg-white text-emerald-700 cursor-pointer shadow-sm'
+            : 'px-3 py-1 rounded-lg whitespace-nowrap shrink-0 text-xs font-extrabold text-slate-600 hover:text-slate-900 cursor-pointer';
         }
       });
       renderAllOwnerViews();
@@ -3072,11 +3116,11 @@ function sha256hex(ascii) {
       document.getElementById('menuSubTab_main').classList.toggle('hidden', sub !== 'main');
       document.getElementById('menuSubTab_addon').classList.toggle('hidden', sub !== 'addon');
       document.getElementById('subtab_main').className = sub === 'main'
-        ? 'px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer'
-        : 'px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer';
+        ? 'px-4 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white cursor-pointer shadow-sm'
+        : 'px-4 py-2 rounded-xl text-xs font-black text-slate-600 hover:text-slate-900 cursor-pointer';
       document.getElementById('subtab_addon').className = sub === 'addon'
-        ? 'px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer'
-        : 'px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer';
+        ? 'px-4 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white cursor-pointer shadow-sm'
+        : 'px-4 py-2 rounded-xl text-xs font-black text-slate-600 hover:text-slate-900 cursor-pointer';
     }
 
     let activeCogsSubTab = 'menu';
@@ -3085,11 +3129,11 @@ function sha256hex(ascii) {
       document.getElementById('cogsGrid_menu').classList.toggle('hidden', sub !== 'menu');
       document.getElementById('cogsGrid_addon').classList.toggle('hidden', sub !== 'addon');
       document.getElementById('cogstab_menu').className = sub === 'menu'
-        ? 'px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer'
-        : 'px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer';
+        ? 'px-4 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white cursor-pointer shadow-sm'
+        : 'px-4 py-2 rounded-xl text-xs font-black text-slate-600 hover:text-slate-900 cursor-pointer';
       document.getElementById('cogstab_addon').className = sub === 'addon'
-        ? 'px-4 py-2 rounded-xl text-xs font-black bg-[#B3261E] text-white cursor-pointer'
-        : 'px-4 py-2 rounded-xl text-xs font-black text-stone-400 hover:text-white cursor-pointer';
+        ? 'px-4 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white cursor-pointer shadow-sm'
+        : 'px-4 py-2 rounded-xl text-xs font-black text-slate-600 hover:text-slate-900 cursor-pointer';
     }
 
     // FAST ASYNC CLOUD SYNC (NON-BLOCKING WITH 5-SECOND TIMEOUT)
@@ -3187,6 +3231,31 @@ function sha256hex(ascii) {
       }).filter(Boolean);
     }
 
+    // ---- Sinkron cepat: ping ringan tiap 5 dtk; tarik data penuh hanya bila ada perubahan ----
+    let ownerLastVer = null, ownerLastFull = 0, ownerPingBusy = false, ownerLastChange = 0;
+    async function ownerPing() {
+      if (!cloudCfg.scriptUrl || ownerPingBusy) return;
+      if (!document.getElementById('loginGate').classList.contains('hidden')) return;
+      ownerPingBusy = true;
+      try {
+        const c = new AbortController(); const t = setTimeout(() => c.abort(), 15000);
+        const r = await fetch(cloudCfg.scriptUrl + '?action=ping&t=' + Date.now(), { signal: c.signal });
+        clearTimeout(t);
+        const j = await r.json();
+        if (j && j.ver !== undefined) {
+          if (String(j.ver) !== ownerLastVer) ownerLastChange = Date.now();
+          if (String(j.ver) !== ownerLastVer || Date.now() - ownerLastFull > 60000) await syncFromSpreadsheet(false);
+        } else if (Date.now() - ownerLastFull > 12000) {
+          await syncFromSpreadsheet(false); // Apps Script versi lama (belum ada ping)
+        }
+      } catch (e) {} finally { ownerPingBusy = false; }
+    }
+    function ownerSchedulePing() {
+      const gap = document.visibilityState !== 'visible' ? 30000 : (Date.now() - ownerLastChange < 60000 ? 2500 : 5000);
+      setTimeout(async () => { await ownerPing(); ownerSchedulePing(); }, gap);
+    }
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') ownerPing(); });
+
     let ownerSyncBusy = false;
     async function syncFromSpreadsheet(manual = false) {
       if (ownerSyncBusy && !manual) return;
@@ -3222,6 +3291,8 @@ function sha256hex(ascii) {
         clearTimeout(timeoutId);
         const json = await res.json();
         applyResetEpoch(json.resetEpoch);
+        if (json.ver !== undefined) ownerLastVer = String(json.ver);
+        ownerLastFull = Date.now();
 
         applyPinFromCloud(json);
         applyMenuBundleOwner(json);
@@ -3396,28 +3467,28 @@ function sha256hex(ascii) {
 
       // KPI CARDS DASHBOARD
       document.getElementById('kpiGrid').innerHTML = `
-        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
-          <span class="text-[10px] font-extrabold uppercase text-amber-300">Total Omzet Hari Ini</span>
-          <div class="text-xl sm:text-2xl font-black text-white mt-1">${rp(omzet)}</div>
-          <span class="text-[11px] text-emerald-400 font-bold">${validTx.length} Transaksi Sukses</span>
+        <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-amber-700">Total Omzet Hari Ini</span>
+          <div class="text-xl sm:text-2xl font-black text-slate-900 mt-1">${rp(omzet)}</div>
+          <span class="text-[11px] text-emerald-600 font-bold">${validTx.length} Transaksi Sukses</span>
         </div>
-        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
+        <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-extrabold uppercase text-emerald-400">Estimasi Laba Kotor</span>
-            <span class="text-[10px] font-black px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">${marginPercentToday}% MARGIN</span>
+            <span class="text-[10px] font-extrabold uppercase text-emerald-600">Estimasi Laba Kotor</span>
+            <span class="text-[10px] font-black px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">${marginPercentToday}% MARGIN</span>
           </div>
-          <div class="text-xl sm:text-2xl font-black text-emerald-300 mt-1">${rp(grossProfitToday)}</div>
-          <span class="text-[11px] text-stone-400">HPP: ${rp(totalCogsSoldToday)}</span>
+          <div class="text-xl sm:text-2xl font-black text-emerald-700 mt-1">${rp(grossProfitToday)}</div>
+          <span class="text-[11px] text-slate-500">HPP: ${rp(totalCogsSoldToday)}</span>
         </div>
-        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
-          <span class="text-[10px] font-extrabold uppercase text-sky-400">Kas Tunai di Laci</span>
-          <div class="text-xl sm:text-2xl font-black text-sky-300 mt-1">${rp(cashSum)}</div>
-          <span class="text-[11px] text-stone-400">QRIS: ${rp(nonCashSum)}</span>
+        <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-sky-600">Kas Tunai di Laci</span>
+          <div class="text-xl sm:text-2xl font-black text-sky-700 mt-1">${rp(cashSum)}</div>
+          <span class="text-[11px] text-slate-500">QRIS: ${rp(nonCashSum)}</span>
         </div>
-        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
-          <span class="text-[10px] font-extrabold uppercase text-amber-400">Belanja Kulakan Hari Ini</span>
-          <div class="text-xl sm:text-2xl font-black text-amber-300 mt-1">${rp(totalPurchaseCostToday)}</div>
-          <span class="text-[11px] text-stone-400">${todayPurchases.length} Pembelian Bahan</span>
+        <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-amber-600">Belanja Kulakan Hari Ini</span>
+          <div class="text-xl sm:text-2xl font-black text-amber-700 mt-1">${rp(totalPurchaseCostToday)}</div>
+          <span class="text-[11px] text-slate-500">${todayPurchases.length} Pembelian Bahan</span>
         </div>
       `;
 
@@ -3425,7 +3496,7 @@ function sha256hex(ascii) {
       document.getElementById('liveCounterBadge').textContent = txList.length + ' Transaksi Hari Ini (' + validTx.length + ' Sukses)';
       const liveFeed = document.getElementById('liveSalesFeed');
       if (txList.length === 0) {
-        liveFeed.innerHTML = '<div class="py-10 text-center text-xs text-stone-500 font-semibold bg-[#160F0C] rounded-2xl border border-stone-800/80">Belum ada transaksi di kasir hari ini.<br/>Transaksi baru dari kasir akan muncul di sini secara seketika (real-time).</div>';
+        liveFeed.innerHTML = '<div class="py-10 text-center text-xs text-slate-500 font-semibold bg-slate-50 rounded-2xl border border-slate-200">Belum ada transaksi di kasir hari ini.<br/>Transaksi baru dari kasir akan muncul di sini secara seketika (real-time).</div>';
       } else {
         liveFeed.innerHTML = txList.map(t => {
           const timeFormatted = new Date(t.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -3435,21 +3506,21 @@ function sha256hex(ascii) {
           }).join(', ');
 
           return `
-            <div class="p-3.5 rounded-2xl bg-[#160F0C] border ${t.isVoid ? 'border-red-900 bg-red-950/20 opacity-60' : 'border-stone-800 hover:border-amber-500/50'} flex flex-wrap items-center justify-between gap-3 transition-all">
+            <div class="p-3.5 rounded-2xl bg-slate-50 border ${t.isVoid ? 'border-red-200 bg-red-50 opacity-60' : 'border-slate-200 hover:border-amber-400'} flex flex-wrap items-center justify-between gap-3 transition-all">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <span class="font-black text-xs text-amber-300">#${t.id}</span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-800 text-stone-300">🕒 ${timeFormatted}</span>
-                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${t.isCash ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-sky-950 text-sky-300 border border-sky-800'}">${t.paymentMethodName}</span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-800 text-stone-300">${t.orderTypeName}</span>
+                  <span class="font-black text-xs text-amber-700">#${t.id}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">🕒 ${timeFormatted}</span>
+                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${t.isCash ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-sky-50 text-sky-700 border border-sky-200'}">${t.paymentMethodName}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">${t.orderTypeName}</span>
                   ${t.isVoid ? '<span class="text-[9.5px] font-black px-2 py-0.5 rounded bg-red-600 text-white">VOID / BATAL</span>' : ''}
                 </div>
-                <div class="text-xs text-white font-medium mt-1 truncate">${itemsStr || 'Pesanan Seblak Brengos'}</div>
-                <div class="text-[10.5px] text-stone-400 mt-0.5">Kasir: ${t.cashierName || 'Kasir'} ${t.customerName && t.customerName !== '-' ? '• Pelanggan: ' + t.customerName : ''}</div>
+                <div class="text-xs text-slate-900 font-medium mt-1 truncate">${itemsStr || 'Pesanan'}</div>
+                <div class="text-[10.5px] text-slate-500 mt-0.5">Kasir: ${t.cashierName || 'Kasir'} ${t.customerName && t.customerName !== '-' ? '• Pelanggan: ' + t.customerName : ''}</div>
               </div>
               <div class="flex items-center gap-2 text-right shrink-0">
-                <span class="font-black text-sm sm:text-base text-white">${rp(t.total)}</span>
-                ${!t.isVoid ? `<button onclick="ownerVoidTx('${t.id}')" class="px-3 py-1.5 rounded-lg bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 text-xs font-bold cursor-pointer">Void</button>` : ''}
+                <span class="font-black text-sm sm:text-base text-slate-900">${rp(t.total)}</span>
+                ${!t.isVoid ? `<button onclick="ownerVoidTx('${t.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold cursor-pointer">Void</button>` : ''}
               </div>
             </div>
           `;
@@ -3467,26 +3538,26 @@ function sha256hex(ascii) {
       });
       const sortedMenu = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
       document.getElementById('topMenuRanking').innerHTML = sortedMenu.length === 0
-        ? '<div class="py-6 text-center text-xs text-stone-500">Belum ada data penjualan menu hari ini.</div>'
+        ? '<div class="py-6 text-center text-xs text-slate-500">Belum ada data penjualan menu hari ini.</div>'
         : sortedMenu.map(([name, qty], idx) => `
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#160F0C] border border-stone-800">
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
               <div class="flex items-center gap-2.5">
-                <span class="w-6 h-6 rounded-lg bg-[#B3261E] text-white font-black text-xs flex items-center justify-center">#${idx+1}</span>
-                <span class="font-bold text-xs text-white">${name}</span>
+                <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-black text-xs flex items-center justify-center">#${idx+1}</span>
+                <span class="font-bold text-xs text-slate-900">${name}</span>
               </div>
-              <span class="font-black text-xs text-amber-300">${qty} Porsi</span>
+              <span class="font-black text-xs text-amber-700">${qty} Porsi</span>
             </div>
           `).join('');
 
       // CRITICAL STOCK ALERTS
       const lowItems = stockList.filter(s => s.qty <= s.low);
       document.getElementById('lowStockAlerts').innerHTML = lowItems.length === 0
-        ? '<div class="py-6 text-center text-xs text-emerald-400 font-bold">✅ Semua bahan baku Seblak Brengos dalam batas AMAN!</div>'
+        ? '<div class="py-6 text-center text-xs text-emerald-600 font-bold">✅ Semua bahan baku dalam batas AMAN!</div>'
         : lowItems.map(s => `
-            <div class="p-2.5 rounded-xl bg-red-950/40 border border-red-800/60 flex items-center justify-between">
+            <div class="p-2.5 rounded-xl bg-red-50 border border-red-200 flex items-center justify-between">
               <div>
-                <div class="font-bold text-xs text-red-200">${s.name}</div>
-                <div class="text-[10px] text-red-400">Batas min: ${s.low} ${s.unit}</div>
+                <div class="font-bold text-xs text-red-700">${s.name}</div>
+                <div class="text-[10px] text-red-600">Batas min: ${s.low} ${s.unit}</div>
               </div>
               <span class="font-black text-xs px-2 py-0.5 rounded bg-red-600 text-white">Sisa: ${s.qty} ${s.unit}</span>
             </div>
@@ -3495,16 +3566,16 @@ function sha256hex(ascii) {
       // CLOSING HISTORY
       const cBox = document.getElementById('closingHistoryTable');
       cBox.innerHTML = closingList.length === 0
-        ? '<div class="py-6 text-center text-xs text-stone-500">Belum ada laporan closing shift yang dikirim kasir.</div>'
+        ? '<div class="py-6 text-center text-xs text-slate-500">Belum ada laporan closing shift yang dikirim kasir.</div>'
         : closingList.map(c => `
-            <div class="p-3 rounded-xl bg-[#160F0C] border border-stone-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
               <div>
-                <div class="font-black text-white">${c.dateKey || '-'} • ${c.shiftName || 'Shift Kasir'}</div>
-                <div class="text-[11px] text-stone-400">Nota: ${c.txCount || 0} | Tunai: ${rp(c.cashSales)} | Non-Tunai: ${rp(c.nonCashSales)}</div>
+                <div class="font-black text-slate-900">${c.dateKey || '-'} • ${c.shiftName || 'Shift Kasir'}</div>
+                <div class="text-[11px] text-slate-500">Nota: ${c.txCount || 0} | Tunai: ${rp(c.cashSales)} | Non-Tunai: ${rp(c.nonCashSales)}</div>
               </div>
               <div class="text-right">
-                <div class="font-black text-amber-300">Omzet: ${rp(c.totalSales)}</div>
-                <div class="text-[11px] ${(c.cashDifference||0) < 0 ? 'text-red-400' : 'text-emerald-400'}">Selisih Kas: ${rp(c.cashDifference || 0)}</div>
+                <div class="font-black text-amber-700">Omzet: ${rp(c.totalSales)}</div>
+                <div class="text-[11px] ${(c.cashDifference||0) < 0 ? 'text-red-600' : 'text-emerald-600'}">Selisih Kas: ${rp(c.cashDifference || 0)}</div>
               </div>
             </div>
           `).join('');
@@ -3518,39 +3589,39 @@ function sha256hex(ascii) {
       // AUDIT NOTA LIST
       const auditEl = document.getElementById('auditTxList');
       auditEl.innerHTML = txList.length === 0
-        ? '<div class="p-8 rounded-2xl bg-[#221712] border border-stone-800 text-center text-xs text-stone-500">Belum ada transaksi tercatat hari ini.</div>'
+        ? '<div class="p-8 rounded-2xl bg-white border border-slate-200 text-center text-xs text-slate-500">Belum ada transaksi tercatat hari ini.</div>'
         : txList.map(t => `
-            <div class="p-3.5 rounded-2xl bg-[#221712] border ${t.isVoid ? 'border-red-900 bg-red-950/20 opacity-70' : 'border-stone-800'} flex flex-wrap items-center justify-between gap-3">
+            <div class="p-3.5 rounded-2xl bg-white border ${t.isVoid ? 'border-red-200 bg-red-50 opacity-70' : 'border-slate-200'} flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="font-black text-xs text-amber-300">#${t.id}</span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-stone-800 text-stone-200">${t.orderTypeName}</span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-stone-800 text-emerald-300">${t.paymentMethodName}</span>
+                  <span class="font-black text-xs text-amber-700">#${t.id}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">${t.orderTypeName}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-emerald-700">${t.paymentMethodName}</span>
                   ${t.isVoid ? '<span class="text-[10px] font-black px-2 py-0.5 rounded bg-red-600 text-white">VOID</span>' : ''}
                 </div>
-                <div class="text-xs text-white font-semibold mt-1">${t.itemsSummary || (t.items || []).map(i => i.qty + 'x ' + i.name).join(', ')}</div>
-                <div class="text-[10px] text-stone-400 mt-0.5">${new Date(t.time).toLocaleString('id-ID')} • Kasir: ${t.cashierName || 'Kasir'}</div>
+                <div class="text-xs text-slate-900 font-semibold mt-1">${t.itemsSummary || (t.items || []).map(i => i.qty + 'x ' + i.name).join(', ')}</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">${new Date(t.time).toLocaleString('id-ID')} • Kasir: ${t.cashierName || 'Kasir'}</div>
               </div>
               <div class="flex items-center gap-2">
-                <span class="font-black text-sm text-white">${rp(t.total)}</span>
-                ${!t.isVoid ? `<button onclick="ownerVoidTx('${t.id}')" class="px-3 py-1.5 rounded-lg bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 text-xs font-bold cursor-pointer">Void Nota</button>` : ''}
+                <span class="font-black text-sm text-slate-900">${rp(t.total)}</span>
+                ${!t.isVoid ? `<button onclick="ownerVoidTx('${t.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold cursor-pointer">Void Nota</button>` : ''}
               </div>
             </div>
           `).join('');
 
       // STOK GUDANG GRID
       document.getElementById('ownerStockGrid').innerHTML = stockList.map((s, idx) => `
-        <div class="p-3.5 rounded-2xl bg-[#221712] border ${s.qty <= s.low ? 'border-red-600' : 'border-stone-800'} space-y-2">
+        <div class="p-3.5 rounded-2xl bg-white border ${s.qty <= s.low ? 'border-red-300' : 'border-slate-200'} space-y-2">
           <div class="flex items-start justify-between gap-2">
             <div>
-              <div class="font-extrabold text-xs text-white">${s.name}</div>
-              <span class="text-[10px] text-stone-400">Satuan: ${s.unit} | Min: ${s.low} | Modal: ${rp(s.cost || 0)}</span>
+              <div class="font-extrabold text-xs text-slate-900">${s.name}</div>
+              <span class="text-[10px] text-slate-500">Satuan: ${s.unit} | Min: ${s.low} | Modal: ${rp(s.cost || 0)}</span>
             </div>
-            <span class="text-[10px] font-black px-2 py-0.5 rounded ${s.qty <= s.low ? 'bg-red-600 text-white' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'}">${s.qty <= s.low ? 'MENIPIS' : 'AMAN'}</span>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded ${s.qty <= s.low ? 'bg-red-600 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">${s.qty <= s.low ? 'MENIPIS' : 'AMAN'}</span>
           </div>
           <div class="flex items-center gap-2">
-            <input type="number" value="${s.qty}" onchange="updateLocalStockQty(${idx}, this.value)" class="w-full p-2 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-amber-300" />
-            <button onclick="quickAddOwnerStock(${idx}, 10)" class="px-3 py-2 rounded-xl bg-emerald-900/50 hover:bg-emerald-800 text-emerald-200 font-black text-xs border border-emerald-700 cursor-pointer">+10</button>
+            <input type="number" value="${s.qty}" onchange="updateLocalStockQty(${idx}, this.value)" class="w-full p-2 rounded-xl bg-slate-50 border border-slate-300 text-sm font-black text-amber-700" />
+            <button onclick="quickAddOwnerStock(${idx}, 10)" class="px-3 py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-black text-xs border border-emerald-200 cursor-pointer">+10</button>
           </div>
         </div>
       `).join('');
@@ -3558,30 +3629,30 @@ function sha256hex(ascii) {
       // MASTER MENU SUB-TAB
       document.getElementById('menuCountBadge').textContent = menuList.length;
       document.getElementById('menuSubTab_main').innerHTML = menuList.map((m, idx) => `
-        <div class="p-3.5 rounded-2xl bg-[#221712] border border-stone-800 space-y-2.5">
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-2.5">
           <div class="flex items-start justify-between gap-2">
             <div>
-              <span class="text-[10px] font-extrabold uppercase text-amber-400">${m.category || 'Menu Utama'}</span>
-              <div class="font-black text-sm text-white">${m.name}</div>
+              <span class="text-[10px] font-extrabold uppercase text-amber-600">${m.category || 'Menu Utama'}</span>
+              <div class="font-black text-sm text-slate-900">${m.name}</div>
             </div>
-            <button onclick="deleteMenuItem(${idx})" class="text-xs text-red-500 hover:text-red-400 p-1 cursor-pointer" title="Hapus Menu">✕</button>
+            <button onclick="deleteMenuItem(${idx})" class="text-xs text-red-600 hover:text-red-700 p-1 cursor-pointer" title="Hapus Menu">✕</button>
           </div>
-          ${m.description ? `<p class="text-[10.5px] text-stone-400 line-clamp-2 leading-tight">${m.description}</p>` : ''}
+          ${m.description ? `<p class="text-[10.5px] text-slate-500 line-clamp-2 leading-tight">${m.description}</p>` : ''}
           <div>
             <div class="flex items-center justify-between mb-1">
-              <label class="text-[10px] text-stone-400 uppercase font-bold">Harga Jual (Rp):</label>
-              <span class="text-[10px] text-emerald-400 font-extrabold">${rp(m.price)}</span>
+              <label class="text-[10px] text-slate-500 uppercase font-bold">Harga Jual (Rp):</label>
+              <span class="text-[10px] text-emerald-600 font-extrabold">${rp(m.price)}</span>
             </div>
             <div class="flex items-center gap-1.5">
-              <input type="number" value="${m.price}" onchange="updateLocalMenuPrice(${idx}, this.value)" class="w-full p-2 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-emerald-300 focus:outline-none focus:border-amber-400" />
-              <button onclick="quickAdjustMenuPrice(${idx}, 1000)" class="px-2.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+1k</button>
+              <input type="number" value="${m.price}" onchange="updateLocalMenuPrice(${idx}, this.value)" class="w-full p-2 rounded-xl bg-slate-50 border border-slate-300 text-sm font-black text-emerald-700 focus:outline-none focus:border-emerald-600" />
+              <button onclick="quickAdjustMenuPrice(${idx}, 1000)" class="px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 cursor-pointer">+1k</button>
             </div>
           </div>
-          <div class="pt-2 border-t border-stone-800/80 flex items-center justify-between gap-2">
-            <div class="text-[10.5px] text-stone-400">
-              Resep: <span class="font-bold text-amber-300">${(m.ingredients || []).length} Bahan (BOM)</span>
+          <div class="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
+            <div class="text-[10.5px] text-slate-500">
+              Resep: <span class="font-bold text-amber-700">${(m.ingredients || []).length} Bahan (BOM)</span>
             </div>
-            <button onclick="openRecipeModal(${idx})" class="px-2.5 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-extrabold text-[11px] flex items-center gap-1 cursor-pointer">
+            <button onclick="openRecipeModal(${idx})" class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-extrabold text-[11px] flex items-center gap-1 cursor-pointer">
               <span>📋</span> Atur Resep Bahan
             </button>
           </div>
@@ -3591,23 +3662,23 @@ function sha256hex(ascii) {
       // MASTER ADD-ON / TOPPING SUB-TAB
       document.getElementById('toppingCountBadge').textContent = toppingList.length;
       document.getElementById('menuSubTab_addon').innerHTML = toppingList.map((t, idx) => `
-        <div class="p-3.5 rounded-2xl bg-[#221712] border border-stone-800 space-y-2.5">
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-2.5">
           <div class="flex items-start justify-between gap-2">
             <div>
-              <span class="text-[10px] font-extrabold uppercase text-emerald-400">Extra Topping / Add-on</span>
-              <div class="font-black text-sm text-white">${t.name}</div>
+              <span class="text-[10px] font-extrabold uppercase text-emerald-600">Extra Topping / Add-on</span>
+              <div class="font-black text-sm text-slate-900">${t.name}</div>
             </div>
-            <button onclick="deleteToppingItem(${idx})" class="text-xs text-red-500 hover:text-red-400 p-1 cursor-pointer" title="Hapus Topping">✕</button>
+            <button onclick="deleteToppingItem(${idx})" class="text-xs text-red-600 hover:text-red-700 p-1 cursor-pointer" title="Hapus Topping">✕</button>
           </div>
           <div>
             <div class="flex items-center justify-between mb-1">
-              <label class="text-[10px] text-stone-400 uppercase font-bold">Harga Jual Add-on (Rp):</label>
-              <span class="text-[10px] text-emerald-400 font-extrabold">${rp(t.price)}</span>
+              <label class="text-[10px] text-slate-500 uppercase font-bold">Harga Jual Add-on (Rp):</label>
+              <span class="text-[10px] text-emerald-600 font-extrabold">${rp(t.price)}</span>
             </div>
             <div class="flex items-center gap-1.5">
-              <input type="number" value="${t.price}" onchange="updateLocalToppingPrice(${idx}, this.value)" class="w-full p-2 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-emerald-300 focus:outline-none focus:border-emerald-400" />
-              <button onclick="quickAdjustToppingPrice(${idx}, 500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+500</button>
-              <button onclick="quickAdjustToppingPrice(${idx}, 1000)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+1k</button>
+              <input type="number" value="${t.price}" onchange="updateLocalToppingPrice(${idx}, this.value)" class="w-full p-2 rounded-xl bg-slate-50 border border-slate-300 text-sm font-black text-emerald-700 focus:outline-none focus:border-emerald-600" />
+              <button onclick="quickAdjustToppingPrice(${idx}, 500)" class="px-2 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 cursor-pointer">+500</button>
+              <button onclick="quickAdjustToppingPrice(${idx}, 1000)" class="px-2 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 cursor-pointer">+1k</button>
             </div>
           </div>
         </div>
@@ -3619,7 +3690,7 @@ function sha256hex(ascii) {
       const waInp = document.getElementById('ownerWaInput');
       if (scriptInp) scriptInp.value = cloudCfg.scriptUrl || '';
       if (sheetInp) sheetInp.value = cloudCfg.sheetUrl || '';
-      if (waInp) waInp.value = cloudCfg.ownerWa || '087898185988';
+      if (waInp) waInp.value = (cloudCfg.ownerWa || getBiz().ownerWa || '');
     }
 
     // ==========================================
@@ -3627,25 +3698,25 @@ function sha256hex(ascii) {
     // ==========================================
     function renderCogsSection(omzet, totalCogsSold, grossProfit, marginPercent) {
       document.getElementById('cogsKpiRow').innerHTML = `
-        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
-          <span class="text-[10px] font-extrabold uppercase text-amber-300">Total Omzet Penjualan</span>
-          <div class="text-xl font-black text-white mt-1">${rp(omzet)}</div>
-          <span class="text-[10.5px] text-stone-400">Total penerimaan kotor</span>
+        <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-amber-700">Total Omzet Penjualan</span>
+          <div class="text-xl font-black text-slate-900 mt-1">${rp(omzet)}</div>
+          <span class="text-[10.5px] text-slate-500">Total penerimaan kotor</span>
         </div>
-        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
-          <span class="text-[10px] font-extrabold uppercase text-red-400">Total HPP Bahan Terjual</span>
-          <div class="text-xl font-black text-red-300 mt-1">${rp(totalCogsSold)}</div>
-          <span class="text-[10.5px] text-stone-400">Biaya modal pokok penjualan</span>
+        <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-red-600">Total HPP Bahan Terjual</span>
+          <div class="text-xl font-black text-red-600 mt-1">${rp(totalCogsSold)}</div>
+          <span class="text-[10.5px] text-slate-500">Biaya modal pokok penjualan</span>
         </div>
-        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
-          <span class="text-[10px] font-extrabold uppercase text-emerald-400">Estimasi Laba Kotor Hari Ini</span>
-          <div class="text-xl font-black text-emerald-300 mt-1">${rp(grossProfit)}</div>
-          <span class="text-[10.5px] text-emerald-400/90 font-bold">Laba Bersih Sebelum Operasional</span>
+        <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-emerald-600">Estimasi Laba Kotor Hari Ini</span>
+          <div class="text-xl font-black text-emerald-700 mt-1">${rp(grossProfit)}</div>
+          <span class="text-[10.5px] text-emerald-600 font-bold">Laba Bersih Sebelum Operasional</span>
         </div>
-        <div class="bg-[#221712] border border-stone-800 p-4 rounded-2xl shadow-sm">
-          <span class="text-[10px] font-extrabold uppercase text-sky-400">Rata-Rata Margin Keuntungan</span>
-          <div class="text-xl font-black text-sky-300 mt-1">${marginPercent}%</div>
-          <span class="text-[10.5px] text-stone-400">Persentase laba kotor hari ini</span>
+        <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-extrabold uppercase text-sky-600">Rata-Rata Margin Keuntungan</span>
+          <div class="text-xl font-black text-sky-700 mt-1">${marginPercent}%</div>
+          <span class="text-[10.5px] text-slate-500">Persentase laba kotor hari ini</span>
         </div>
       `;
 
@@ -3658,37 +3729,37 @@ function sha256hex(ascii) {
         const isNormal = marginPct >= 35 && marginPct < 45;
 
         return `
-          <div class="p-4 rounded-2xl bg-[#221712] border border-stone-800 space-y-3">
+          <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
             <div class="flex items-start justify-between gap-2">
               <div>
-                <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">${m.category || 'Menu Utama'}</span>
-                <h4 class="font-black text-sm text-white mt-1">${m.name}</h4>
+                <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">${m.category || 'Menu Utama'}</span>
+                <h4 class="font-black text-sm text-slate-900 mt-1">${m.name}</h4>
               </div>
-              <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${isHealthy ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : (isNormal ? 'bg-amber-950 text-amber-300 border border-amber-700' : 'bg-red-950 text-red-300 border border-red-700')}">${marginPct}% MARGIN</span>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${isHealthy ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : (isNormal ? 'bg-amber-50 text-amber-700 border border-amber-300' : 'bg-red-50 text-red-600 border border-red-200')}">${marginPct}% MARGIN</span>
             </div>
 
-            <div class="grid grid-cols-2 gap-2 text-xs bg-[#160F0C] p-2.5 rounded-xl border border-stone-800">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
               <div>
-                <span class="text-[10px] text-stone-400 uppercase font-bold block">Harga Jual:</span>
-                <span class="font-black text-emerald-400">${rp(m.price)}</span>
+                <span class="text-[10px] text-slate-500 uppercase font-bold block">Harga Jual:</span>
+                <span class="font-black text-emerald-600">${rp(m.price)}</span>
               </div>
               <div>
-                <span class="text-[10px] text-stone-400 uppercase font-bold block">Laba Kotor/Porsi:</span>
-                <span class="font-black text-amber-300">${rp(profit)}</span>
+                <span class="text-[10px] text-slate-500 uppercase font-bold block">Laba Kotor/Porsi:</span>
+                <span class="font-black text-amber-700">${rp(profit)}</span>
               </div>
             </div>
 
             <div>
               <div class="flex items-center justify-between mb-1">
-                <label class="text-[10.5px] text-stone-300 uppercase font-extrabold">Atur COGS / HPP Modal (Rp):</label>
-                <span class="text-[10px] text-stone-400">Modal per porsi</span>
+                <label class="text-[10.5px] text-slate-700 uppercase font-extrabold">Atur COGS / HPP Modal (Rp):</label>
+                <span class="text-[10px] text-slate-500">Modal per porsi</span>
               </div>
               <div class="flex items-center gap-1.5">
-                <input type="number" value="${cogsVal}" onchange="updateMenuCogs(${idx}, this.value)" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-amber-300 focus:outline-none focus:border-amber-400" />
-                <button onclick="quickAdjustMenuCogs(${idx}, -500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">-500</button>
-                <button onclick="quickAdjustMenuCogs(${idx}, 500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+500</button>
+                <input type="number" value="${cogsVal}" onchange="updateMenuCogs(${idx}, this.value)" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm font-black text-amber-700 focus:outline-none focus:border-emerald-600" />
+                <button onclick="quickAdjustMenuCogs(${idx}, -500)" class="px-2 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 cursor-pointer">-500</button>
+                <button onclick="quickAdjustMenuCogs(${idx}, 500)" class="px-2 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 cursor-pointer">+500</button>
               </div>
-              <button onclick="openRecipeModal(${idx})" class="w-full mt-2 py-1.5 px-3 rounded-xl bg-stone-800/80 hover:bg-stone-800 border border-stone-700 hover:border-amber-500/50 text-stone-300 font-bold text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
+              <button onclick="openRecipeModal(${idx})" class="w-full mt-2 py-1.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-100 border border-slate-300 hover:border-amber-400 text-slate-700 font-bold text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
                 <span>📋</span> Formula Resep (BOM) &amp; Hitung Otomatis
               </button>
             </div>
@@ -3703,34 +3774,34 @@ function sha256hex(ascii) {
         const marginPct = t.price > 0 ? Math.round((profit / t.price) * 100) : 0;
 
         return `
-          <div class="p-4 rounded-2xl bg-[#221712] border border-stone-800 space-y-3">
+          <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
             <div class="flex items-start justify-between gap-2">
               <div>
-                <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Extra Topping / Add-on</span>
-                <h4 class="font-black text-sm text-white mt-1">${t.name}</h4>
+                <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Extra Topping / Add-on</span>
+                <h4 class="font-black text-sm text-slate-900 mt-1">${t.name}</h4>
               </div>
-              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700">${marginPct}% MARGIN</span>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">${marginPct}% MARGIN</span>
             </div>
 
-            <div class="grid grid-cols-2 gap-2 text-xs bg-[#160F0C] p-2.5 rounded-xl border border-stone-800">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
               <div>
-                <span class="text-[10px] text-stone-400 uppercase font-bold block">Harga Jual:</span>
-                <span class="font-black text-emerald-400">${rp(t.price)}</span>
+                <span class="text-[10px] text-slate-500 uppercase font-bold block">Harga Jual:</span>
+                <span class="font-black text-emerald-600">${rp(t.price)}</span>
               </div>
               <div>
-                <span class="text-[10px] text-stone-400 uppercase font-bold block">Laba Kotor:</span>
-                <span class="font-black text-amber-300">${rp(profit)}</span>
+                <span class="text-[10px] text-slate-500 uppercase font-bold block">Laba Kotor:</span>
+                <span class="font-black text-amber-700">${rp(profit)}</span>
               </div>
             </div>
 
             <div>
               <div class="flex items-center justify-between mb-1">
-                <label class="text-[10.5px] text-stone-300 uppercase font-extrabold">Atur Modal HPP (Rp):</label>
+                <label class="text-[10.5px] text-slate-700 uppercase font-extrabold">Atur Modal HPP (Rp):</label>
               </div>
               <div class="flex items-center gap-1.5">
-                <input type="number" value="${cogsVal}" onchange="updateToppingCogs(${idx}, this.value)" class="w-full p-2.5 rounded-xl bg-[#160F0C] border border-stone-700 text-sm font-black text-amber-300 focus:outline-none focus:border-amber-400" />
-                <button onclick="quickAdjustToppingCogs(${idx}, -500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">-500</button>
-                <button onclick="quickAdjustToppingCogs(${idx}, 500)" class="px-2 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-stone-300 cursor-pointer">+500</button>
+                <input type="number" value="${cogsVal}" onchange="updateToppingCogs(${idx}, this.value)" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm font-black text-amber-700 focus:outline-none focus:border-emerald-600" />
+                <button onclick="quickAdjustToppingCogs(${idx}, -500)" class="px-2 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 cursor-pointer">-500</button>
+                <button onclick="quickAdjustToppingCogs(${idx}, 500)" class="px-2 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 cursor-pointer">+500</button>
               </div>
             </div>
           </div>
@@ -3813,26 +3884,26 @@ function sha256hex(ascii) {
       document.getElementById('purchaseCountBadge').textContent = purchaseList.length + ' Pembelian Tercatat';
       const pBox = document.getElementById('purchaseHistoryList');
       if (purchaseList.length === 0) {
-        pBox.innerHTML = '<div class="py-8 text-center text-xs text-stone-500 bg-[#160F0C] rounded-2xl border border-stone-800">Belum ada catatan pembelian bahan baku. Gunakan formulir di atas untuk mencatat kulakan pertama Anda.</div>';
+        pBox.innerHTML = '<div class="py-8 text-center text-xs text-slate-500 bg-slate-50 rounded-2xl border border-slate-200">Belum ada catatan pembelian bahan baku. Gunakan formulir di atas untuk mencatat kulakan pertama Anda.</div>';
       } else {
         pBox.innerHTML = purchaseList.map((p, pIdx) => `
-          <div class="p-3.5 rounded-2xl bg-[#160F0C] border border-stone-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
             <div>
               <div class="flex items-center gap-2">
-                <span class="font-black text-amber-300">#${p.id}</span>
-                <span class="font-extrabold text-white">${p.stockName}</span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">+${p.qty} ${p.unit}</span>
+                <span class="font-black text-amber-700">#${p.id}</span>
+                <span class="font-extrabold text-slate-900">${p.stockName}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">+${p.qty} ${p.unit}</span>
               </div>
-              <div class="text-[11px] text-stone-400 mt-1">
+              <div class="text-[11px] text-slate-500 mt-1">
                 Waktu: ${new Date(p.time).toLocaleString('id-ID')} • Supplier: ${p.supplier || '-'} ${p.note ? '• (' + p.note + ')' : ''}
               </div>
             </div>
             <div class="flex items-center gap-3">
               <div class="text-right">
-                <div class="font-black text-sm text-emerald-400">${rp(p.totalCost)}</div>
-                <div class="text-[10px] text-stone-400">@ ${rp(p.unitCost)} / ${p.unit}</div>
+                <div class="font-black text-sm text-emerald-600">${rp(p.totalCost)}</div>
+                <div class="text-[10px] text-slate-500">@ ${rp(p.unitCost)} / ${p.unit}</div>
               </div>
-              <button onclick="deletePurchaseRecord(${pIdx})" class="text-xs text-red-500 hover:text-red-400 p-1 cursor-pointer" title="Hapus Catatan">✕</button>
+              <button onclick="deletePurchaseRecord(${pIdx})" class="text-xs text-red-600 hover:text-red-700 p-1 cursor-pointer" title="Hapus Catatan">✕</button>
             </div>
           </div>
         `).join('');
@@ -4110,7 +4181,7 @@ function sha256hex(ascii) {
     function renderRecipeIngredientsList() {
       const box = document.getElementById('recipeIngredientsList');
       if (tempRecipeIngredients.length === 0) {
-        box.innerHTML = '<div class="p-4 rounded-xl bg-[#160F0C] border border-stone-800 text-center text-xs text-stone-500">Belum ada bahan baku yang terdaftar di resep ini. Tambahkan bahan di bawah.</div>';
+        box.innerHTML = '<div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-500">Belum ada bahan baku yang terdaftar di resep ini. Tambahkan bahan di bawah.</div>';
         document.getElementById('recipeTotalCogsPreview').textContent = 'Rp 0';
         return;
       }
@@ -4125,16 +4196,16 @@ function sha256hex(ascii) {
         totalBOM += subtotal;
 
         return `
-          <div class="p-2.5 rounded-xl bg-[#160F0C] border border-stone-800 flex items-center justify-between gap-2 text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
             <div class="flex-1 min-w-0">
-              <div class="font-bold text-white truncate">${stName}</div>
-              <div class="text-[10px] text-stone-400">@ ${rp(unitCost)} / ${unit}</div>
+              <div class="font-bold text-slate-900 truncate">${stName}</div>
+              <div class="text-[10px] text-slate-500">@ ${rp(unitCost)} / ${unit}</div>
             </div>
             <div class="flex items-center gap-1.5">
-              <input type="number" step="any" value="${ing.qty}" onchange="updateRecipeIngredientQty(${i}, this.value)" class="w-16 p-1.5 rounded-lg bg-[#221712] border border-stone-700 text-xs font-black text-amber-300 text-center focus:outline-none focus:border-amber-400" />
-              <span class="text-[11px] text-stone-400 font-bold w-8">${unit}</span>
-              <span class="font-extrabold text-emerald-400 text-xs w-20 text-right">${rp(subtotal)}</span>
-              <button onclick="removeRecipeIngredient(${i})" class="w-6 h-6 rounded-md bg-red-950/80 hover:bg-red-900 text-red-400 text-xs font-bold cursor-pointer">✕</button>
+              <input type="number" step="any" value="${ing.qty}" onchange="updateRecipeIngredientQty(${i}, this.value)" class="w-16 p-1.5 rounded-lg bg-white border border-slate-300 text-xs font-black text-amber-700 text-center focus:outline-none focus:border-emerald-600" />
+              <span class="text-[11px] text-slate-500 font-bold w-8">${unit}</span>
+              <span class="font-extrabold text-emerald-600 text-xs w-20 text-right">${rp(subtotal)}</span>
+              <button onclick="removeRecipeIngredient(${i})" class="w-6 h-6 rounded-md bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold cursor-pointer">✕</button>
             </div>
           </div>
         `;
@@ -4320,7 +4391,7 @@ function sha256hex(ascii) {
       setLS('stock', stockList);
       broadcastUpdate('STOCK_UPDATED', stockList);
       const ok = await postToCloud({ type: 'bulk_stock', outletId: 'seblak', stockItems: stockList });
-      if (ok) alert('✅ Stok Bahan Baku Seblak Brengos berhasil dikirim ke Google Spreadsheet & Kasir!');
+      if (ok) alert('✅ Stok Bahan Baku berhasil dikirim ke Google Spreadsheet & Kasir!');
       else alert('Stok tersimpan di perangkat lokal.');
     }
 
@@ -4397,8 +4468,8 @@ function sha256hex(ascii) {
       cloudCfg = {
         scriptUrl: document.getElementById('ownerScriptUrl').value.trim(),
         sheetUrl: document.getElementById('ownerSheetUrl').value.trim(),
-        cashierName: 'Kasir Seblak Brengos',
-        ownerWa: document.getElementById('ownerWaInput').value.trim() || '087898185988'
+        cashierName: 'Kasir',
+        ownerWa: document.getElementById('ownerWaInput').value.trim()
       };
       setLS('cloud_cfg', cloudCfg);
       closeSecretCloudModal();
@@ -4433,12 +4504,17 @@ function sha256hex(ascii) {
 
     applyBizBranding();
 
-    // AUTO REFRESH IN BACKGROUND (EVERY 12 SECONDS - NON-BLOCKING REALTIME)
-    setInterval(() => {
-      if (cloudCfg.scriptUrl && document.getElementById('loginGate').classList.contains('hidden')) {
-        syncFromSpreadsheet(false);
-      }
-    }, 12000);
+    // Sinkron otomatis: ping ringan tiap 5 detik, data penuh hanya diambil bila ada perubahan
+    ownerSchedulePing();
   </script>
+<script>
+(function(){
+  [['syncText','btnSyncStatus','Sinkronisasi'],['btStatusText','btnBtConnect','Printer'],['ownerSyncText','btnOwnerSync','Sinkronisasi']].forEach(function(a){
+    var t=document.getElementById(a[0]),b=document.getElementById(a[1]); if(!t||!b) return;
+    var u=function(){ b.title=a[2]+': '+t.textContent; b.setAttribute('aria-label',b.title); }; u();
+    new MutationObserver(u).observe(t,{childList:true,characterData:true,subtree:true});
+  });
+})();
+</script>
 </body>
 </html>
